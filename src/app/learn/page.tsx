@@ -5,6 +5,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { WordFlashcard, WordItem } from "@/components/WordFlashcard";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
+import { generateQuizOptions } from "@/lib/quiz";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,8 +18,9 @@ import {
   Trophy,
   CheckCircle2,
   Database,
-  ArrowRight,
   RefreshCw,
+  BookOpen,
+  BrainCircuit,
 } from "lucide-react";
 
 // Mock words fallback to ensure immediate rendering in any environment
@@ -88,9 +90,16 @@ const FALLBACK_WORDS: WordItem[] = [
 export default function LearnPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSessionFinished, setIsSessionFinished] = useState(false);
+  const [studyMode, setStudyMode] = useState<"browse" | "quiz">("browse");
   const [isPending, startTransition] = useTransition();
   const [localFallbackWords, setLocalFallbackWords] =
     useState<WordItem[]>(FALLBACK_WORDS);
+
+  // Stable Quiz State strictly keyed to card transition
+  const [quizOptions, setQuizOptions] = useState<string[]>([]);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [isAnswered, setIsAnswered] = useState(false);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
   // Centralized audio engine: pass currentIndex so card navigation immediately cancels playback
   const { play, isPlayingUrl, isAudioUnavailable } =
@@ -103,6 +112,7 @@ export default function LearnPage() {
 
   // Convex Mutations
   const toggleMasteredMutation = useMutation(api.words.toggleMastered);
+  const setWordMasteryMutation = useMutation(api.words.setWordMastery);
   const resetCategoryProgressMutation = useMutation(
     api.words.resetCategoryProgress
   );
@@ -118,6 +128,18 @@ export default function LearnPage() {
   const masteredCount = words.filter((w) => w.isMastered).length;
   const progressPercent =
     words.length > 0 ? Math.round((masteredCount / words.length) * 100) : 0;
+
+  // MANDATORY: Stable Options
+  // Options for Quiz Mode must be set in state strictly on card transition keyed to currentWord._id.
+  // Never re-shuffle during ordinary component re-renders!
+  useEffect(() => {
+    if (!currentWord) return;
+    const options = generateQuizOptions(currentWord.englishText, words);
+    setQuizOptions(options);
+    setSelectedOption(null);
+    setIsAnswered(false);
+    setIsCorrect(null);
+  }, [currentWord?._id, words]);
 
   // Auto-seed if Convex is connected but has 0 words
   useEffect(() => {
@@ -158,7 +180,6 @@ export default function LearnPage() {
         console.error("Failed to reset category progress in Convex:", err);
       }
     } else {
-      // Local fallback reset
       setLocalFallbackWords((prev) =>
         prev.map((w) => ({ ...w, isMastered: false }))
       );
@@ -167,8 +188,7 @@ export default function LearnPage() {
     setIsSessionFinished(false);
   }, [isConvexLive, resetCategoryProgressMutation]);
 
-  // Toggle Mastered Mutation
-  // MANDATORY: Do NOT pass userId as a client argument!
+  // Toggle Mastered Mutation (Browse Mode switch)
   const handleToggleMastered = useCallback(async () => {
     if (!currentWord) return;
 
@@ -183,7 +203,6 @@ export default function LearnPage() {
         console.error("Failed to mutate userProgress in Convex:", err);
       }
     } else {
-      // Local optimistic state for preview mode
       setLocalFallbackWords((prev) =>
         prev.map((w, idx) =>
           idx === currentIndex ? { ...w, isMastered: !w.isMastered } : w
@@ -191,6 +210,69 @@ export default function LearnPage() {
       );
     }
   }, [currentWord, isConvexLive, toggleMasteredMutation, currentIndex]);
+
+  // MANDATORY: Quiz Answer Selection & Mastery Demotion Logic
+  // If user selects correct answer: mark mastered.
+  // If user selects wrong answer for a word previously marked mastered: demote to false!
+  const handleSelectOption = useCallback(
+    async (option: string) => {
+      if (isAnswered || !currentWord) return;
+
+      const isAnswerCorrect =
+        option.toLowerCase().trim() === currentWord.englishText.toLowerCase().trim();
+
+      setSelectedOption(option);
+      setIsAnswered(true);
+      setIsCorrect(isAnswerCorrect);
+
+      if (isAnswerCorrect) {
+        // Promote to mastered if not already mastered
+        if (!currentWord.isMastered) {
+          if (isConvexLive) {
+            try {
+              startTransition(async () => {
+                await setWordMasteryMutation({
+                  wordId: currentWord._id as any,
+                  isMastered: true,
+                });
+              });
+            } catch (err) {
+              console.error("Failed to promote mastery in Convex:", err);
+            }
+          } else {
+            setLocalFallbackWords((prev) =>
+              prev.map((w) =>
+                w._id === currentWord._id ? { ...w, isMastered: true } : w
+              )
+            );
+          }
+        }
+      } else {
+        // MANDATORY: Demote mastery if user fails a previously mastered word
+        if (currentWord.isMastered) {
+          if (isConvexLive) {
+            try {
+              startTransition(async () => {
+                await setWordMasteryMutation({
+                  wordId: currentWord._id as any,
+                  isMastered: false,
+                });
+              });
+            } catch (err) {
+              console.error("Failed to demote mastery in Convex:", err);
+            }
+          } else {
+            setLocalFallbackWords((prev) =>
+              prev.map((w) =>
+                w._id === currentWord._id ? { ...w, isMastered: false } : w
+              )
+            );
+          }
+        }
+      }
+    },
+    [isAnswered, currentWord, isConvexLive, setWordMasteryMutation]
+  );
 
   // Keyboard navigation shortcuts
   useEffect(() => {
@@ -208,6 +290,30 @@ export default function LearnPage() {
           handleReviewAgain();
         }
         return;
+      }
+
+      // Quiz mode number shortcuts: 1, 2, 3, 4
+      if (studyMode === "quiz" && !isAnswered && quizOptions.length > 0) {
+        if (e.key === "1" && quizOptions[0]) {
+          e.preventDefault();
+          handleSelectOption(quizOptions[0]);
+          return;
+        }
+        if (e.key === "2" && quizOptions[1]) {
+          e.preventDefault();
+          handleSelectOption(quizOptions[1]);
+          return;
+        }
+        if (e.key === "3" && quizOptions[2]) {
+          e.preventDefault();
+          handleSelectOption(quizOptions[2]);
+          return;
+        }
+        if (e.key === "4" && quizOptions[3]) {
+          e.preventDefault();
+          handleSelectOption(quizOptions[3]);
+          return;
+        }
       }
 
       if (e.key === "ArrowLeft") {
@@ -237,6 +343,10 @@ export default function LearnPage() {
     handleToggleMastered,
     isSessionFinished,
     handleReviewAgain,
+    studyMode,
+    isAnswered,
+    quizOptions,
+    handleSelectOption,
   ]);
 
   const handleSeedDatabase = async () => {
@@ -248,8 +358,8 @@ export default function LearnPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-xl px-4 py-8 sm:py-12 flex flex-col gap-6">
-      {/* Top Header & Mastery Progress */}
+    <div className="mx-auto w-full max-w-xl px-4 py-6 sm:py-10 flex flex-col gap-5">
+      {/* Top Header Controls: Mode Selector & Category Progress */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -264,19 +374,52 @@ export default function LearnPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-            <Trophy className="h-3.5 w-3.5 text-amber-500" />
-            <span>
-              {masteredCount}/{words.length} Mastered
-            </span>
+          {/* Flashcard / Quiz Mode Segmented Toggle Switch */}
+          <div className="flex items-center rounded-xl bg-muted p-1 border border-border/60">
+            <button
+              type="button"
+              onClick={() => setStudyMode("browse")}
+              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+                studyMode === "browse"
+                  ? "bg-background text-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <BookOpen className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>Browse</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setStudyMode("quiz")}
+              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+                studyMode === "quiz"
+                  ? "bg-background text-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <BrainCircuit className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>Quiz Mode</span>
+            </button>
           </div>
         </div>
 
-        {/* Visual Progress Bar */}
-        <Progress
-          value={isSessionFinished ? 100 : progressPercent}
-          className="h-2"
-        />
+        {/* Visual Progress Bar & Score Counter */}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
+            <span>Progress</span>
+            <div className="flex items-center gap-1">
+              <Trophy className="h-3 w-3 text-amber-500" />
+              <span>
+                {masteredCount} of {words.length} Mastered ({progressPercent}%)
+              </span>
+            </div>
+          </div>
+          <Progress
+            value={isSessionFinished ? 100 : progressPercent}
+            className="h-2"
+          />
+        </div>
       </div>
 
       {/* Completion Card or Active Flashcard */}
@@ -366,6 +509,12 @@ export default function LearnPage() {
       ) : currentWord ? (
         <WordFlashcard
           word={currentWord}
+          mode={studyMode}
+          quizOptions={quizOptions}
+          selectedOption={selectedOption}
+          isAnswered={isAnswered}
+          isCorrect={isCorrect}
+          onSelectOption={handleSelectOption}
           isPlayingKurdish={isPlayingUrl(currentWord.kurdishAudioUrl)}
           isPlayingEnglish={isPlayingUrl(currentWord.englishAudioUrl)}
           isKurdishUnavailable={isAudioUnavailable(currentWord.kurdishAudioUrl)}
@@ -383,7 +532,7 @@ export default function LearnPage() {
 
       {/* Navigation Controls (when session is active) */}
       {!isSessionFinished && (
-        <div className="flex items-center justify-between gap-4 pt-2">
+        <div className="flex items-center justify-between gap-4 pt-1">
           <Button
             type="button"
             variant="outline"
@@ -420,19 +569,21 @@ export default function LearnPage() {
       )}
 
       {/* Controls helper & Seeder */}
-      <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground px-1">
-        <div className="flex items-center gap-3">
+      <div className="mt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground px-1">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="hidden sm:inline">Shortcuts:</span>
-          <span className="bg-muted px-1.5 py-0.5 rounded border border-border/50">
-            ← Prev
+          {studyMode === "quiz" && (
+            <span className="bg-muted px-1.5 py-0.5 rounded border border-border/50 text-[11px]">
+              1-4: Options
+            </span>
+          )}
+          <span className="bg-muted px-1.5 py-0.5 rounded border border-border/50 text-[11px]">
+            ← / →: Nav
           </span>
-          <span className="bg-muted px-1.5 py-0.5 rounded border border-border/50">
-            → Next
+          <span className="bg-muted px-1.5 py-0.5 rounded border border-border/50 text-[11px]">
+            Space: Audio
           </span>
-          <span className="bg-muted px-1.5 py-0.5 rounded border border-border/50">
-            Space: Listen
-          </span>
-          <span className="bg-muted px-1.5 py-0.5 rounded border border-border/50">
+          <span className="bg-muted px-1.5 py-0.5 rounded border border-border/50 text-[11px]">
             M: Master
           </span>
         </div>

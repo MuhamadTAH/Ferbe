@@ -140,6 +140,45 @@ export const toggleMastered = mutation({
 });
 
 /**
+ * Explicitly sets the mastered state for a word.
+ * Used for quiz active recall (promotes on correct, demotes on wrong).
+ * Reads identity inside Convex using ctx.auth.getUserIdentity() with 'dev_user' fallback.
+ */
+export const setWordMastery = mutation({
+  args: {
+    wordId: v.id("words"),
+    isMastered: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    const userId = identity?.subject ?? "dev_user";
+
+    const existing = await ctx.db
+      .query("userProgress")
+      .withIndex("by_user_word", (q) =>
+        q.eq("userId", userId).eq("wordId", args.wordId)
+      )
+      .first();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        isMastered: args.isMastered,
+        lastReviewedAt: Date.now(),
+      });
+      return args.isMastered;
+    } else {
+      await ctx.db.insert("userProgress", {
+        userId,
+        wordId: args.wordId,
+        isMastered: args.isMastered,
+        lastReviewedAt: Date.now(),
+      });
+      return args.isMastered;
+    }
+  },
+});
+
+/**
  * Resets/unmasters all words in the specified category for the current user.
  * Batch Performance:
  * 1. Single query on userProgress with by_user index.
