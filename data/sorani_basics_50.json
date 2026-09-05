@@ -1,0 +1,452 @@
+[
+  {
+    "kurdishText": "سڵاو",
+    "englishText": "Hello",
+    "transliteration": "Slaw",
+    "imageUrl": "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": "/audio/slaw.mp3",
+    "englishAudioUrl": "/audio/hello.mp3",
+    "order": 1
+  },
+  {
+    "kurdishText": "سوپاس",
+    "englishText": "Thank you",
+    "transliteration": "Supas",
+    "imageUrl": "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": "/audio/supas.mp3",
+    "englishAudioUrl": "/audio/thank_you.mp3",
+    "order": 2
+  },
+  {
+    "kurdishText": "بەیانی باش",
+    "englishText": "Good morning",
+    "transliteration": "Beyanî bash",
+    "imageUrl": "https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": "/audio/beyani_bash.mp3",
+    "englishAudioUrl": "/audio/good_morning.mp3",
+    "order": 3
+  },
+  {
+    "kurdishText": "ئاو",
+    "englishText": "Water",
+    "transliteration": "Aw",
+    "imageUrl": "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": "/audio/aw.mp3",
+    "englishAudioUrl": "/audio/water.mp3",
+    "order": 4
+  },
+  {
+    "kurdishText": "نان",
+    "englishText": "Bread",
+    "transliteration": "Nan",
+    "imageUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": "/audio/nan.mp3",
+    "englishAudioUrl": "/audio/bread.mp3",
+    "order": 5
+  },
+  {
+    "kurdishText": "بەڵێ",
+    "englishText": "Yes",
+    "transliteration": "Bełê",
+    "imageUrl": "https://images.unsplash.com/photo-1579208575657-c595a05383b7?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 6
+  },
+  {
+    "kurdishText": "نەخێر",
+    "englishText": "No",
+    "transliteration": "Nexêr",
+    "imageUrl": "https://images.unsplash.com/photo-1589652717521-10c0d092dea9?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 7
+  },
+  {
+    "kurdishText": "تکایە",
+    "englishText": "Please",
+    "transliteration": "Tkaye",
+    "imageUrl": "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 8
+  },
+  {
+    "kurdishText": "شەو شاد",
+    "englishText": "Good night",
+    "transliteration": "Shew shad",
+    "imageUrl": "https://images.unsplash.com/photo-1507499739999-097706ad8914?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 9
+  },
+  {
+    "kurdishText": "ڕۆژ باش",
+    "englishText": "Good day",
+    "transliteration": "Roj bash",
+    "imageUrl": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 10
+  },
+  {
+    "kurdishText": "چۆنیت",
+    "englishText": "How are you",
+    "transliteration": "Çonît",
+    "imageUrl": "https://images.unsplash.com/photo-1516726817505-f5ed825624d8?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 11
+  },
+  {
+    "kurdishText": "باشم",
+    "englishText": "I am fine",
+    "transliteration": "Bashim",
+    "imageUrl": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 12
+  },
+  {
+    "kurdishText": "ماڵ",
+    "englishText": "Home",
+    "transliteration": "Mał",
+    "imageUrl": "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 13
+  },
+  {
+    "kurdishText": "کتێب",
+    "englishText": "Book",
+    "transliteration": "Ktêb",
+    "imageUrl": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 14
+  },
+  {
+    "kurdishText": "قەڵەم",
+    "englishText": "Pen",
+    "transliteration": "Qełem",
+    "imageUrl": "https://images.unsplash.com/photo-1585336261026-77cc7c007957?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 15
+  },
+  {
+    "kurdishText": "کورسی",
+    "englishText": "Chair",
+    "transliteration": "Kursî",
+    "imageUrl": "https://images.unsplash.com/photo-1503602642458-232111445657?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 16
+  },
+  {
+    "kurdishText": "مێز",
+    "englishText": "Table",
+    "transliteration": "Mêz",
+    "imageUrl": "https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 17
+  },
+  {
+    "kurdishText": "دەرگا",
+    "englishText": "Door",
+    "transliteration": "Derga",
+    "imageUrl": "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 18
+  },
+  {
+    "kurdishText": "پەنجەرە",
+    "englishText": "Window",
+    "transliteration": "Penjere",
+    "imageUrl": "https://images.unsplash.com/photo-1509644851169-2acc08aa25b5?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 19
+  },
+  {
+    "kurdishText": "ژوور",
+    "englishText": "Room",
+    "transliteration": "Jûr",
+    "imageUrl": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 20
+  },
+  {
+    "kurdishText": "سەگ",
+    "englishText": "Dog",
+    "transliteration": "Seg",
+    "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 21
+  },
+  {
+    "kurdishText": "پشیلە",
+    "englishText": "Cat",
+    "transliteration": "Pshîle",
+    "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 22
+  },
+  {
+    "kurdishText": "باڵندە",
+    "englishText": "Bird",
+    "transliteration": "Bałnde",
+    "imageUrl": "https://images.unsplash.com/photo-1444464666168-49d633b86797?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 23
+  },
+  {
+    "kurdishText": "دار",
+    "englishText": "Tree",
+    "transliteration": "Dar",
+    "imageUrl": "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 24
+  },
+  {
+    "kurdishText": "گوڵ",
+    "englishText": "Flower",
+    "transliteration": "Guł",
+    "imageUrl": "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 25
+  },
+  {
+    "kurdishText": "خۆر",
+    "englishText": "Sun",
+    "transliteration": "Xor",
+    "imageUrl": "https://images.unsplash.com/photo-1538370965046-79c0d6907d47?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 26
+  },
+  {
+    "kurdishText": "مانگ",
+    "englishText": "Moon",
+    "transliteration": "Mang",
+    "imageUrl": "https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 27
+  },
+  {
+    "kurdishText": "ئاسمان",
+    "englishText": "Sky",
+    "transliteration": "Asman",
+    "imageUrl": "https://images.unsplash.com/photo-1534088568595-a066f410bcda?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 28
+  },
+  {
+    "kurdishText": "چا",
+    "englishText": "Tea",
+    "transliteration": "Ça",
+    "imageUrl": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 29
+  },
+  {
+    "kurdishText": "قاوە",
+    "englishText": "Coffee",
+    "transliteration": "Qawe",
+    "imageUrl": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 30
+  },
+  {
+    "kurdishText": "شەکەر",
+    "englishText": "Sugar",
+    "transliteration": "Şeker",
+    "imageUrl": "https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 31
+  },
+  {
+    "kurdishText": "خوێ",
+    "englishText": "Salt",
+    "transliteration": "Xwê",
+    "imageUrl": "https://images.unsplash.com/photo-1626197031507-c17099753214?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 32
+  },
+  {
+    "kurdishText": "سێو",
+    "englishText": "Apple",
+    "transliteration": "Sêw",
+    "imageUrl": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 33
+  },
+  {
+    "kurdishText": "پڕتەقاڵ",
+    "englishText": "Orange",
+    "transliteration": "Pirteqał",
+    "imageUrl": "https://images.unsplash.com/photo-1547514701-42782101795e?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 34
+  },
+  {
+    "kurdishText": "یەک",
+    "englishText": "One",
+    "transliteration": "Yek",
+    "imageUrl": "https://images.unsplash.com/photo-1568832359672-e36cf5d74f54?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 35
+  },
+  {
+    "kurdishText": "دوو",
+    "englishText": "Two",
+    "transliteration": "Dû",
+    "imageUrl": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 36
+  },
+  {
+    "kurdishText": "سێ",
+    "englishText": "Three",
+    "transliteration": "Sê",
+    "imageUrl": "https://images.unsplash.com/photo-1509228627152-72ae9ae6848d?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 37
+  },
+  {
+    "kurdishText": "چوار",
+    "englishText": "Four",
+    "transliteration": "Çwar",
+    "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 38
+  },
+  {
+    "kurdishText": "پێنج",
+    "englishText": "Five",
+    "transliteration": "Pênc",
+    "imageUrl": "https://images.unsplash.com/photo-1516116211227-bbc1b0880312?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 39
+  },
+  {
+    "kurdishText": "دایک",
+    "englishText": "Mother",
+    "transliteration": "Dayk",
+    "imageUrl": "https://images.unsplash.com/photo-1536640712-4d4c36ff0e4e?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 40
+  },
+  {
+    "kurdishText": "باوک",
+    "englishText": "Father",
+    "transliteration": "Bawk",
+    "imageUrl": "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 41
+  },
+  {
+    "kurdishText": "برا",
+    "englishText": "Brother",
+    "transliteration": "Bra",
+    "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 42
+  },
+  {
+    "kurdishText": "خوشک",
+    "englishText": "Sister",
+    "transliteration": "Xuşk",
+    "imageUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 43
+  },
+  {
+    "kurdishText": "هاوڕێ",
+    "englishText": "Friend",
+    "transliteration": "Hawڕê",
+    "imageUrl": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 44
+  },
+  {
+    "kurdishText": "خوێندنگە",
+    "englishText": "School",
+    "transliteration": "Xwêndinge",
+    "imageUrl": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 45
+  },
+  {
+    "kurdishText": "شەقام",
+    "englishText": "Street",
+    "transliteration": "Şeqam",
+    "imageUrl": "https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 46
+  },
+  {
+    "kurdishText": "ئۆتۆمبێل",
+    "englishText": "Car",
+    "transliteration": "Otomobêl",
+    "imageUrl": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 47
+  },
+  {
+    "kurdishText": "دەست",
+    "englishText": "Hand",
+    "transliteration": "Dest",
+    "imageUrl": "https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 48
+  },
+  {
+    "kurdishText": "چاو",
+    "englishText": "Eye",
+    "transliteration": "Çaw",
+    "imageUrl": "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 49
+  },
+  {
+    "kurdishText": "دڵ",
+    "englishText": "Heart",
+    "transliteration": "Dił",
+    "imageUrl": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=600&auto=format&fit=crop&q=80",
+    "kurdishAudioUrl": null,
+    "englishAudioUrl": null,
+    "order": 50
+  }
+]

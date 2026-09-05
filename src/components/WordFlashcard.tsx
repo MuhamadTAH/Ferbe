@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Volume2, VolumeX, Check, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,8 +13,8 @@ export interface WordItem {
   englishText: string;
   transliteration: string;
   imageUrl: string;
-  kurdishAudioUrl: string;
-  englishAudioUrl: string;
+  kurdishAudioUrl?: string | null;
+  englishAudioUrl?: string | null;
   isMastered: boolean;
   order?: number;
 }
@@ -24,6 +23,8 @@ interface WordFlashcardProps {
   word: WordItem;
   isPlayingKurdish: boolean;
   isPlayingEnglish: boolean;
+  isKurdishUnavailable?: boolean;
+  isEnglishUnavailable?: boolean;
   onPlayKurdish: () => void;
   onPlayEnglish: () => void;
   onToggleMastered: () => void;
@@ -34,11 +35,16 @@ export function WordFlashcard({
   word,
   isPlayingKurdish,
   isPlayingEnglish,
+  isKurdishUnavailable = false,
+  isEnglishUnavailable = false,
   onPlayKurdish,
   onPlayEnglish,
   onToggleMastered,
   isTogglingMastered,
 }: WordFlashcardProps) {
+  const isKurdishDisabled = !word.kurdishAudioUrl || isKurdishUnavailable;
+  const isEnglishDisabled = !word.englishAudioUrl || isEnglishUnavailable;
+
   return (
     <Card className="overflow-hidden border-border/80 bg-card shadow-lg transition-all duration-300 hover:shadow-xl">
       {/* Visual Image Header */}
@@ -106,38 +112,61 @@ export function WordFlashcard({
           </h2>
         </div>
 
-        {/* Audio Triggers (Constraint 4) */}
+        {/* Audio Triggers (Constraint 4 & Audio Fallback) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
           {/* Kurdish Audio Button */}
           <Button
             type="button"
-            variant={isPlayingKurdish ? "default" : "subtle"}
+            variant={
+              isKurdishDisabled
+                ? "secondary"
+                : isPlayingKurdish
+                  ? "default"
+                  : "subtle"
+            }
             size="lg"
             onClick={onPlayKurdish}
+            disabled={isKurdishDisabled}
             className={cn(
               "relative flex items-center justify-center gap-2.5 h-13 rounded-xl transition-all duration-200",
-              isPlayingKurdish
-                ? "bg-emerald-600 text-white ring-2 ring-emerald-500/50 shadow-md scale-[1.01]"
-                : "hover:bg-emerald-100 dark:hover:bg-emerald-900/40"
+              isKurdishDisabled &&
+                "opacity-60 cursor-not-allowed bg-muted/60 text-muted-foreground border border-border/40",
+              !isKurdishDisabled &&
+                isPlayingKurdish &&
+                "bg-emerald-600 text-white ring-2 ring-emerald-500/50 shadow-md scale-[1.01]",
+              !isKurdishDisabled &&
+                !isPlayingKurdish &&
+                "hover:bg-emerald-100 dark:hover:bg-emerald-900/40"
             )}
           >
-            <Volume2
-              className={cn(
-                "h-5 w-5 transition-transform",
-                isPlayingKurdish && "animate-pulse text-white"
+            {isKurdishDisabled ? (
+              <VolumeX className="h-4 w-4 text-muted-foreground/70" />
+            ) : (
+              <Volume2
+                className={cn(
+                  "h-5 w-5 transition-transform",
+                  isPlayingKurdish && "animate-pulse text-white"
+                )}
+              />
+            )}
+            <div className="flex flex-col items-center sm:items-start text-left leading-tight">
+              <div className="flex items-center gap-1.5 text-sm font-semibold">
+                <span>Kurdish Audio</span>
+                <span
+                  dir="rtl"
+                  className="font-kurdish font-normal text-xs opacity-80"
+                >
+                  (کوردی)
+                </span>
+              </div>
+              {isKurdishDisabled && (
+                <span className="text-[11px] text-muted-foreground/70 font-normal">
+                  Audio unavailable
+                </span>
               )}
-            />
-            <div className="flex items-center gap-1.5 text-sm font-semibold">
-              <span>Kurdish Audio</span>
-              <span
-                dir="rtl"
-                className="font-kurdish font-normal text-xs opacity-80"
-              >
-                (کوردی)
-              </span>
             </div>
-            {isPlayingKurdish && (
-              <span className="flex h-2 w-2 relative">
+            {!isKurdishDisabled && isPlayingKurdish && (
+              <span className="flex h-2 w-2 relative ml-auto">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
               </span>
@@ -147,28 +176,51 @@ export function WordFlashcard({
           {/* English Audio Button */}
           <Button
             type="button"
-            variant={isPlayingEnglish ? "default" : "outline"}
+            variant={
+              isEnglishDisabled
+                ? "secondary"
+                : isPlayingEnglish
+                  ? "default"
+                  : "outline"
+            }
             size="lg"
             onClick={onPlayEnglish}
+            disabled={isEnglishDisabled}
             className={cn(
               "relative flex items-center justify-center gap-2.5 h-13 rounded-xl transition-all duration-200",
-              isPlayingEnglish
-                ? "bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 ring-2 ring-slate-400/40 shadow-md scale-[1.01]"
-                : "border-border/80 hover:bg-muted"
+              isEnglishDisabled &&
+                "opacity-60 cursor-not-allowed bg-muted/60 text-muted-foreground border border-border/40",
+              !isEnglishDisabled &&
+                isPlayingEnglish &&
+                "bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 ring-2 ring-slate-400/40 shadow-md scale-[1.01]",
+              !isEnglishDisabled &&
+                !isPlayingEnglish &&
+                "border-border/80 hover:bg-muted"
             )}
           >
-            <Volume2
-              className={cn(
-                "h-5 w-5 transition-transform",
-                isPlayingEnglish && "animate-pulse"
+            {isEnglishDisabled ? (
+              <VolumeX className="h-4 w-4 text-muted-foreground/70" />
+            ) : (
+              <Volume2
+                className={cn(
+                  "h-5 w-5 transition-transform",
+                  isPlayingEnglish && "animate-pulse"
+                )}
+              />
+            )}
+            <div className="flex flex-col items-center sm:items-start text-left leading-tight">
+              <div className="flex items-center gap-1.5 text-sm font-semibold">
+                <span>English Audio</span>
+                <span className="text-xs opacity-70">(Pronounce)</span>
+              </div>
+              {isEnglishDisabled && (
+                <span className="text-[11px] text-muted-foreground/70 font-normal">
+                  Audio unavailable
+                </span>
               )}
-            />
-            <div className="flex items-center gap-1.5 text-sm font-semibold">
-              <span>English Audio</span>
-              <span className="text-xs opacity-70">(Pronounce)</span>
             </div>
-            {isPlayingEnglish && (
-              <span className="flex h-2 w-2 relative">
+            {!isEnglishDisabled && isPlayingEnglish && (
+              <span className="flex h-2 w-2 relative ml-auto">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-200 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-200"></span>
               </span>

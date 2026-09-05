@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 
 export const MOCK_BASICS_WORDS = [
   {
@@ -140,7 +140,249 @@ export const toggleMastered = mutation({
 });
 
 /**
- * Seeds the database with the 'Basics' category and 5 mock words if not already present.
+ * Resets/unmasters all words in the specified category for the current user.
+ * Batch Performance:
+ * 1. Single query on userProgress with by_user index.
+ * 2. In-memory filter matching category word IDs.
+ * 3. Parallel patch with Promise.all() to prevent sequential N+1 queries.
+ */
+export const resetCategoryProgress = mutation({
+  args: {
+    categorySlug: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    const userId = identity?.subject ?? "dev_user";
+    const slug = args.categorySlug ?? "basics";
+
+    const category = await ctx.db
+      .query("categories")
+      .withIndex("by_slug", (q) => q.eq("slug", slug))
+      .first();
+
+    if (!category) {
+      return { resetCount: 0 };
+    }
+
+    const categoryWords = await ctx.db
+      .query("words")
+      .withIndex("by_category", (q) => q.eq("categoryId", category._id))
+      .collect();
+
+    const categoryWordIdSet = new Set(
+      categoryWords.map((w) => w._id.toString())
+    );
+
+    // Single query using by_user index (Batch performance - no N+1 queries)
+    const userProgressRecords = await ctx.db
+      .query("userProgress")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    // In-memory filter for records belonging to this category that are mastered
+    const recordsToReset = userProgressRecords.filter(
+      (record) =>
+        categoryWordIdSet.has(record.wordId.toString()) && record.isMastered
+    );
+
+    // Parallel batch patch with Promise.all()
+    await Promise.all(
+      recordsToReset.map((record) =>
+        ctx.db.patch(record._id, {
+          isMastered: false,
+          lastReviewedAt: Date.now(),
+        })
+      )
+    );
+
+    return { resetCount: recordsToReset.length };
+  },
+});
+
+/**
+ * Internal batch mutation to ingest words into a category.
+ * Security: Defined as an internalMutation (NOT public client-exposed).
+ * Validates uniqueness by kurdishText within the category.
+ */
+export const seedCategoryWords = internalMutation({
+  args: {
+    categorySlug: v.optional(v.string()),
+    categoryName: v.optional(v.string()),
+    words: v.array(
+      v.object({
+        kurdishText: v.string(),
+        englishText: v.string(),
+        transliteration: v.string(),
+        imageUrl: v.string(),
+        kurdishAudioUrl: v.optional(v.union(v.string(), v.null())),
+        englishAudioUrl: v.optional(v.union(v.string(), v.null())),
+        order: v.optional(v.number()),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    const slug = args.categorySlug ?? "basics";
+    const name =
+      args.categoryName ?? (slug.charAt(0).toUpperCase() + slug.slice(1));
+
+    let category = await ctx.db
+      .query("categories")
+      .withIndex("by_slug", (q) => q.eq("slug", slug))
+      .first();
+
+    if (!category) {
+      const categoryId = await ctx.db.insert("categories", {
+        name,
+        slug,
+        description: `${name} Kurdish Sorani vocabulary`,
+      });
+      category = await ctx.db.get(categoryId);
+    }
+
+    if (!category) throw new Error("Failed to find or create category");
+
+    // Fetch existing words to validate uniqueness by kurdishText
+    const existingWords = await ctx.db
+      .query("words")
+      .withIndex("by_category", (q) => q.eq("categoryId", category!._id))
+      .collect();
+
+    const existingKurdishTexts = new Set(
+      existingWords.map((w) => w.kurdishText.trim())
+    );
+
+    let inserted = 0;
+    let skipped = 0;
+    let currentOrder = existingWords.length;
+
+    for (const word of args.words) {
+      const trimmedKurdish = word.kurdishText.trim();
+      if (existingKurdishTexts.has(trimmedKurdish)) {
+        skipped++;
+        continue;
+      }
+
+      currentOrder++;
+      await ctx.db.insert("words", {
+        categoryId: category._id,
+        kurdishText: trimmedKurdish,
+        englishText: word.englishText.trim(),
+        transliteration: word.transliteration.trim(),
+        imageUrl: word.imageUrl,
+        kurdishAudioUrl: word.kurdishAudioUrl ?? undefined,
+        englishAudioUrl: word.englishAudioUrl ?? undefined,
+        order: word.order ?? currentOrder,
+      });
+
+      existingKurdishTexts.add(trimmedKurdish);
+      inserted++;
+    }
+
+    return {
+      categoryId: category._id,
+      categorySlug: slug,
+      inserted,
+      skipped,
+      total: args.words.length,
+    };
+  },
+});
+
+/**
+ * Admin-secured mutation for scripts/seed-words.ts when running via HTTP client.
+ * Verifies admin token before running the seedCategoryWords logic.
+ */
+export const seedCategoryWordsAdmin = mutation({
+  args: {
+    adminSecret: v.string(),
+    categorySlug: v.optional(v.string()),
+    categoryName: v.optional(v.string()),
+    words: v.array(
+      v.object({
+        kurdishText: v.string(),
+        englishText: v.string(),
+        transliteration: v.string(),
+        imageUrl: v.string(),
+        kurdishAudioUrl: v.optional(v.union(v.string(), v.null())),
+        englishAudioUrl: v.optional(v.union(v.string(), v.null())),
+        order: v.optional(v.number()),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    const expectedSecret = process.env.ADMIN_SEED_SECRET || "ferbe_admin_secret";
+    if (args.adminSecret !== expectedSecret) {
+      throw new Error("Unauthorized: Invalid admin secret");
+    }
+
+    const slug = args.categorySlug ?? "basics";
+    const name =
+      args.categoryName ?? (slug.charAt(0).toUpperCase() + slug.slice(1));
+
+    let category = await ctx.db
+      .query("categories")
+      .withIndex("by_slug", (q) => q.eq("slug", slug))
+      .first();
+
+    if (!category) {
+      const categoryId = await ctx.db.insert("categories", {
+        name,
+        slug,
+        description: `${name} Kurdish Sorani vocabulary`,
+      });
+      category = await ctx.db.get(categoryId);
+    }
+
+    if (!category) throw new Error("Failed to find or create category");
+
+    const existingWords = await ctx.db
+      .query("words")
+      .withIndex("by_category", (q) => q.eq("categoryId", category!._id))
+      .collect();
+
+    const existingKurdishTexts = new Set(
+      existingWords.map((w) => w.kurdishText.trim())
+    );
+
+    let inserted = 0;
+    let skipped = 0;
+    let currentOrder = existingWords.length;
+
+    for (const word of args.words) {
+      const trimmedKurdish = word.kurdishText.trim();
+      if (existingKurdishTexts.has(trimmedKurdish)) {
+        skipped++;
+        continue;
+      }
+
+      currentOrder++;
+      await ctx.db.insert("words", {
+        categoryId: category._id,
+        kurdishText: trimmedKurdish,
+        englishText: word.englishText.trim(),
+        transliteration: word.transliteration.trim(),
+        imageUrl: word.imageUrl,
+        kurdishAudioUrl: word.kurdishAudioUrl ?? undefined,
+        englishAudioUrl: word.englishAudioUrl ?? undefined,
+        order: word.order ?? currentOrder,
+      });
+
+      existingKurdishTexts.add(trimmedKurdish);
+      inserted++;
+    }
+
+    return {
+      categoryId: category._id,
+      categorySlug: slug,
+      inserted,
+      skipped,
+      total: args.words.length,
+    };
+  },
+});
+
+/**
+ * Seeds the database with the 'Basics' category and initial mock words if not already present.
  */
 export const seed = mutation({
   args: {},

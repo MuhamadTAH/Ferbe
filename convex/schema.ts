@@ -14,8 +14,8 @@ export default defineSchema({
     englishText: v.string(),
     transliteration: v.string(),
     imageUrl: v.string(),
-    kurdishAudioUrl: v.string(),
-    englishAudioUrl: v.string(),
+    kurdishAudioUrl: v.optional(v.string()),
+    englishAudioUrl: v.optional(v.string()),
     order: v.optional(v.number()),
   }).index("by_category", ["categoryId"]),
 

@@ -10,23 +10,51 @@ export interface AudioPlayerState {
 
 /**
  * Centralized audio player hook for HTML5 Audio playback.
- * - Enforces single audio stream (stops existing audio before starting new audio)
- * - Cancels playback on card navigation or unmount via navigationDependency
- * - Exposes active URL tracking and isPlayingUrl helper for UI indicators
+ * - Single audio stream (stops existing audio before starting new audio)
+ * - Navigation cancelation via navigationDependency
+ * - Tracks failed/unavailable audio URLs (404, network failure, or null)
+ * - Safe error handling without unhandled runtime rejections or crashes
  */
 export function useAudioPlayer(navigationDependency?: unknown) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [activeUrl, setActiveUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [failedUrls, setFailedUrls] = useState<Set<string>>(new Set());
 
-  // Stop any active audio playback and clear audio element
+  // Check if a URL is unavailable (null, undefined, empty, or previously failed)
+  const isAudioUnavailable = useCallback(
+    (url?: string | null) => {
+      if (!url || typeof url !== "string" || url.trim() === "") {
+        return true;
+      }
+      return failedUrls.has(url);
+    },
+    [failedUrls]
+  );
+
+  // Mark a specific URL as permanently unavailable for this session
+  const markUnavailable = useCallback((url?: string | null) => {
+    if (!url) return;
+    setFailedUrls((prev) => {
+      if (prev.has(url)) return prev;
+      const next = new Set(prev);
+      next.add(url);
+      return next;
+    });
+  }, []);
+
+  // Stop any active audio playback and release resources
   const stop = useCallback(() => {
     if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      audioRef.current.removeAttribute("src");
-      audioRef.current.load();
+      try {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current.removeAttribute("src");
+        audioRef.current.load();
+      } catch {
+        // Suppress cleanup errors
+      }
       audioRef.current = null;
     }
     setActiveUrl(null);
@@ -35,24 +63,26 @@ export function useAudioPlayer(navigationDependency?: unknown) {
 
   // Play audio url, stopping any existing audio first
   const play = useCallback(
-    (url: string) => {
-      if (!url) return;
+    (url?: string | null) => {
+      // Guard against null, empty, or known failed URLs
+      if (!url || isAudioUnavailable(url)) {
+        if (url) markUnavailable(url);
+        return;
+      }
 
-      // If currently playing the exact same url, pause/stop it
+      // If currently playing the exact same url, toggle pause/stop
       if (audioRef.current && activeUrl === url && isPlaying) {
         stop();
         return;
       }
 
-      // Mandatory requirement: prevent concurrent audio playback
+      // Prevent concurrent playback: always stop existing audio first
       stop();
       setError(null);
 
       try {
-        const audio = new Audio(url);
+        const audio = new Audio();
         audioRef.current = audio;
-        setActiveUrl(url);
-        setIsPlaying(true);
 
         audio.onended = () => {
           setIsPlaying(false);
@@ -60,31 +90,44 @@ export function useAudioPlayer(navigationDependency?: unknown) {
           audioRef.current = null;
         };
 
+        // Capture HTML5 audio error events (e.g. 404, media decode failure, bad source)
         audio.onerror = () => {
-          setError("Failed to play audio");
+          markUnavailable(url);
+          setError("Audio unavailable");
           setIsPlaying(false);
           setActiveUrl(null);
           audioRef.current = null;
         };
 
-        audio.play().catch((err) => {
-          // Autoplay policy or user gesture requirement
-          console.warn("Audio playback interrupted or blocked:", err);
-          setError("Audio playback blocked");
-          setIsPlaying(false);
-          setActiveUrl(null);
-          audioRef.current = null;
-        });
-      } catch (err) {
-        setError("Audio initialization error");
+        audio.src = url;
+        audio.preload = "auto";
+        setActiveUrl(url);
+        setIsPlaying(true);
+
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((err: unknown) => {
+            // Graceful promise rejection handler (e.g. network 404 or autoplay restrictions)
+            markUnavailable(url);
+            setError("Audio unavailable");
+            setIsPlaying(false);
+            setActiveUrl(null);
+            audioRef.current = null;
+          });
+        }
+      } catch (err: unknown) {
+        // Synchronous instantiation error handling
+        markUnavailable(url);
+        setError("Audio unavailable");
         setIsPlaying(false);
         setActiveUrl(null);
+        audioRef.current = null;
       }
     },
-    [activeUrl, isPlaying, stop]
+    [activeUrl, isPlaying, isAudioUnavailable, markUnavailable, stop]
   );
 
-  // Helper to test if a specific URL is currently playing
+  // Helper to check if a specific URL is currently actively playing
   const isPlayingUrl = useCallback(
     (url?: string | null) => {
       return Boolean(url && activeUrl === url && isPlaying);
@@ -92,7 +135,7 @@ export function useAudioPlayer(navigationDependency?: unknown) {
     [activeUrl, isPlaying]
   );
 
-  // Mandatory requirement: cancel playback on card navigation
+  // Mandatory: Cancel playback on card navigation
   useEffect(() => {
     stop();
   }, [navigationDependency, stop]);
@@ -103,6 +146,8 @@ export function useAudioPlayer(navigationDependency?: unknown) {
     activeUrl,
     isPlaying,
     isPlayingUrl,
+    isAudioUnavailable,
+    markUnavailable,
     error,
   };
 }
