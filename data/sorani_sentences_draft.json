@@ -1,0 +1,13 @@
+{
+  "_comment": "DRAFT content - needs native-speaker review before launch (see docs/RISKLOG.md). Tokens are derived by splitting `kurdish` on spaces.",
+  "sentences": [
+    { "english": "Hello, my name is Aras", "kurdish": "سڵاو ، ناوم ئاراسە" },
+    { "english": "I am Kurdish", "kurdish": "من کوردیم" },
+    { "english": "This book is new", "kurdish": "ئەم کتێبە نوێیە" },
+    { "english": "The water is cold", "kurdish": "ئاو ساردە" },
+    { "english": "The bread is tasty", "kurdish": "نانەکە خۆشە" },
+    { "english": "That man is a teacher", "kurdish": "ئەو پیاوە مامۆستایە" },
+    { "english": "The house is big", "kurdish": "ماڵەکە گەورەیە" },
+    { "english": "I am a student", "kurdish": "من قوتابیام" }
+  ]
+}

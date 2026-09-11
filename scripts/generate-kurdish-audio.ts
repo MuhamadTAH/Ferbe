@@ -114,8 +114,8 @@ async function generateKurdishAudio() {
 
       console.log(`✓ Saved ${filename} (${buffer.length} bytes)`);
       successCount++;
-    } catch (err: any) {
-      console.warn(`⚠ Failed to generate audio for '${word.kurdishText}':`, err?.message || err);
+    } catch (err: unknown) {
+      console.warn(`⚠ Failed to generate audio for '${word.kurdishText}':`, err instanceof Error ? err.message : err);
       failureCount++;
     }
   }
