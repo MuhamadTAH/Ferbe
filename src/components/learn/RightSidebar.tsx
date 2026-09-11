@@ -13,6 +13,8 @@ import {
   Plus,
   Users,
   Infinity as InfinityIcon,
+  Compass,
+  X,
 } from "lucide-react";
 import { PushButton } from "@/components/duo/PushButton";
 
@@ -34,6 +36,8 @@ export function RightSidebar({
   const [activePopover, setActivePopover] = useState<
     "flag" | "streak" | "hearts" | null
   >(null);
+  const [showFriendStreaksModal, setShowFriendStreaksModal] = useState(false);
+  const [showStreakSocietyModal, setShowStreakSocietyModal] = useState(false);
   const hudRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -146,12 +150,22 @@ export function RightSidebar({
               <Check className="h-4 w-4 text-[#58CC02] stroke-[3]" />
             </div>
 
-            <Link href="/sections" className="block mt-2">
+            <Link href="/courses" className="block mt-2">
               <button
                 type="button"
-                className="flex w-full items-center gap-2 rounded-2xl p-2.5 text-xs font-extrabold text-[#1CB0F6] hover:bg-[#F7F7F7] transition-colors"
+                className="flex w-full items-center gap-2 rounded-2xl p-2.5 text-xs font-extrabold text-[#1CB0F6] hover:bg-[#F7F7F7] transition-colors cursor-pointer"
               >
                 <Plus className="h-4 w-4" />
+                <span>Add a new course</span>
+              </button>
+            </Link>
+
+            <Link href="/sections" className="block mt-1">
+              <button
+                type="button"
+                className="flex w-full items-center gap-2 rounded-2xl p-2.5 text-xs font-extrabold text-[#777777] hover:bg-[#F7F7F7] transition-colors cursor-pointer"
+              >
+                <Compass className="h-4 w-4" />
                 <span>Explore all sections</span>
               </button>
             </Link>
@@ -210,23 +224,37 @@ export function RightSidebar({
               <p className="mt-1 text-[11px] font-bold text-[#AFAFAF]">
                 0 active Friend Streaks
               </p>
-              <Link href="/profile" className="block mt-2">
-                <button
-                  type="button"
-                  className="w-full rounded-xl border border-[#E5E5E5] py-1.5 text-[11px] font-extrabold uppercase text-[#1CB0F6] hover:bg-[#F7F7F7]"
-                >
-                  View List
-                </button>
-              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setActivePopover(null);
+                  setShowFriendStreaksModal(true);
+                }}
+                className="mt-2 w-full rounded-xl border border-[#E5E5E5] py-1.5 text-[11px] font-extrabold uppercase text-[#1CB0F6] hover:bg-[#F7F7F7] transition-colors cursor-pointer"
+              >
+                View List
+              </button>
             </div>
 
             {/* Streak Society Teaser */}
-            <div className="mt-3 rounded-2xl bg-gradient-to-br from-[#FFF4E5] to-[#FFE2BF] p-3 text-[#B35300]">
-              <span className="text-xs font-extrabold">Streak Society</span>
+            <button
+              type="button"
+              onClick={() => {
+                setActivePopover(null);
+                setShowStreakSocietyModal(true);
+              }}
+              className="mt-3 w-full rounded-2xl bg-gradient-to-br from-[#FFF4E5] to-[#FFE2BF] p-3 text-left text-[#B35300] hover:opacity-95 transition-opacity cursor-pointer"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-extrabold">Streak Society</span>
+                <span className="text-[10px] font-extrabold uppercase tracking-wide text-[#B35300]">
+                  View More →
+                </span>
+              </div>
               <p className="mt-0.5 text-[11px] font-medium leading-relaxed">
                 Reach a 7 day streak to join the Streak Society and unlock exclusive Kurdish avatars!
               </p>
-            </div>
+            </button>
           </div>
         )}
 
@@ -510,6 +538,160 @@ export function RightSidebar({
         <span>·</span>
         <span className="text-[#58CC02]">Kurdish Sorani (کوردی)</span>
       </div>
+
+      {/* Friend Streaks Modal */}
+      {showFriendStreaksModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in">
+          <div className="relative w-full max-w-md rounded-3xl border-2 border-[#E5E5E5] bg-white p-6 shadow-2xl animate-in zoom-in-95">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#DDF4FF] text-[#1CB0F6]">
+                  <Users className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-[#4B4B4B]">
+                    Friend Streaks
+                  </h3>
+                  <p className="text-xs font-bold text-[#AFAFAF]">
+                    Learn together every day
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowFriendStreaksModal(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-xl text-[#AFAFAF] hover:bg-[#F7F7F7] hover:text-[#4B4B4B] cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-5 rounded-2xl bg-[#F7F7F7] p-5 text-center">
+              <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#DDF4FF] text-3xl">
+                🔥👥
+              </div>
+              <h4 className="text-sm font-extrabold text-[#4B4B4B]">
+                0 Active Friend Streaks
+              </h4>
+              <p className="mt-1 text-xs font-bold leading-relaxed text-[#777777]">
+                Start a shared streak by inviting friends to learn Kurdish! Each person completes a lesson daily to keep the flame alive.
+              </p>
+            </div>
+
+            <div className="mt-5 flex flex-col gap-2.5">
+              <Link href="/profile" onClick={() => setShowFriendStreaksModal(false)}>
+                <button
+                  type="button"
+                  className="w-full rounded-2xl border-b-4 border-[#1899D6] bg-[#1CB0F6] py-3 text-xs font-extrabold uppercase tracking-wider text-white hover:bg-[#4FC3F9] active:translate-y-[2px] active:border-b-2 cursor-pointer shadow-sm"
+                >
+                  Find Friends on Fêrbe
+                </button>
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowFriendStreaksModal(false)}
+                className="w-full rounded-2xl border-2 border-[#E5E5E5] py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#777777] hover:bg-[#F7F7F7] cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Streak Society Modal */}
+      {showStreakSocietyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in">
+          <div className="relative w-full max-w-md rounded-3xl border-2 border-[#FF9600]/40 bg-white p-6 shadow-2xl animate-in zoom-in-95">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FFF4E5] text-[#FF9600]">
+                  <Crown className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-[#4B4B4B]">
+                    Streak Society
+                  </h3>
+                  <p className="text-xs font-bold text-[#FF9600]">
+                    Exclusive VIP Milestone
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowStreakSocietyModal(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-xl text-[#AFAFAF] hover:bg-[#F7F7F7] hover:text-[#4B4B4B] cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-5 rounded-2xl bg-gradient-to-br from-[#FFF4E5] to-[#FFE2BF] p-5 text-center text-[#B35300]">
+              <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-3xl bg-white shadow-md text-3xl">
+                🔥
+              </div>
+              <h4 className="text-lg font-extrabold">
+                Reach a 7-Day Streak
+              </h4>
+              <p className="mt-1 text-xs font-medium leading-relaxed">
+                Join the dedicated Kurdish learners who have built an unbreakable habit.
+              </p>
+
+              {/* Progress to 7 days */}
+              <div className="mt-4">
+                <div className="flex justify-between text-xs font-extrabold text-[#B35300]">
+                  <span>Progress to Society</span>
+                  <span>{currentStreak} / 7 Days</span>
+                </div>
+                <div className="mt-1.5 h-3.5 w-full overflow-hidden rounded-full bg-white/60 p-0.5">
+                  <div
+                    className="h-full rounded-full bg-[#FF9600] transition-all duration-300"
+                    style={{
+                      width: `${Math.min(100, (currentStreak / 7) * 100)}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Perks list */}
+            <div className="mt-5 space-y-2.5 text-xs font-bold text-[#4B4B4B]">
+              <div className="flex items-center gap-3 rounded-xl border border-[#E5E5E5] p-2.5">
+                <span className="text-lg">💎</span>
+                <div>
+                  <div>100 Bonus Gems</div>
+                  <div className="text-[10px] text-[#AFAFAF]">Awarded immediately upon entry</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 rounded-xl border border-[#E5E5E5] p-2.5">
+                <span className="text-lg">🦚</span>
+                <div>
+                  <div>Exclusive Kurdish Avatar Flair</div>
+                  <div className="text-[10px] text-[#AFAFAF]">Golden peacock frame for your profile</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 rounded-xl border border-[#E5E5E5] p-2.5">
+                <span className="text-lg">🛡️</span>
+                <div>
+                  <div>Free Emergency Streak Freeze</div>
+                  <div className="text-[10px] text-[#AFAFAF]">Automatically protect your streak for 1 day</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-2">
+              <Link href="/learn" onClick={() => setShowStreakSocietyModal(false)}>
+                <button
+                  type="button"
+                  className="w-full rounded-2xl border-b-4 border-[#FF7800] bg-[#FF9600] py-3 text-xs font-extrabold uppercase tracking-wider text-white hover:bg-[#FFA526] active:translate-y-[2px] active:border-b-2 cursor-pointer shadow-sm"
+                >
+                  Keep Learning
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

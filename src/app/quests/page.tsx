@@ -100,21 +100,25 @@ function QuestsInner() {
     <div className="mx-auto flex max-w-5xl justify-center gap-10 px-4 py-8">
       {/* Main Column */}
       <main className="w-full max-w-xl">
-        {/* Monthly Challenge Banner */}
-        <div className="relative overflow-hidden rounded-3xl border-2 border-[#1CB0F6]/40 bg-gradient-to-br from-[#1CB0F6] to-[#0E82BD] p-6 text-white shadow-lg">
+        {/* Monthly Challenge Banner ("Purple Top" from Duolingo) */}
+        <div className="relative overflow-hidden rounded-3xl border-2 border-[#CE82FF] bg-gradient-to-br from-[#7928CA] via-[#8B35D9] to-[#9A46DE] p-6 text-white shadow-xl">
+          {/* Decorative background glow circles */}
+          <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-white/10 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-12 -left-12 h-44 w-44 rounded-full bg-[#CE82FF]/20 blur-2xl" />
+
           <div className="relative z-10">
             <div className="flex items-center justify-between">
-              <span className="rounded-full bg-white/20 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider backdrop-blur">
+              <span className="rounded-full bg-white/20 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider backdrop-blur-md shadow-xs">
                 September Challenge
               </span>
               <div className="flex items-center gap-1.5 text-xs font-extrabold text-white/90">
-                <Clock className="h-4 w-4" />
+                <Clock className="h-4 w-4 text-[#FFD700]" />
                 <span>19 days left</span>
               </div>
             </div>
 
             <div className="mt-4 flex items-center gap-4">
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-white/10 text-white shadow-inner">
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-white/15 text-white shadow-inner backdrop-blur-sm border border-white/20">
                 <Trophy className="h-10 w-10 text-[#FFC800] drop-shadow-md" />
               </div>
               <div>
@@ -133,9 +137,9 @@ function QuestsInner() {
                 <span>Monthly Quest Progress</span>
                 <span>{12 + totalQuestsCompleted} / 30</span>
               </div>
-              <div className="mt-2 h-3.5 w-full overflow-hidden rounded-full bg-black/20 p-0.5">
+              <div className="mt-2 h-3.5 w-full overflow-hidden rounded-full bg-black/25 p-0.5">
                 <div
-                  className="h-full rounded-full bg-[#58CC02] transition-all duration-300"
+                  className="h-full rounded-full bg-[#58CC02] transition-all duration-300 shadow-sm"
                   style={{
                     width: `${Math.min(100, ((12 + totalQuestsCompleted) / 30) * 100)}%`,
                   }}
