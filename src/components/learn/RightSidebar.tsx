@@ -1,7 +1,19 @@
-"use client";
-
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Trophy, Zap, Sparkles, Check, Clock, Target, Flame, Heart, Crown } from "lucide-react";
+import {
+  Trophy,
+  Zap,
+  Sparkles,
+  Check,
+  Clock,
+  Target,
+  Flame,
+  Heart,
+  Crown,
+  Plus,
+  Users,
+  Infinity as InfinityIcon,
+} from "lucide-react";
 import { PushButton } from "@/components/duo/PushButton";
 
 interface RightSidebarProps {
@@ -19,6 +31,21 @@ export function RightSidebar({
   signedIn,
   hearts = 5,
 }: RightSidebarProps) {
+  const [activePopover, setActivePopover] = useState<
+    "flag" | "streak" | "hearts" | null
+  >(null);
+  const hudRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (hudRef.current && !hudRef.current.contains(event.target as Node)) {
+        setActivePopover(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const lessonsToUnlockLeaderboard = Math.max(0, 3 - completedLessonsCount);
   const xpQuestTarget = 10;
   const currentXpProgress = Math.min(xpQuestTarget, totalXp);
@@ -26,49 +53,251 @@ export function RightSidebar({
 
   return (
     <aside className="sticky top-6 hidden w-84 shrink-0 flex-col gap-5 lg:flex">
-      {/* 0. Top HUD Status Pills on Desktop (Duolingo layout) */}
-      <div className="flex items-center justify-between px-1 py-1">
-        {/* Kurdish Flag Pill */}
-        <div
-          className="flex items-center gap-2 rounded-xl border-2 border-[#E5E5E5] px-2.5 py-1 text-xs font-extrabold text-[#4B4B4B] hover:bg-[#F7F7F7] cursor-pointer"
-          title="Kurdish Sorani (کوردی)"
-        >
-          <span className="flex h-3.5 w-5 flex-col overflow-hidden rounded-[2px] border border-black/10 shadow-xs">
-            <span className="h-1/3 w-full bg-[#ED1C24]" />
-            <span className="flex h-1/3 w-full items-center justify-center bg-white">
-              <span className="h-1 w-1 rounded-full bg-[#FFD700]" />
+      {/* 0. Top HUD Status Pills on Desktop (Duolingo layout with interactive Popovers) */}
+      <div ref={hudRef} className="relative z-30 px-1 py-1">
+        <div className="flex items-center justify-between">
+          {/* Kurdish Flag Pill */}
+          <button
+            type="button"
+            onClick={() =>
+              setActivePopover(activePopover === "flag" ? null : "flag")
+            }
+            className={`flex items-center gap-2 rounded-xl border-2 px-2.5 py-1 text-xs font-extrabold transition-all cursor-pointer ${
+              activePopover === "flag"
+                ? "border-[#1CB0F6] bg-[#DDF4FF] text-[#1899D6]"
+                : "border-[#E5E5E5] text-[#4B4B4B] hover:bg-[#F7F7F7]"
+            }`}
+            title="Kurdish Sorani (کوردی)"
+          >
+            <span className="flex h-3.5 w-5 flex-col overflow-hidden rounded-[2px] border border-black/10 shadow-xs">
+              <span className="h-1/3 w-full bg-[#ED1C24]" />
+              <span className="flex h-1/3 w-full items-center justify-center bg-white">
+                <span className="h-1 w-1 rounded-full bg-[#FFD700]" />
+              </span>
+              <span className="h-1/3 w-full bg-[#278E43]" />
             </span>
-            <span className="h-1/3 w-full bg-[#278E43]" />
-          </span>
-          <span>Sorani</span>
+            <span>Sorani</span>
+          </button>
+
+          {/* Streak Pill */}
+          <button
+            type="button"
+            onClick={() =>
+              setActivePopover(activePopover === "streak" ? null : "streak")
+            }
+            className={`flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold transition-all cursor-pointer ${
+              activePopover === "streak"
+                ? "bg-[#FFF4E5] text-[#FF9600] ring-2 ring-[#FF9600]/30"
+                : "text-[#FF9600] hover:bg-[#FFF4E5]"
+            }`}
+            title="Day Streak"
+          >
+            <Flame className="h-5 w-5 fill-[#FF9600] text-[#FF9600]" />
+            <span>{currentStreak}</span>
+          </button>
+
+          {/* Gems Pill (Direct Link to Shop) */}
+          <Link
+            href="/shop"
+            className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold text-[#1CB0F6] transition-colors hover:bg-[#DDF4FF]"
+            title="💎 Gems · Visit Shop"
+          >
+            <span className="text-sm">💎</span>
+            <span>{500 + totalXp}</span>
+          </Link>
+
+          {/* Hearts Pill */}
+          <button
+            type="button"
+            onClick={() =>
+              setActivePopover(activePopover === "hearts" ? null : "hearts")
+            }
+            className={`flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold transition-all cursor-pointer ${
+              activePopover === "hearts"
+                ? "bg-[#FFDFDF] text-[#FF4B4B] ring-2 ring-[#FF4B4B]/30"
+                : "text-[#FF4B4B] hover:bg-[#FFDFDF]"
+            }`}
+            title="Hearts remaining"
+          >
+            <Heart className="h-5 w-5 fill-[#FF4B4B] text-[#FF4B4B]" />
+            <span>{hearts}</span>
+          </button>
         </div>
 
-        {/* Streak Pill */}
-        <div
-          className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold text-[#FF9600] transition-colors hover:bg-[#FFF4E5]"
-          title="Day Streak"
-        >
-          <Flame className="h-5 w-5 fill-[#FF9600] text-[#FF9600]" />
-          <span>{currentStreak}</span>
-        </div>
+        {/* 1. Course Flag Popover */}
+        {activePopover === "flag" && (
+          <div className="absolute left-0 top-full mt-2 w-64 rounded-3xl border-2 border-[#E5E5E5] bg-white p-4 shadow-xl animate-in zoom-in-95 duration-150">
+            <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#AFAFAF]">
+              My Courses
+            </p>
+            <div className="mt-3 flex items-center justify-between rounded-2xl border-2 border-[#58CC02] bg-[#E8FAD4]/40 p-2.5">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-5 w-7 flex-col overflow-hidden rounded-[3px] border border-black/10">
+                  <span className="h-1/3 w-full bg-[#ED1C24]" />
+                  <span className="flex h-1/3 w-full items-center justify-center bg-white">
+                    <span className="h-1 w-1 rounded-full bg-[#FFD700]" />
+                  </span>
+                  <span className="h-1/3 w-full bg-[#278E43]" />
+                </span>
+                <span className="text-xs font-extrabold text-[#4B4B4B]">
+                  Kurdish (Sorani)
+                </span>
+              </div>
+              <Check className="h-4 w-4 text-[#58CC02] stroke-[3]" />
+            </div>
 
-        {/* Gems Pill */}
-        <div
-          className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold text-[#1CB0F6] transition-colors hover:bg-[#DDF4FF]"
-          title="Gems"
-        >
-          <span className="text-sm">💎</span>
-          <span>{500 + totalXp}</span>
-        </div>
+            <Link href="/sections" className="block mt-2">
+              <button
+                type="button"
+                className="flex w-full items-center gap-2 rounded-2xl p-2.5 text-xs font-extrabold text-[#1CB0F6] hover:bg-[#F7F7F7] transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Explore all sections</span>
+              </button>
+            </Link>
+          </div>
+        )}
 
-        {/* Hearts Pill */}
-        <div
-          className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold text-[#FF4B4B] transition-colors hover:bg-[#FFDFDF]"
-          title="Hearts remaining"
-        >
-          <Heart className="h-5 w-5 fill-[#FF4B4B] text-[#FF4B4B]" />
-          <span>{hearts}</span>
-        </div>
+        {/* 2. Streak Panel Popover */}
+        {activePopover === "streak" && (
+          <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-80 rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-xl animate-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-base font-extrabold text-[#4B4B4B]">
+                  {currentStreak} day streak
+                </h4>
+                <p className="text-xs font-bold text-[#AFAFAF]">
+                  You&apos;ve earned your longest streak ever!
+                </p>
+              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FFF4E5] text-2xl">
+                🔥
+              </div>
+            </div>
+
+            {/* 7-Day Calendar Mini Tracker */}
+            <div className="mt-4 flex items-center justify-between gap-1 rounded-2xl bg-[#F7F7F7] p-2">
+              {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
+                <div key={i} className="flex flex-col items-center gap-1">
+                  <span className="text-[10px] font-extrabold text-[#AFAFAF]">
+                    {d}
+                  </span>
+                  <div
+                    className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-extrabold ${
+                      i <= currentStreak
+                        ? "bg-[#FF9600] text-white shadow-xs"
+                        : "bg-[#E5E5E5] text-[#AFAFAF]"
+                    }`}
+                  >
+                    {i <= currentStreak ? (
+                      <Flame className="h-3.5 w-3.5 fill-white" />
+                    ) : (
+                      "·"
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Friend Streaks Card */}
+            <div className="mt-4 rounded-2xl border border-[#E5E5E5] p-3">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-[#1CB0F6]" />
+                <span className="text-xs font-extrabold text-[#4B4B4B]">
+                  Friend Streaks
+                </span>
+              </div>
+              <p className="mt-1 text-[11px] font-bold text-[#AFAFAF]">
+                0 active Friend Streaks
+              </p>
+              <Link href="/profile" className="block mt-2">
+                <button
+                  type="button"
+                  className="w-full rounded-xl border border-[#E5E5E5] py-1.5 text-[11px] font-extrabold uppercase text-[#1CB0F6] hover:bg-[#F7F7F7]"
+                >
+                  View List
+                </button>
+              </Link>
+            </div>
+
+            {/* Streak Society Teaser */}
+            <div className="mt-3 rounded-2xl bg-gradient-to-br from-[#FFF4E5] to-[#FFE2BF] p-3 text-[#B35300]">
+              <span className="text-xs font-extrabold">Streak Society</span>
+              <p className="mt-0.5 text-[11px] font-medium leading-relaxed">
+                Reach a 7 day streak to join the Streak Society and unlock exclusive Kurdish avatars!
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* 3. Hearts Menu Popover */}
+        {activePopover === "hearts" && (
+          <div className="absolute right-0 top-full mt-2 w-80 rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-xl animate-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-base font-extrabold text-[#4B4B4B]">Hearts</h4>
+                <p className="text-xs font-bold text-[#AFAFAF]">
+                  Next heart in 25 minutes
+                </p>
+              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FFDFDF] text-xl">
+                ❤️
+              </div>
+            </div>
+
+            <p className="mt-3 text-xs font-bold text-[#777777]">
+              {hearts >= 5
+                ? "Full hearts! Keep on learning without worry."
+                : `You have ${hearts} heart${hearts === 1 ? "" : "s"} left. Keep going!`}
+            </p>
+
+            <div className="mt-4 flex flex-col gap-2.5">
+              {/* Unlimited Hearts Super Promo */}
+              <div className="rounded-2xl border-2 border-[#CE82FF] bg-[#FAF5FF] p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-extrabold text-[#CE82FF]">
+                    <InfinityIcon className="h-4 w-4" />
+                    <span>Unlimited Hearts</span>
+                  </div>
+                  <span className="rounded-md bg-[#CE82FF] px-1.5 py-0.5 text-[9px] font-extrabold uppercase text-white">
+                    Free Trial
+                  </span>
+                </div>
+                <p className="mt-1 text-[11px] font-bold text-[#777777]">
+                  Never run out of hearts with Super Fêrbe.
+                </p>
+                <Link href="/shop" className="block mt-2">
+                  <button
+                    type="button"
+                    className="w-full rounded-xl border-b-2 border-[#9A46DE] bg-[#CE82FF] py-2 text-xs font-extrabold uppercase tracking-wide text-white hover:bg-[#D996FF]"
+                  >
+                    Try Super Free
+                  </button>
+                </Link>
+              </div>
+
+              {/* Refill Hearts */}
+              <Link href="/shop" className="block">
+                <button
+                  type="button"
+                  className="w-full rounded-2xl border-2 border-[#E5E5E5] border-b-4 bg-white py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#FF4B4B] hover:bg-[#F7F7F7] active:translate-y-[2px]"
+                >
+                  Refill Hearts · 💎 350
+                </button>
+              </Link>
+
+              {/* Free Practice */}
+              <Link href="/practice" className="block">
+                <button
+                  type="button"
+                  className="w-full rounded-2xl border-2 border-[#E5E5E5] border-b-4 bg-white py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#1CB0F6] hover:bg-[#F7F7F7] active:translate-y-[2px]"
+                >
+                  Practice to Earn Hearts
+                </button>
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 1. Unlock Leaderboards Card */}

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useQuery } from "convex/react";
-import { Check, Lock, BookOpen, ChevronRight } from "lucide-react";
+import { Check, Lock, BookOpen, ChevronRight, ArrowUp } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
 import { ConfigRequired, ErrorBoundary } from "@/components/states/ScreenState";
@@ -45,6 +45,15 @@ function PathPage() {
     title: string;
     order: number;
   } | null>(null);
+  const [showScrollToCurrent, setShowScrollToCurrent] = useState(false);
+
+  useEffect(() => {
+    function handleScroll() {
+      setShowScrollToCurrent(window.scrollY > 350);
+    }
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const curriculum = useQuery(api.curriculum.getCourseCurriculum, {}) as
     | Curriculum
@@ -147,6 +156,24 @@ function PathPage() {
                         </button>
                       ) : null}
 
+                      {/* Mascot Character on Path Side (Duolingo Path Character) */}
+                      {i === 1 && (
+                        <div className="absolute -right-28 -top-2 hidden sm:flex flex-col items-center select-none animate-in fade-in duration-300">
+                          <div className="relative mb-1 rounded-2xl border-2 border-[#E5E5E5] bg-white px-2.5 py-1 text-[11px] font-extrabold text-[#4B4B4B] shadow-xs">
+                            <span className="font-kurdish text-xs font-bold text-[#58CC02] kurdish-word">
+                              هەر بژی!
+                            </span>
+                            <span className="ml-1 text-[10px] text-[#AFAFAF]">
+                              (Keep going!)
+                            </span>
+                            <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-white" />
+                          </div>
+                          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-[#58CC02]/30 bg-gradient-to-br from-[#E8FAD4] to-[#BFF582] text-3xl shadow-sm transform hover:scale-105 transition-transform cursor-pointer">
+                            🦉
+                          </div>
+                        </div>
+                      )}
+
                       {/* 3D Round Node Button */}
                       {unlocked ? (
                         <button
@@ -224,6 +251,19 @@ function PathPage() {
           unitTitle={guidebookUnit.title}
           unitOrder={guidebookUnit.order}
         />
+      )}
+
+      {/* Floating Go To Current Unit Button (Duolingo floating scroll action) */}
+      {showScrollToCurrent && (
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="Go to current unit"
+          title="Go to current unit"
+          className="fixed bottom-20 right-6 z-40 flex h-13 w-13 items-center justify-center rounded-full border-b-4 border-[#1899D6] bg-[#1CB0F6] text-white shadow-xl transition-all hover:bg-[#4FC3F9] active:translate-y-[2px] active:border-b-2 sm:bottom-8 sm:right-8 animate-in fade-in zoom-in-90"
+        >
+          <ArrowUp className="h-6 w-6 stroke-[3]" />
+        </button>
       )}
     </div>
   );
