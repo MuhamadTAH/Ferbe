@@ -3,6 +3,8 @@ import { Inter, Noto_Sans_Arabic, Nunito } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "@/providers/ConvexClientProvider";
 import { AppHeader } from "@/components/AppHeader";
+import { SidebarNav } from "@/components/navigation/SidebarNav";
+import { MobileNav } from "@/components/navigation/MobileNav";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -41,11 +43,14 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col bg-[#F7F7F7] text-[#4B4B4B] antialiased">
         <ConvexClientProvider>
-          <AppHeader />
-          <main className="flex flex-1 flex-col">{children}</main>
-          <footer className="border-t-2 border-[#E5E5E5] bg-white py-6 text-center text-xs font-bold text-[#AFAFAF]">
-            Fêrbe · <span dir="rtl" className="font-kurdish">فێربە</span> — Interactive Kurdish Sorani Learning
-          </footer>
+          <div className="flex min-h-screen">
+            <SidebarNav />
+            <div className="flex flex-1 flex-col pb-16 lg:pb-0">
+              <AppHeader />
+              <main className="flex flex-1 flex-col">{children}</main>
+            </div>
+          </div>
+          <MobileNav />
         </ConvexClientProvider>
       </body>
     </html>

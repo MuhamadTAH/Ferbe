@@ -386,14 +386,53 @@ function PracticeInner() {
   );
 }
 
+import { KurdishAlphabetView } from "@/components/practice/KurdishAlphabetView";
+import { Sparkles } from "lucide-react";
+
 export default function PracticePage() {
   const { hasConvex } = useAppConfig();
-  if (!hasConvex) {
-    return <ConfigRequired missing="NEXT_PUBLIC_CONVEX_URL" />;
-  }
+  const [activeTab, setActiveTab] = useState<"letters" | "vocabulary">("letters");
+
   return (
-    <ErrorBoundary>
-      <PracticeInner />
-    </ErrorBoundary>
+    <div className="mx-auto w-full max-w-5xl px-4 py-8">
+      {/* Top Segmented Practice Switcher */}
+      <div className="mb-8 flex items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={() => setActiveTab("letters")}
+          className={`flex items-center gap-2 rounded-2xl border-b-4 px-5 py-3 text-sm font-extrabold uppercase tracking-wide transition-all active:translate-y-[2px] active:border-b-2 ${
+            activeTab === "letters"
+              ? "border-[#1899D6] bg-[#1CB0F6] text-white shadow-sm"
+              : "border-[#E5E5E5] bg-white text-[#777777] hover:bg-[#F7F7F7]"
+          }`}
+        >
+          <Sparkles className="h-4 w-4" />
+          <span>Kurdish Alphabet & Sounds</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("vocabulary")}
+          className={`flex items-center gap-2 rounded-2xl border-b-4 px-5 py-3 text-sm font-extrabold uppercase tracking-wide transition-all active:translate-y-[2px] active:border-b-2 ${
+            activeTab === "vocabulary"
+              ? "border-[#58A700] bg-[#58CC02] text-white shadow-sm"
+              : "border-[#E5E5E5] bg-white text-[#777777] hover:bg-[#F7F7F7]"
+          }`}
+        >
+          <BookOpen className="h-4 w-4" />
+          <span>Vocabulary Flashcards</span>
+        </button>
+      </div>
+
+      {activeTab === "letters" ? (
+        <KurdishAlphabetView />
+      ) : !hasConvex ? (
+        <ConfigRequired missing="NEXT_PUBLIC_CONVEX_URL" />
+      ) : (
+        <ErrorBoundary>
+          <PracticeInner />
+        </ErrorBoundary>
+      )}
+    </div>
   );
 }

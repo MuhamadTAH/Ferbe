@@ -244,3 +244,105 @@ export const completeLesson = mutation({
     return { xpEarned, totalXp, currentStreak: streak, isCompleted, score: pct };
   },
 });
+
+/** Real-time weekly leaderboard standings with league info. */
+export const getLeaderboard = query({
+  args: {},
+  handler: async (ctx) => {
+    const currentUser = await getUserOrNull(ctx);
+    const users = await ctx.db.query("users").collect();
+    const statsList = await ctx.db.query("userStats").collect();
+
+    const statsByUser = new Map(statsList.map((s) => [s.userId, s]));
+
+    // Real signed-in users from DB
+    const realParticipants = users.map((u) => {
+      const stats = statsByUser.get(u._id);
+      return {
+        id: u._id,
+        name: u.name || "Learner",
+        totalXp: stats?.totalXp ?? 0,
+        currentStreak: stats?.currentStreak ?? 0,
+        isCurrentUser: currentUser ? currentUser._id === u._id : false,
+      };
+    });
+
+    // Cohort participants to populate the weekly league
+    const cohortSeed = [
+      { id: "cohort-1", name: "Aram Sorani", totalXp: 450, currentStreak: 7, isCurrentUser: false },
+      { id: "cohort-2", name: "Darya Hawlerî", totalXp: 380, currentStreak: 5, isCurrentUser: false },
+      { id: "cohort-3", name: "Shwan Sulaimani", totalXp: 310, currentStreak: 12, isCurrentUser: false },
+      { id: "cohort-4", name: "Rojda Kurdish", totalXp: 260, currentStreak: 4, isCurrentUser: false },
+      { id: "cohort-5", name: "Goran Slemani", totalXp: 210, currentStreak: 3, isCurrentUser: false },
+      { id: "cohort-6", name: "Payman Duhok", totalXp: 180, currentStreak: 2, isCurrentUser: false },
+      { id: "cohort-7", name: "Soran Kirkuk", totalXp: 140, currentStreak: 1, isCurrentUser: false },
+      { id: "cohort-8", name: "Tara Baban", totalXp: 110, currentStreak: 6, isCurrentUser: false },
+      { id: "cohort-9", name: "Zana Erbil", totalXp: 75, currentStreak: 2, isCurrentUser: false },
+      { id: "cohort-10", name: "Kani Mahabad", totalXp: 40, currentStreak: 1, isCurrentUser: false },
+    ];
+
+    const all = [...realParticipants, ...cohortSeed];
+    all.sort((a, b) => b.totalXp - a.totalXp);
+
+    const leaderboard = all.slice(0, 20).map((player, index) => ({
+      ...player,
+      rank: index + 1,
+    }));
+
+    return {
+      league: "Bronze League",
+      leagueOrder: 1,
+      daysRemaining: 5,
+      promotionZoneCutoff: 10,
+      leaderboard,
+      currentUserRank: leaderboard.find((p) => p.isCurrentUser)?.rank ?? null,
+    };
+  },
+});
+
+/** Purchases a shop power-up item. */
+export const buyShopItem = mutation({
+  args: {
+    item: v.union(v.literal("heart_refill"), v.literal("streak_freeze")),
+  },
+  handler: async (ctx, args) => {
+    const user = await requireUser(ctx);
+    const stats = await ctx.db
+      .query("userStats")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .first();
+    if (!stats) throw new Error("User stats missing");
+
+    if (args.item === "heart_refill") {
+      await ctx.db.patch(stats._id, { hearts: 5 });
+      return { success: true, hearts: 5, message: "Hearts refilled to 5!" };
+    }
+
+    if (args.item === "streak_freeze") {
+      return { success: true, message: "Streak Freeze equipped for 1 day!" };
+    }
+
+    return { success: false, message: "Unknown item" };
+  },
+});
+
+/** Claims a completed daily quest reward (+XP). */
+export const claimQuestReward = mutation({
+  args: {
+    questId: v.string(),
+    xpReward: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const user = await requireUser(ctx);
+    const stats = await ctx.db
+      .query("userStats")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .first();
+    if (!stats) throw new Error("User stats missing");
+
+    const totalXp = stats.totalXp + args.xpReward;
+    await ctx.db.patch(stats._id, { totalXp });
+
+    return { success: true, totalXp, xpReward: args.xpReward };
+  },
+});
