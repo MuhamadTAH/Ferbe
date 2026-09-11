@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import {
@@ -48,6 +49,26 @@ function LeaderboardInner() {
     | LeaderboardData
     | undefined;
   const stats = useQuery(api.curriculum.getMyStats, {}) as Stats | undefined;
+
+  const [userStatus, setUserStatus] = useState<string | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return localStorage.getItem("ferbe_user_status");
+      } catch {}
+    }
+    return null;
+  });
+
+  const handleSetStatus = (status: string | null) => {
+    setUserStatus(status);
+    try {
+      if (status) {
+        localStorage.setItem("ferbe_user_status", status);
+      } else {
+        localStorage.removeItem("ferbe_user_status");
+      }
+    } catch {}
+  };
 
   if (data === undefined) {
     return (
@@ -231,8 +252,16 @@ function LeaderboardInner() {
                       </span>
 
                       {/* Avatar Circle */}
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#F0F0F0] font-extrabold text-[#777777]">
-                        {player.name.charAt(0).toUpperCase()}
+                      <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#F0F0F0] font-extrabold text-[#777777]">
+                        <span>{player.name.charAt(0).toUpperCase()}</span>
+                        {player.isCurrentUser && userStatus && (
+                          <span
+                            className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] shadow-xs border border-[#E5E5E5]"
+                            title="Your current status"
+                          >
+                            {userStatus}
+                          </span>
+                        )}
                       </div>
 
                       <div>
@@ -246,6 +275,11 @@ function LeaderboardInner() {
                           >
                             {player.name}
                           </span>
+                          {player.isCurrentUser && userStatus && (
+                            <span className="text-sm" title="Status">
+                              {userStatus}
+                            </span>
+                          )}
                           {player.isCurrentUser && (
                             <span className="rounded-md bg-[#1CB0F6] px-1.5 py-0.5 text-[10px] font-extrabold uppercase text-white">
                               You
@@ -284,13 +318,17 @@ function LeaderboardInner() {
     )}
   </main>
 
-      {/* Right Column (Desktop Sticky with HUD pills) */}
+      {/* Right Column (Desktop Sticky with HUD pills and Set your status) */}
       <RightSidebar
         currentStreak={stats?.currentStreak ?? 0}
         totalXp={stats?.totalXp ?? 0}
-        completedLessonsCount={Math.floor((stats?.totalXp ?? 0) / 10)}
+        completedLessonsCount={completedLessonsCount}
         signedIn={stats?.signedIn ?? false}
         hearts={stats?.hearts ?? 5}
+        showSetStatus={!isLocked}
+        activeStatus={userStatus}
+        onSetStatus={handleSetStatus}
+        userName={stats?.signedIn ? "You" : "Gemini"}
       />
     </div>
   );

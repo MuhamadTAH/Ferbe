@@ -18,12 +18,31 @@ import {
 } from "lucide-react";
 import { PushButton } from "@/components/duo/PushButton";
 
+export const STATUS_OPTIONS = [
+  { emoji: "⚡", label: "Charged" },
+  { emoji: "🔥", label: "On fire" },
+  { emoji: "☕", label: "Caffeinated" },
+  { emoji: "🧠", label: "Big brain" },
+  { emoji: "👑", label: "Champion" },
+  { emoji: "💎", label: "Flawless" },
+  { emoji: "🚀", label: "Unstoppable" },
+  { emoji: "🎯", label: "Laser focused" },
+  { emoji: "📖", label: "Scholar" },
+  { emoji: "🦁", label: "Lionhearted" },
+  { emoji: "🌟", label: "Superstar" },
+  { emoji: "🕶️", label: "Cool" },
+];
+
 interface RightSidebarProps {
   currentStreak: number;
   totalXp: number;
   completedLessonsCount: number;
   signedIn: boolean;
   hearts?: number;
+  showSetStatus?: boolean;
+  activeStatus?: string | null;
+  onSetStatus?: (status: string | null) => void;
+  userName?: string;
 }
 
 export function RightSidebar({
@@ -32,6 +51,10 @@ export function RightSidebar({
   completedLessonsCount,
   signedIn,
   hearts = 5,
+  showSetStatus = false,
+  activeStatus = null,
+  onSetStatus,
+  userName = "Gemini",
 }: RightSidebarProps) {
   const [activePopover, setActivePopover] = useState<
     "flag" | "streak" | "hearts" | null
@@ -328,39 +351,99 @@ export function RightSidebar({
         )}
       </div>
 
-      {/* 1. Unlock Leaderboards Card */}
-      <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-base font-extrabold text-[#4B4B4B]">
-            Unlock Leaderboards!
-          </h3>
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FFDFE0]/40 text-[#FF4B4B]">
-            <Trophy className="h-5 w-5 text-[#FFC800]" />
+      {/* 1. Set Your Status Card (Duolingo authentic on Leaderboard / Profile) OR Unlock Leaderboards Card */}
+      {showSetStatus ? (
+        <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-base font-extrabold text-[#4B4B4B]">
+              Set your status
+            </h3>
+            {activeStatus && (
+              <button
+                type="button"
+                onClick={() => onSetStatus?.(null)}
+                className="text-xs font-extrabold uppercase tracking-wide text-[#AFAFAF] hover:text-[#EA2B2B] transition-colors cursor-pointer"
+              >
+                CLEAR
+              </button>
+            )}
           </div>
-        </div>
-        <p className="text-xs font-bold leading-relaxed text-[#777777]">
-          {lessonsToUnlockLeaderboard > 0
-            ? `Complete ${lessonsToUnlockLeaderboard} more lesson${
-                lessonsToUnlockLeaderboard === 1 ? "" : "s"
-              } to start competing in the Bronze League!`
-            : "Leaderboards Unlocked! You are now competing in the Bronze League."}
-        </p>
 
-        <div className="mt-3.5">
-          <div className="flex justify-between text-[11px] font-extrabold text-[#AFAFAF]">
-            <span>Bronze League Progress</span>
-            <span>{Math.min(3, completedLessonsCount)} / 3</span>
+          {/* Current Avatar with Status Badge */}
+          <div className="flex items-center gap-3.5 mb-4 p-2.5 rounded-2xl bg-[#F7F7F7]">
+            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#1CB0F6] text-lg font-extrabold text-white shadow-xs">
+              <span>{userName.charAt(0).toUpperCase()}</span>
+              {activeStatus && (
+                <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-white text-xs shadow-md border border-[#E5E5E5]">
+                  {activeStatus}
+                </span>
+              )}
+            </div>
+            <div>
+              <p className="text-xs font-extrabold text-[#4B4B4B]">
+                {activeStatus ? "Current Status" : "No status set"}
+              </p>
+              <p className="text-[11px] font-bold text-[#777777]">
+                {activeStatus
+                  ? STATUS_OPTIONS.find((s) => s.emoji === activeStatus)?.label
+                  : "Pick an emoji below to show how you feel!"}
+              </p>
+            </div>
           </div>
-          <div className="mt-1.5 h-3.5 w-full overflow-hidden rounded-full bg-[#E5E5E5]">
-            <div
-              className="h-full rounded-full bg-[#FFC800] transition-all duration-300"
-              style={{
-                width: `${Math.min(100, (completedLessonsCount / 3) * 100)}%`,
-              }}
-            />
+
+          {/* Grid of 12 Status Emoji Badges */}
+          <div className="grid grid-cols-6 gap-2">
+            {STATUS_OPTIONS.map((opt) => (
+              <button
+                key={opt.emoji}
+                type="button"
+                onClick={() => onSetStatus?.(opt.emoji)}
+                title={opt.label}
+                className={`flex h-10 w-10 items-center justify-center rounded-xl border-2 text-lg transition-transform cursor-pointer hover:scale-110 active:scale-95 ${
+                  activeStatus === opt.emoji
+                    ? "border-[#1CB0F6] bg-[#DDF4FF] shadow-xs ring-2 ring-[#1CB0F6]/30"
+                    : "border-[#E5E5E5] bg-white hover:bg-[#F7F7F7]"
+                }`}
+              >
+                {opt.emoji}
+              </button>
+            ))}
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-base font-extrabold text-[#4B4B4B]">
+              Unlock Leaderboards!
+            </h3>
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FFDFE0]/40 text-[#FF4B4B]">
+              <Trophy className="h-5 w-5 text-[#FFC800]" />
+            </div>
+          </div>
+          <p className="text-xs font-bold leading-relaxed text-[#777777]">
+            {lessonsToUnlockLeaderboard > 0
+              ? `Complete ${lessonsToUnlockLeaderboard} more lesson${
+                  lessonsToUnlockLeaderboard === 1 ? "" : "s"
+                } to start competing in the Bronze League!`
+              : "Leaderboards Unlocked! You are now competing in the Bronze League."}
+          </p>
+
+          <div className="mt-3.5">
+            <div className="flex justify-between text-[11px] font-extrabold text-[#AFAFAF]">
+              <span>Bronze League Progress</span>
+              <span>{Math.min(3, completedLessonsCount)} / 3</span>
+            </div>
+            <div className="mt-1.5 h-3.5 w-full overflow-hidden rounded-full bg-[#E5E5E5]">
+              <div
+                className="h-full rounded-full bg-[#FFC800] transition-all duration-300"
+                style={{
+                  width: `${Math.min(100, (completedLessonsCount / 3) * 100)}%`,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 2. Daily Quests Card */}
       <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
