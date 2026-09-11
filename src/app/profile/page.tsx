@@ -11,6 +11,7 @@ import {
   GraduationCap,
   Shield,
   UserPlus,
+  Heart,
 } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
@@ -322,25 +323,112 @@ function ProfileInner() {
       </main>
 
       {/* Right Column (Desktop Sticky) */}
-      <aside className="sticky top-20 hidden w-80 shrink-0 flex-col gap-5 lg:flex">
-        {/* Friends Card */}
-        <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
-          <div className="mb-2 flex items-center gap-2">
-            <UserPlus className="h-5 w-5 text-[#1CB0F6]" />
-            <h3 className="text-base font-extrabold text-[#4B4B4B]">
-              Add Friends
-            </h3>
-          </div>
-          <p className="text-xs font-bold leading-relaxed text-[#777777]">
-            Learning is better together! Invite friends to compare streaks and
-            compete in weekly Kurdish Sorani leagues.
-          </p>
-          <button
-            type="button"
-            className="mt-4 w-full rounded-2xl border-b-4 border-[#1899D6] bg-[#1CB0F6] py-2.5 text-xs font-extrabold uppercase tracking-wide text-white transition-all hover:bg-[#4FC3F9] active:translate-y-[2px] active:border-b-2"
+      <aside className="sticky top-6 hidden w-84 shrink-0 flex-col gap-5 lg:flex">
+        {/* Top HUD Status Pills */}
+        <div className="flex items-center justify-between px-1 py-1">
+          {/* Kurdish Flag Pill */}
+          <div
+            className="flex items-center gap-2 rounded-xl border-2 border-[#E5E5E5] px-2.5 py-1 text-xs font-extrabold text-[#4B4B4B] hover:bg-[#F7F7F7] cursor-pointer"
+            title="Kurdish Sorani (کوردی)"
           >
-            Find Friends
-          </button>
+            <span className="flex h-3.5 w-5 flex-col overflow-hidden rounded-[2px] border border-black/10 shadow-xs">
+              <span className="h-1/3 w-full bg-[#ED1C24]" />
+              <span className="flex h-1/3 w-full items-center justify-center bg-white">
+                <span className="h-1 w-1 rounded-full bg-[#FFD700]" />
+              </span>
+              <span className="h-1/3 w-full bg-[#278E43]" />
+            </span>
+            <span>Sorani</span>
+          </div>
+
+          {/* Streak Pill */}
+          <div
+            className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold text-[#FF9600] transition-colors hover:bg-[#FFF4E5]"
+            title="Day Streak"
+          >
+            <Flame className="h-5 w-5 fill-[#FF9600] text-[#FF9600]" />
+            <span>{stats.currentStreak}</span>
+          </div>
+
+          {/* Gems Pill */}
+          <div
+            className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold text-[#1CB0F6] transition-colors hover:bg-[#DDF4FF]"
+            title="Gems"
+          >
+            <span className="text-sm">💎</span>
+            <span>{500 + stats.totalXp}</span>
+          </div>
+
+          {/* Hearts Pill */}
+          <div
+            className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold text-[#FF4B4B] transition-colors hover:bg-[#FFDFDF]"
+            title="Hearts remaining"
+          >
+            <Heart className="h-5 w-5 fill-[#FF4B4B] text-[#FF4B4B]" />
+            <span>{stats.hearts ?? 5}</span>
+          </div>
+        </div>
+
+        {/* Friends Card with Following / Followers tabs */}
+        <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-base font-extrabold text-[#4B4B4B]">Friends</h3>
+            <UserPlus className="h-5 w-5 text-[#AFAFAF]" />
+          </div>
+
+          {/* Segmented Tabs */}
+          <div className="flex rounded-2xl border-2 border-[#E5E5E5] p-1 text-xs font-extrabold">
+            <button
+              type="button"
+              className="flex-1 rounded-xl bg-[#E5E5E5]/60 py-2 text-center text-[#4B4B4B] transition-colors"
+            >
+              FOLLOWING
+            </button>
+            <button
+              type="button"
+              className="flex-1 rounded-xl py-2 text-center text-[#AFAFAF] hover:text-[#4B4B4B] transition-colors"
+            >
+              FOLLOWERS
+            </button>
+          </div>
+
+          {/* Empty State */}
+          <div className="py-6 text-center">
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F7F7F7] text-2xl">
+              👥
+            </div>
+            <p className="text-xs font-bold leading-relaxed text-[#777777]">
+              You aren&apos;t following anyone yet. Learning Kurdish Sorani is more fun with friends!
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2.5">
+            <button
+              type="button"
+              className="w-full rounded-2xl border-b-4 border-[#1899D6] bg-[#1CB0F6] py-2.5 text-xs font-extrabold uppercase tracking-wide text-white transition-all hover:bg-[#4FC3F9] active:translate-y-[2px] active:border-b-2 shadow-sm"
+            >
+              Find Friends
+            </button>
+            <button
+              type="button"
+              className="w-full rounded-2xl border-2 border-[#E5E5E5] border-b-4 bg-white py-2.5 text-xs font-extrabold uppercase tracking-wide text-[#1CB0F6] transition-all hover:bg-[#F7F7F7] active:translate-y-[2px] active:border-b-2 shadow-xs"
+            >
+              Invite Friends
+            </button>
+          </div>
+        </div>
+
+        {/* Footer info links */}
+        <div className="px-2 text-center text-[11px] font-bold text-[#AFAFAF]">
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-1">
+            <span className="hover:underline cursor-pointer">About</span>
+            <span className="hover:underline cursor-pointer">Blog</span>
+            <span className="hover:underline cursor-pointer">Store</span>
+            <span className="hover:underline cursor-pointer">Efficacy</span>
+            <span className="hover:underline cursor-pointer">Terms</span>
+            <span className="hover:underline cursor-pointer">Privacy</span>
+          </div>
+          <p className="mt-3">Fêrbe · Kurdish Sorani Academy © 2026</p>
         </div>
       </aside>
     </div>

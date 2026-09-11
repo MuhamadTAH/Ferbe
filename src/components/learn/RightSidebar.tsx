@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Trophy, Zap, Sparkles, Check, Clock, Target, Flame, Heart } from "lucide-react";
+import { Trophy, Zap, Sparkles, Check, Clock, Target, Flame, Heart, Crown } from "lucide-react";
 import { PushButton } from "@/components/duo/PushButton";
 
 interface RightSidebarProps {
@@ -222,8 +222,28 @@ export function RightSidebar({
         </div>
       </div>
 
-      {/* 3. Guest Profile Conversion Card (Soft-Wall CTA) */}
-      {!signedIn && (
+      {/* 3. Try Super for free (when signed in) OR Guest Profile CTA (when guest) */}
+      {signedIn ? (
+        <div className="rounded-3xl border-2 border-[#CE82FF] bg-gradient-to-br from-[#1B1B2F] to-[#2E0249] p-5 text-white shadow-sm">
+          <div className="mb-2 flex items-center gap-2">
+            <Crown className="h-5 w-5 text-[#CE82FF]" />
+            <h4 className="text-sm font-extrabold text-[#CE82FF]">
+              Try Super Fêrbe for free
+            </h4>
+          </div>
+          <p className="text-xs leading-relaxed text-white/80">
+            No ads, personalized practice, and unlimited Hearts!
+          </p>
+          <Link href="/shop" className="block mt-4">
+            <button
+              type="button"
+              className="w-full rounded-2xl border-b-4 border-[#9A46DE] bg-[#CE82FF] py-2.5 text-xs font-extrabold uppercase tracking-wide text-white transition-all hover:bg-[#D996FF] active:translate-y-[2px] active:border-b-2 shadow-sm"
+            >
+              Try 1 Week Free
+            </button>
+          </Link>
+        </div>
+      ) : (
         <div className="rounded-3xl border-2 border-[#1CB0F6] bg-[#DDF4FF]/60 p-5 shadow-sm">
           <div className="mb-2 flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-[#1CB0F6]" />
