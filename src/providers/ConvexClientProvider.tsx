@@ -1,27 +1,64 @@
 "use client";
 
-import { ReactNode, useMemo } from "react";
+import { ReactNode, createContext, useContext, useMemo } from "react";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 
-const convexUrl =
-  process.env.NEXT_PUBLIC_CONVEX_URL || "https://dummy-preview.convex.cloud";
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL as string | undefined;
+const clerkPublishableKey = process.env
+  .NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY as string | undefined;
+
+interface AppConfig {
+  hasConvex: boolean;
+  hasClerk: boolean;
+}
+
+const AppConfigContext = createContext<AppConfig>({
+  hasConvex: Boolean(convexUrl),
+  hasClerk: Boolean(clerkPublishableKey),
+});
+
+/** Runtime flags so pages can render honest configuration states. */
+export function useAppConfig(): AppConfig {
+  return useContext(AppConfigContext);
+}
 
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
-  const convex = useMemo(() => new ConvexReactClient(convexUrl), []);
-  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const value = useMemo<AppConfig>(
+    () => ({ hasConvex: Boolean(convexUrl), hasClerk: Boolean(clerkPublishableKey) }),
+    []
+  );
 
-  if (clerkPublishableKey) {
+  // No Convex URL configured: mount nothing so pages can show a clear
+  // configuration state instead of silently failing (no dummy URLs baked in).
+  if (!convexUrl) {
     return (
-      <ClerkProvider publishableKey={clerkPublishableKey}>
-        <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-          {children}
-        </ConvexProviderWithClerk>
-      </ClerkProvider>
+      <AppConfigContext.Provider value={value}>
+        {children}
+      </AppConfigContext.Provider>
     );
   }
 
-  // Graceful fallback for local development before Clerk keys are configured
-  return <ConvexProvider client={convex}>{children}</ConvexProvider>;
+  const convex = new ConvexReactClient(convexUrl);
+
+  if (clerkPublishableKey) {
+    return (
+      <AppConfigContext.Provider value={value}>
+        <ClerkProvider publishableKey={clerkPublishableKey}>
+          <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+            {children}
+          </ConvexProviderWithClerk>
+        </ClerkProvider>
+      </AppConfigContext.Provider>
+    );
+  }
+
+  // Convex configured without Clerk (local dev): data queries work but all
+  // mutations will correctly fail as UNAUTHENTICATED.
+  return (
+    <AppConfigContext.Provider value={value}>
+      <ConvexProvider client={convex}>{children}</ConvexProvider>
+    </AppConfigContext.Provider>
+  );
 }
