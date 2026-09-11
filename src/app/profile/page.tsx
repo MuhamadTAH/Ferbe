@@ -16,6 +16,7 @@ import { api } from "../../../convex/_generated/api";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
 import { ConfigRequired, ErrorBoundary } from "@/components/states/ScreenState";
 import { RightSidebar } from "@/components/learn/RightSidebar";
+import { FriendsSidebarCard } from "@/components/profile/FriendsSidebarCard";
 
 interface Stats {
   currentStreak: number;
@@ -339,13 +340,14 @@ function ProfileInner() {
         </section>
       </main>
 
-      {/* Right Column (Desktop Sticky with interactive HUD pills) */}
+      {/* Right Column (Desktop Sticky with interactive HUD pills + Duolingo Friends Card) */}
       <RightSidebar
         currentStreak={stats.currentStreak}
         totalXp={stats.totalXp}
         completedLessonsCount={Math.floor(stats.totalXp / 10)}
         signedIn={stats.signedIn}
         hearts={stats.hearts}
+        customCard={<FriendsSidebarCard />}
       />
     </div>
   );

@@ -44,6 +44,7 @@ interface RightSidebarProps {
   activeStatus?: string | null;
   onSetStatus?: (status: string | null) => void;
   userName?: string;
+  customCard?: React.ReactNode;
 }
 
 export function RightSidebar({
@@ -56,6 +57,7 @@ export function RightSidebar({
   activeStatus = null,
   onSetStatus,
   userName = "Gemini",
+  customCard,
 }: RightSidebarProps) {
   const [activePopover, setActivePopover] = useState<
     "flag" | "streak" | "hearts" | null
@@ -445,6 +447,9 @@ export function RightSidebar({
           </div>
         </div>
       )}
+
+      {/* Optional Custom Card (e.g. Friends Card on Profile) */}
+      {customCard}
 
       {/* 2. Daily Quests Card */}
       <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">

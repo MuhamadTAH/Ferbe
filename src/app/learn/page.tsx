@@ -117,16 +117,13 @@ function PathPage() {
                     Master essential Kurdish Sorani vocabulary & greetings
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setGuidebookUnit({ title: unit.title, order: unit.order })
-                  }
-                  className="flex items-center gap-2 rounded-2xl border-b-4 border-[#3D8F02] bg-[#46A302] px-3.5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-[#4FB703] active:translate-y-[2px] active:border-b-2 shadow-sm"
+                <Link
+                  href={`/guidebook/${unit.order}`}
+                  className="flex items-center gap-2 rounded-2xl border-b-4 border-[#3D8F02] bg-[#46A302] px-3.5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-[#4FB703] active:translate-y-[2px] active:border-b-2 shadow-sm cursor-pointer"
                 >
                   <BookOpen className="h-4 w-4" />
                   <span className="hidden sm:inline">Guidebook</span>
-                </button>
+                </Link>
               </div>
 
               {/* Zigzag Learning Path Nodes */}
