@@ -21,6 +21,20 @@
   --input: #cbd5e1;
   --ring: #059669;
   --radius: 0.85rem;
+
+  /* Duolingo-style palette used by the learning experience */
+  --duo-green: #58cc02;
+  --duo-green-dark: #58a700;
+  --duo-blue: #1cb0f6;
+  --duo-blue-dark: #1899d6;
+  --duo-red: #ff4b4b;
+  --duo-red-dark: #ea2b2b;
+  --duo-gold: #ffc800;
+  --duo-snow: #f7f7f7;
+  --duo-ink: #4b4b4b;
+  --duo-wolf: #777777;
+  --duo-hare: #afafaf;
+  --duo-swan: #e5e5e5;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -68,7 +82,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-nunito), var(--font-inter), system-ui, -apple-system, sans-serif;
   --font-kurdish: var(--font-noto-arabic), "Noto Sans Arabic", "Vazirmatn", "Segoe UI", Tahoma, sans-serif;
 }
 
@@ -83,4 +97,16 @@ body {
   font-family: var(--font-kurdish);
   letter-spacing: normal !important;
   font-feature-settings: "liga" 1, "calt" 1;
+}
+
+/* Shake for wrong-answer feedback */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
 }

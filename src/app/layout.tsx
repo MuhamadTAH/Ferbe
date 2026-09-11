@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Sans_Arabic } from "next/font/google";
+import { Inter, Noto_Sans_Arabic, Nunito } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "@/providers/ConvexClientProvider";
-import Link from "next/link";
-import { BookOpen, Sparkles } from "lucide-react";
+import { AppHeader } from "@/components/AppHeader";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+const nunito = Nunito({
+  variable: "--font-nunito",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
 const notoSansArabic = Noto_Sans_Arabic({
@@ -18,8 +24,9 @@ const notoSansArabic = Noto_Sans_Arabic({
 });
 
 export const metadata: Metadata = {
-  title: "Fêrbe - Kurdish Language Learning",
-  description: "Learn Kurdish Sorani with interactive flashcards and audio pronunciation",
+  title: "Fêrbe — Learn Kurdish Sorani",
+  description:
+    "Learn Kurdish Sorani with Duolingo-style lessons: multiple choice, word bank and audio exercises, hearts, streaks and XP.",
 };
 
 export default function RootLayout({
@@ -30,50 +37,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${notoSansArabic.variable} h-full antialiased`}
+      className={`${inter.variable} ${nunito.variable} ${notoSansArabic.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground antialiased selection:bg-emerald-100 selection:text-emerald-900 dark:selection:bg-emerald-900/50">
+      <body className="flex min-h-full flex-col bg-[#F7F7F7] text-[#4B4B4B] antialiased">
         <ConvexClientProvider>
-          <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
-            <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
-              <Link
-                href="/"
-                className="flex items-center gap-2.5 font-bold text-xl text-foreground transition-opacity hover:opacity-90"
-              >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm shadow-emerald-500/20">
-                  <Sparkles className="h-5 w-5" />
-                </div>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="font-extrabold tracking-tight">Fêrbe</span>
-                  <span
-                    dir="rtl"
-                    className="font-kurdish text-emerald-600 dark:text-emerald-400 font-semibold text-base"
-                  >
-                    فێربە
-                  </span>
-                </div>
-              </Link>
-
-              <nav className="flex items-center gap-3 sm:gap-4">
-                <Link
-                  href="/learn"
-                  className="flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-sm font-medium text-foreground/80 hover:bg-muted hover:text-foreground transition-colors"
-                >
-                  <BookOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                  <span>Learn</span>
-                </Link>
-                <div className="h-4 w-px bg-border" />
-                <span className="text-xs font-medium text-muted-foreground bg-muted px-2.5 py-1 rounded-full border border-border/40">
-                  Sorani Kurdish
-                </span>
-              </nav>
-            </div>
-          </header>
-
-          <main className="flex-1 flex flex-col">{children}</main>
-
-          <footer className="border-t border-border/40 py-6 text-center text-xs text-muted-foreground">
-            <p>Fêrbe • Interactive Kurdish Sorani Language Learning</p>
+          <AppHeader />
+          <main className="flex flex-1 flex-col">{children}</main>
+          <footer className="border-t-2 border-[#E5E5E5] bg-white py-6 text-center text-xs font-bold text-[#AFAFAF]">
+            Fêrbe · <span dir="rtl" className="font-kurdish">فێربە</span> — Interactive Kurdish Sorani Learning
           </footer>
         </ConvexClientProvider>
       </body>
