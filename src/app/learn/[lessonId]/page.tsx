@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { X } from "lucide-react";
@@ -40,6 +41,54 @@ function SessionInner({ lessonId }: { lessonId: string }) {
     progress,
   } = useLessonSession(lessonId);
 
+  const exercise = currentExercise(state);
+  const isHeartsExhausted = state.phase === "HEARTS_EXHAUSTED";
+  const showFeedback =
+    state.phase === "FEEDBACK_SUCCESS" ||
+    state.phase === "FEEDBACK_ERROR" ||
+    isHeartsExhausted;
+  const canCheck =
+    state.phase === "ACTIVE_QUESTION" &&
+    (exercise?.type === "word_bank"
+      ? state.built.length > 0
+      : state.selected !== null);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Enter") {
+        if (showFeedback && !isHeartsExhausted) {
+          e.preventDefault();
+          continueSession();
+        } else if (canCheck) {
+          e.preventDefault();
+          submit();
+        }
+      } else if (
+        !showFeedback &&
+        state.phase === "ACTIVE_QUESTION" &&
+        exercise?.type === "multiple_choice"
+      ) {
+        const num = parseInt(e.key, 10);
+        if (!isNaN(num) && num >= 1 && num <= state.optionList.length) {
+          select(state.optionList[num - 1]);
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    showFeedback,
+    isHeartsExhausted,
+    canCheck,
+    continueSession,
+    submit,
+    state.phase,
+    exercise?.type,
+    state.optionList,
+    select,
+  ]);
+
   if (session === undefined || state.phase === "IDLE") {
     return (
       <div className="py-24 text-center font-extrabold text-[#AFAFAF]">
@@ -76,18 +125,6 @@ function SessionInner({ lessonId }: { lessonId: string }) {
       />
     );
   }
-
-  const exercise = currentExercise(state);
-  const isHeartsExhausted = state.phase === "HEARTS_EXHAUSTED";
-  const showFeedback =
-    state.phase === "FEEDBACK_SUCCESS" ||
-    state.phase === "FEEDBACK_ERROR" ||
-    isHeartsExhausted;
-  const canCheck =
-    state.phase === "ACTIVE_QUESTION" &&
-    (exercise?.type === "word_bank"
-      ? state.built.length > 0
-      : state.selected !== null);
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col">
@@ -152,9 +189,13 @@ function SessionInner({ lessonId }: { lessonId: string }) {
       {!showFeedback ? (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-[#E5E5E5] bg-white">
           <div className="mx-auto flex max-w-2xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-            <span className="truncate text-xs font-extrabold uppercase tracking-wide text-[#AFAFAF]">
-              {session.lesson.title}
-            </span>
+            <button
+              type="button"
+              onClick={submit}
+              className="rounded-2xl border-2 border-[#E5E5E5] border-b-4 bg-white px-6 py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#AFAFAF] transition-all hover:bg-[#F7F7F7] hover:text-[#777777] active:translate-y-[2px] active:border-b-2 shadow-xs"
+            >
+              Skip
+            </button>
             <PushButton
               variant="green"
               disabled={!canCheck}

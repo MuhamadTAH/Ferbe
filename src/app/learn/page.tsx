@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useQuery } from "convex/react";
-import { Check, Lock, BookOpen } from "lucide-react";
+import { Check, Lock, BookOpen, ChevronRight } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
 import { ConfigRequired, ErrorBoundary } from "@/components/states/ScreenState";
@@ -93,9 +94,15 @@ function PathPage() {
               {/* Unit Header Banner with Guidebook Button */}
               <div className="flex items-center justify-between rounded-3xl bg-[#58CC02] px-6 py-5 text-white shadow-[0_4px_0_#46A302]">
                 <div>
-                  <p className="text-xs font-extrabold uppercase tracking-wider text-white/80">
-                    Unit {unit.order}
-                  </p>
+                  <Link
+                    href="/sections"
+                    className="group inline-flex items-center gap-1 transition-opacity hover:opacity-90 cursor-pointer"
+                  >
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-white/80 group-hover:text-white">
+                      Section 1, Unit {unit.order}
+                    </span>
+                    <ChevronRight className="h-3.5 w-3.5 text-white/80 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
+                  </Link>
                   <h2 className="text-xl font-extrabold">{unit.title}</h2>
                   <p className="mt-0.5 text-xs text-white/90">
                     Master essential Kurdish Sorani vocabulary & greetings

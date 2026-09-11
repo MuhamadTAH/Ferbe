@@ -4,7 +4,7 @@ import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Exercise } from "@/lib/sessionMachine";
 
-const LABELS = ["A", "B", "C", "D", "E", "F"];
+const LABELS = ["1", "2", "3", "4", "5", "6"];
 
 interface MultipleChoiceViewProps {
   exercise: Exercise;
