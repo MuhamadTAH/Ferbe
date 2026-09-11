@@ -1,71 +1,25 @@
 import { v } from "convex/values";
 import { mutation, query, internalMutation } from "./_generated/server";
-
-export const MOCK_BASICS_WORDS = [
-  {
-    kurdishText: "سڵاو",
-    englishText: "Hello",
-    transliteration: "Slaw",
-    imageUrl: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=600&auto=format&fit=crop&q=80",
-    kurdishAudioUrl: "/audio/slaw.mp3",
-    englishAudioUrl: "/audio/hello.mp3",
-    order: 1,
-  },
-  {
-    kurdishText: "سوپاس",
-    englishText: "Thank you",
-    transliteration: "Supas",
-    imageUrl: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80",
-    kurdishAudioUrl: "/audio/supas.mp3",
-    englishAudioUrl: "/audio/thank_you.mp3",
-    order: 2,
-  },
-  {
-    kurdishText: "بەیانی باش",
-    englishText: "Good morning",
-    transliteration: "Beyanî bash",
-    imageUrl: "https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?w=600&auto=format&fit=crop&q=80",
-    kurdishAudioUrl: "/audio/beyani_bash.mp3",
-    englishAudioUrl: "/audio/good_morning.mp3",
-    order: 3,
-  },
-  {
-    kurdishText: "ئاو",
-    englishText: "Water",
-    transliteration: "Aw",
-    imageUrl: "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=600&auto=format&fit=crop&q=80",
-    kurdishAudioUrl: "/audio/aw.mp3",
-    englishAudioUrl: "/audio/water.mp3",
-    order: 4,
-  },
-  {
-    kurdishText: "نان",
-    englishText: "Bread",
-    transliteration: "Nan",
-    imageUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80",
-    kurdishAudioUrl: "/audio/nan.mp3",
-    englishAudioUrl: "/audio/bread.mp3",
-    order: 5,
-  },
-];
+import { requireUser, getUserOrNull } from "./users";
 
 /**
- * Fetches words for a given category (or all) and in-memory merges each word's isMastered
- * status based on the authenticated user (with a 'dev_user' fallback when identity is null).
+ * Fetches words for a category (or all) and merges the signed-in user's
+ * word-mastery status. Unauthenticated callers get the words with
+ * isMastered=false (queries cannot create the user record).
  */
 export const getWordsWithProgress = query({
   args: {
     categorySlug: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    const userId = identity?.subject ?? "dev_user";
+    const user = await getUserOrNull(ctx);
+    const userId = user?._id ?? null;
 
     let words;
     if (args.categorySlug) {
       const category = await ctx.db
         .query("categories")
-        .withIndex("by_slug", (q) => q.eq("slug", args.categorySlug!))
+        .withIndex("by_slug", (q) => q.eq("slug", args.categorySlug as string))
         .first();
 
       if (!category) {
@@ -82,9 +36,12 @@ export const getWordsWithProgress = query({
 
     words.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-    // Fetch user progress records for this user
+    if (!userId) {
+      return words.map((word) => ({ ...word, isMastered: false }));
+    }
+
     const progressRecords = await ctx.db
-      .query("userProgress")
+      .query("wordProgress")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
@@ -92,7 +49,6 @@ export const getWordsWithProgress = query({
       progressRecords.map((p) => [p.wordId.toString(), p.isMastered])
     );
 
-    // Merge isMastered in memory inside the resolver before returning to client
     return words.map((word) => ({
       ...word,
       isMastered: progressMap.get(word._id.toString()) ?? false,
@@ -100,23 +56,18 @@ export const getWordsWithProgress = query({
   },
 });
 
-/**
- * Toggles or sets mastered state for a word.
- * userId is NEVER accepted as a client argument; it is read from ctx.auth.getUserIdentity()
- * with a 'dev_user' server fallback.
- */
+/** Toggles mastered state for a word (Practice mode). Requires auth. */
 export const toggleMastered = mutation({
   args: {
     wordId: v.id("words"),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    const userId = identity?.subject ?? "dev_user";
+    const user = await requireUser(ctx);
 
     const existing = await ctx.db
-      .query("userProgress")
+      .query("wordProgress")
       .withIndex("by_user_word", (q) =>
-        q.eq("userId", userId).eq("wordId", args.wordId)
+        q.eq("userId", user._id).eq("wordId", args.wordId)
       )
       .first();
 
@@ -127,36 +78,31 @@ export const toggleMastered = mutation({
         lastReviewedAt: Date.now(),
       });
       return nextState;
-    } else {
-      await ctx.db.insert("userProgress", {
-        userId,
-        wordId: args.wordId,
-        isMastered: true,
-        lastReviewedAt: Date.now(),
-      });
-      return true;
     }
+
+    await ctx.db.insert("wordProgress", {
+      userId: user._id,
+      wordId: args.wordId,
+      isMastered: true,
+      lastReviewedAt: Date.now(),
+    });
+    return true;
   },
 });
 
-/**
- * Explicitly sets the mastered state for a word.
- * Used for quiz active recall (promotes on correct, demotes on wrong).
- * Reads identity inside Convex using ctx.auth.getUserIdentity() with 'dev_user' fallback.
- */
+/** Explicitly sets mastered state (quiz promote/demote). Requires auth. */
 export const setWordMastery = mutation({
   args: {
     wordId: v.id("words"),
     isMastered: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    const userId = identity?.subject ?? "dev_user";
+    const user = await requireUser(ctx);
 
     const existing = await ctx.db
-      .query("userProgress")
+      .query("wordProgress")
       .withIndex("by_user_word", (q) =>
-        q.eq("userId", userId).eq("wordId", args.wordId)
+        q.eq("userId", user._id).eq("wordId", args.wordId)
       )
       .first();
 
@@ -166,32 +112,25 @@ export const setWordMastery = mutation({
         lastReviewedAt: Date.now(),
       });
       return args.isMastered;
-    } else {
-      await ctx.db.insert("userProgress", {
-        userId,
-        wordId: args.wordId,
-        isMastered: args.isMastered,
-        lastReviewedAt: Date.now(),
-      });
-      return args.isMastered;
     }
+
+    await ctx.db.insert("wordProgress", {
+      userId: user._id,
+      wordId: args.wordId,
+      isMastered: args.isMastered,
+      lastReviewedAt: Date.now(),
+    });
+    return args.isMastered;
   },
 });
 
-/**
- * Resets/unmasters all words in the specified category for the current user.
- * Batch Performance:
- * 1. Single query on userProgress with by_user index.
- * 2. In-memory filter matching category word IDs.
- * 3. Parallel patch with Promise.all() to prevent sequential N+1 queries.
- */
+/** Resets mastery for all words in a category. Requires auth. */
 export const resetCategoryProgress = mutation({
   args: {
     categorySlug: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    const userId = identity?.subject ?? "dev_user";
+    const user = await requireUser(ctx);
     const slug = args.categorySlug ?? "basics";
 
     const category = await ctx.db
@@ -212,19 +151,16 @@ export const resetCategoryProgress = mutation({
       categoryWords.map((w) => w._id.toString())
     );
 
-    // Single query using by_user index (Batch performance - no N+1 queries)
-    const userProgressRecords = await ctx.db
-      .query("userProgress")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
+    const records = await ctx.db
+      .query("wordProgress")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
       .collect();
 
-    // In-memory filter for records belonging to this category that are mastered
-    const recordsToReset = userProgressRecords.filter(
+    const recordsToReset = records.filter(
       (record) =>
         categoryWordIdSet.has(record.wordId.toString()) && record.isMastered
     );
 
-    // Parallel batch patch with Promise.all()
     await Promise.all(
       recordsToReset.map((record) =>
         ctx.db.patch(record._id, {
@@ -240,8 +176,7 @@ export const resetCategoryProgress = mutation({
 
 /**
  * Internal batch mutation to ingest words into a category.
- * Security: Defined as an internalMutation (NOT public client-exposed).
- * Validates uniqueness by kurdishText within the category.
+ * Not callable from clients.
  */
 export const seedCategoryWords = internalMutation({
   args: {
@@ -280,7 +215,6 @@ export const seedCategoryWords = internalMutation({
 
     if (!category) throw new Error("Failed to find or create category");
 
-    // Fetch existing words to validate uniqueness by kurdishText
     const existingWords = await ctx.db
       .query("words")
       .withIndex("by_category", (q) => q.eq("categoryId", category!._id))
@@ -328,8 +262,8 @@ export const seedCategoryWords = internalMutation({
 });
 
 /**
- * Admin-secured mutation for scripts/seed-words.ts when running via HTTP client.
- * Verifies admin token before running the seedCategoryWords logic.
+ * Admin-secured mutation for scripts when running via HTTP client.
+ * SECURITY: ADMIN_SEED_SECRET is mandatory — no committed default.
  */
 export const seedCategoryWordsAdmin = mutation({
   args: {
@@ -349,7 +283,12 @@ export const seedCategoryWordsAdmin = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const expectedSecret = process.env.ADMIN_SEED_SECRET || "ferbe_admin_secret";
+    const expectedSecret = process.env.ADMIN_SEED_SECRET;
+    if (!expectedSecret) {
+      throw new Error(
+        "ADMIN_SEED_SECRET is not configured on the Convex deployment"
+      );
+    }
     if (args.adminSecret !== expectedSecret) {
       throw new Error("Unauthorized: Invalid admin secret");
     }
@@ -416,50 +355,6 @@ export const seedCategoryWordsAdmin = mutation({
       inserted,
       skipped,
       total: args.words.length,
-    };
-  },
-});
-
-/**
- * Seeds the database with the 'Basics' category and initial mock words if not already present.
- */
-export const seed = mutation({
-  args: {},
-  handler: async (ctx) => {
-    let category = await ctx.db
-      .query("categories")
-      .withIndex("by_slug", (q) => q.eq("slug", "basics"))
-      .first();
-
-    if (!category) {
-      const categoryId = await ctx.db.insert("categories", {
-        name: "Basics",
-        slug: "basics",
-        description: "Essential everyday Kurdish words and greetings",
-      });
-      category = await ctx.db.get(categoryId);
-    }
-
-    if (!category) throw new Error("Failed to create category");
-
-    const existingWords = await ctx.db
-      .query("words")
-      .withIndex("by_category", (q) => q.eq("categoryId", category!._id))
-      .collect();
-
-    if (existingWords.length === 0) {
-      for (const word of MOCK_BASICS_WORDS) {
-        await ctx.db.insert("words", {
-          categoryId: category._id,
-          ...word,
-        });
-      }
-    }
-
-    return {
-      success: true,
-      categoryCreated: !category,
-      wordCount: MOCK_BASICS_WORDS.length,
     };
   },
 });
