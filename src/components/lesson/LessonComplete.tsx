@@ -14,6 +14,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { PushButton } from "@/components/duo/PushButton";
+import { QuestChest } from "@/components/duo/QuestChest";
 
 export interface ScorecardItem {
   id: string;
@@ -78,7 +79,7 @@ const DEFAULT_SCORECARD: ScorecardItem[] = [
   },
 ];
 
-/** Session-complete screen with XP / accuracy / streak stats and interactive Scorecard. */
+/** Session-complete screen with multi-slide celebration: Stats -> Quest Complete -> Gem Reward. */
 export function LessonComplete({
   lessonTitle,
   xpEarned,
@@ -88,6 +89,7 @@ export function LessonComplete({
   scorecard = DEFAULT_SCORECARD,
   onRestart,
 }: LessonCompleteProps) {
+  const [slide, setSlide] = useState<"summary" | "quest" | "reward">("summary");
   const [isScorecardOpen, setIsScorecardOpen] = useState(false);
   const [expandedTileId, setExpandedTileId] = useState<string | null>(null);
 
@@ -118,126 +120,228 @@ export function LessonComplete({
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-8 px-4 py-16 text-center">
-      <div className="relative flex h-32 w-32 items-center justify-center">
-        <div className="absolute inset-0 rounded-full bg-[#FFC800]/20 animate-ping" />
-        <div className="flex h-28 w-28 items-center justify-center rounded-full bg-[#FFC800]">
-          <Star className="h-14 w-14 fill-white text-white" />
-        </div>
-      </div>
-
-      <div>
-        <h1 className="text-3xl font-extrabold text-[#58CC02]">Practice Complete!</h1>
-        <p className="mt-1 text-sm font-bold text-[#777777]">{lessonTitle}</p>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid w-full grid-cols-3 gap-3">
-        <div className="rounded-2xl border-2 border-b-4 border-[#FFC800] p-4">
-          <Zap className="mx-auto h-6 w-6 text-[#FFC800]" />
-          <p className="mt-1 text-2xl font-extrabold text-[#4B4B4B]">{xpEarned}</p>
-          <p className="text-xs font-bold uppercase tracking-wide text-[#AFAFAF]">
-            TOTAL XP
-          </p>
-        </div>
-        <div className="rounded-2xl border-2 border-b-4 border-[#58CC02] p-4">
-          <Target className="mx-auto h-6 w-6 text-[#58CC02]" />
-          <p className="mt-1 text-2xl font-extrabold text-[#4B4B4B]">{accuracyPct}%</p>
-          <p className="text-xs font-bold uppercase tracking-wide text-[#AFAFAF]">
-            ACCURACY
-          </p>
-        </div>
-        <div className="rounded-2xl border-2 border-b-4 border-[#FF4B4B] p-4">
-          <Flame className="mx-auto h-6 w-6 text-[#FF4B4B]" />
-          <p className="mt-1 text-2xl font-extrabold text-[#4B4B4B]">{currentStreak}</p>
-          <p className="text-xs font-bold uppercase tracking-wide text-[#AFAFAF]">
-            DAY STREAK
-          </p>
-        </div>
-      </div>
-
-      {/* 7-Day Streak Calendar Progression */}
-      <div className="w-full rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm text-left">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Flame className="h-5 w-5 fill-[#FF9600] text-[#FF9600]" />
-            <span className="text-sm font-extrabold text-[#4B4B4B]">
-              Day {currentStreak} of your Kurdish streak!
-            </span>
-          </div>
-          <span className="text-xs font-extrabold text-[#58CC02]">Active</span>
-        </div>
-
-        {/* Days Circles */}
-        <div className="mt-4 flex items-center justify-between gap-1">
-          {[
-            { label: "M", done: true },
-            { label: "Tu", done: true },
-            { label: "W", done: true },
-            { label: "Th", done: true },
-            { label: "F", done: true, today: true },
-            { label: "Sa", done: false },
-            { label: "Su", done: false },
-          ].map((day, idx) => (
-            <div key={idx} className="flex flex-col items-center gap-1.5">
-              <span className="text-[11px] font-extrabold text-[#AFAFAF]">
-                {day.label}
-              </span>
-              <div
-                className={`flex h-9 w-9 items-center justify-center rounded-full border-2 text-xs font-extrabold transition-transform ${
-                  day.done
-                    ? "border-[#FF9600] bg-[#FF9600] text-white shadow-xs"
-                    : "border-[#E5E5E5] bg-[#F7F7F7] text-[#AFAFAF]"
-                } ${day.today ? "scale-110 ring-2 ring-[#FF9600]/30" : ""}`}
-              >
-                {day.done ? <Flame className="h-4 w-4 fill-white" /> : "·"}
-              </div>
+    <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-8 px-4 py-12 text-center">
+      {/* SLIDE 0: SUMMARY STATS */}
+      {slide === "summary" && (
+        <>
+          <div className="relative flex h-32 w-32 items-center justify-center">
+            <div className="absolute inset-0 rounded-full bg-[#FFC800]/20 animate-ping" />
+            <div className="flex h-28 w-28 items-center justify-center rounded-full bg-[#FFC800] shadow-lg">
+              <Star className="h-14 w-14 fill-white text-white drop-shadow-sm" />
             </div>
-          ))}
-        </div>
-
-        <p className="mt-4 text-xs font-bold text-[#777777]">
-          Practicing daily grows your streak, but skipping a day resets it!
-        </p>
-      </div>
-
-      {/* Fêrbe Pro Ad / Promo Card */}
-      <div className="flex w-full items-center justify-between rounded-2xl border-2 border-[#CE82FF]/40 bg-gradient-to-r from-[#7928CA]/10 via-[#8B35D9]/10 to-[#CE82FF]/10 p-4 text-left">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#CE82FF] text-white shadow-sm">
-            <Sparkles className="h-5 w-5" />
           </div>
+
           <div>
-            <h4 className="text-xs font-extrabold text-[#4B4B4B]">
-              Fêrbe Pro · Unlimited Hearts
-            </h4>
-            <p className="text-[11px] font-bold text-[#777777]">
-              Learn Kurdish without interruptions or heart limits
+            <h1 className="text-3xl font-extrabold text-[#58CC02]">
+              {accuracyPct === 100 ? "Perfect lesson!" : "Practice Complete!"}
+            </h1>
+            <p className="mt-1 text-sm font-bold text-[#777777]">
+              {accuracyPct === 100
+                ? "You made no mistakes in this lesson"
+                : lessonTitle}
             </p>
           </div>
+
+          {/* Stats Cards */}
+          <div className="grid w-full grid-cols-3 gap-3">
+            <div className="rounded-2xl border-2 border-b-4 border-[#FFC800] p-4 bg-white shadow-xs">
+              <Zap className="mx-auto h-6 w-6 text-[#FFC800] fill-[#FFC800]" />
+              <p className="mt-1 text-2xl font-extrabold text-[#4B4B4B]">{xpEarned}</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-[#AFAFAF]">
+                TOTAL XP
+              </p>
+            </div>
+            <div className="rounded-2xl border-2 border-b-4 border-[#58CC02] p-4 bg-white shadow-xs">
+              <Target className="mx-auto h-6 w-6 text-[#58CC02]" />
+              <p className="mt-1 text-2xl font-extrabold text-[#4B4B4B]">{accuracyPct}%</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-[#AFAFAF]">
+                ACCURACY
+              </p>
+            </div>
+            <div className="rounded-2xl border-2 border-b-4 border-[#FF4B4B] p-4 bg-white shadow-xs">
+              <Flame className="mx-auto h-6 w-6 text-[#FF4B4B] fill-[#FF4B4B]" />
+              <p className="mt-1 text-2xl font-extrabold text-[#4B4B4B]">{currentStreak}</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-[#AFAFAF]">
+                DAY STREAK
+              </p>
+            </div>
+          </div>
+
+          {/* 7-Day Streak Calendar Progression */}
+          <div className="w-full rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-xs text-left">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Flame className="h-5 w-5 fill-[#FF9600] text-[#FF9600]" />
+                <span className="text-sm font-extrabold text-[#4B4B4B]">
+                  Day {currentStreak} of your Kurdish streak!
+                </span>
+              </div>
+              <span className="text-xs font-extrabold text-[#58CC02]">Active</span>
+            </div>
+
+            {/* Days Circles */}
+            <div className="mt-4 flex items-center justify-between gap-1">
+              {[
+                { label: "M", done: true },
+                { label: "Tu", done: true },
+                { label: "W", done: true },
+                { label: "Th", done: true },
+                { label: "F", done: true, today: true },
+                { label: "Sa", done: false },
+                { label: "Su", done: false },
+              ].map((day, idx) => (
+                <div key={idx} className="flex flex-col items-center gap-1.5">
+                  <span className="text-[11px] font-extrabold text-[#AFAFAF]">
+                    {day.label}
+                  </span>
+                  <div
+                    className={`flex h-9 w-9 items-center justify-center rounded-full border-2 text-xs font-extrabold transition-transform ${
+                      day.done
+                        ? "border-[#FF9600] bg-[#FF9600] text-white shadow-xs"
+                        : "border-[#E5E5E5] bg-[#F7F7F7] text-[#AFAFAF]"
+                    } ${day.today ? "scale-110 ring-2 ring-[#FF9600]/30" : ""}`}
+                  >
+                    {day.done ? <Flame className="h-4 w-4 fill-white" /> : "·"}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-4 text-xs font-bold text-[#777777]">
+              Practicing daily grows your streak, but skipping a day resets it!
+            </p>
+          </div>
+
+          {/* Fêrbe Pro Ad / Promo Card */}
+          <div className="flex w-full items-center justify-between rounded-2xl border-2 border-[#CE82FF]/40 bg-gradient-to-r from-[#7928CA]/10 via-[#8B35D9]/10 to-[#CE82FF]/10 p-4 text-left">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#CE82FF] text-white shadow-xs">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div>
+                <h4 className="text-xs font-extrabold text-[#4B4B4B]">
+                  Fêrbe Pro · Unlimited Hearts
+                </h4>
+                <p className="text-[11px] font-bold text-[#777777]">
+                  Learn Kurdish without interruptions or heart limits
+                </p>
+              </div>
+            </div>
+            <Link href="/shop">
+              <button
+                type="button"
+                className="shrink-0 rounded-xl bg-[#CE82FF] px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide text-white hover:bg-[#B55BE0] transition-colors cursor-pointer"
+              >
+                Try Free
+              </button>
+            </Link>
+          </div>
+
+          {/* Total XP footer text */}
+          <p className="text-xs font-bold text-[#AFAFAF]">
+            Total Kurdish XP:{" "}
+            <span className="font-extrabold text-[#4B4B4B]">{totalXp}</span>
+          </p>
+        </>
+      )}
+
+      {/* SLIDE 1: ALL DAILY QUESTS COMPLETE */}
+      {slide === "quest" && (
+        <div className="w-full space-y-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative mx-auto flex h-28 w-28 items-center justify-center">
+            <div className="absolute inset-0 rounded-full bg-[#FFC800]/20 animate-ping" />
+            <QuestChest isOpen size={88} />
+          </div>
+
+          <div>
+            <h2 className="text-3xl font-extrabold text-[#4B4B4B]">
+              All Daily Quests complete!
+            </h2>
+            <p className="mt-1 text-sm font-bold text-[#777777]">
+              You hit your XP goal and unlocked today&apos;s treasure reward!
+            </p>
+          </div>
+
+          {/* Completed Quest Card with Animated Bar */}
+          <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm text-left">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FFF9E6] text-[#FFC800]">
+                <Zap className="h-6 w-6 fill-[#FFC800]" />
+              </div>
+              <div className="flex-1">
+                <span className="text-sm font-extrabold text-[#4B4B4B]">
+                  Earn 10 XP
+                </span>
+                <div className="mt-2 flex items-center gap-3">
+                  <div className="relative h-5 flex-1 overflow-hidden rounded-full bg-[#E5E5E5]">
+                    <div className="h-full w-full rounded-full bg-[#FFC800] transition-all duration-700 shadow-sm" />
+                    <span className="absolute inset-0 flex items-center justify-center text-[11px] font-extrabold text-[#4B4B4B]">
+                      10 / 10
+                    </span>
+                  </div>
+                  <QuestChest isOpen size={38} className="animate-bounce" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <Link href="/shop">
-          <button
-            type="button"
-            className="shrink-0 rounded-xl bg-[#CE82FF] px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide text-white hover:bg-[#B55BE0] transition-colors"
+      )}
+
+      {/* SLIDE 2: YOU EARNED 5 GEMS */}
+      {slide === "reward" && (
+        <div className="w-full space-y-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative mx-auto flex h-36 w-36 items-center justify-center">
+            <div className="absolute inset-0 rounded-full bg-[#1CB0F6]/20 animate-ping" />
+            <QuestChest isOpen size={100} />
+            <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-[#FFC800] animate-pulse" />
+          </div>
+
+          <div>
+            <h2 className="text-3xl font-extrabold text-[#4B4B4B]">
+              You earned 5 gems!
+            </h2>
+            <p className="mt-1 text-sm font-bold text-[#777777]">
+              Nice job reaching your daily goal!
+            </p>
+          </div>
+
+          <div className="mx-auto flex max-w-xs items-center justify-center gap-2 rounded-2xl border-2 border-[#1CB0F6]/30 bg-[#DDF4FF]/60 py-3.5">
+            <span className="text-3xl">💎</span>
+            <span className="text-2xl font-extrabold text-[#1CB0F6]">
+              +5 GEMS
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Action Buttons (Shared across all slides) */}
+      <div className="flex w-full max-w-sm flex-col gap-2.5 pt-2">
+        {slide === "summary" ? (
+          <PushButton
+            variant="green"
+            onClick={() => setSlide("quest")}
+            className="w-full py-3.5 text-base uppercase tracking-wider"
           >
-            Try Free
-          </button>
-        </Link>
-      </div>
-
-      {/* Total XP footer text */}
-      <p className="text-xs font-bold text-[#AFAFAF]">
-        Total Kurdish XP: <span className="font-extrabold text-[#4B4B4B]">{totalXp}</span>
-      </p>
-
-      {/* Action Buttons */}
-      <div className="flex w-full max-w-sm flex-col gap-2.5">
-        <Link href="/learn" className="w-full">
-          <PushButton variant="green" className="w-full py-3.5 text-base uppercase tracking-wider">
             CONTINUE
           </PushButton>
-        </Link>
+        ) : slide === "quest" ? (
+          <PushButton
+            variant="green"
+            onClick={() => setSlide("reward")}
+            className="w-full py-3.5 text-base uppercase tracking-wider"
+          >
+            CONTINUE
+          </PushButton>
+        ) : (
+          <Link href="/learn" className="w-full">
+            <PushButton
+              variant="green"
+              className="w-full py-3.5 text-base uppercase tracking-wider"
+            >
+              CONTINUE
+            </PushButton>
+          </Link>
+        )}
 
         {/* REVIEW LESSON Button (Duolingo authentic) */}
         <button
@@ -293,7 +397,7 @@ export function LessonComplete({
               <button
                 type="button"
                 onClick={() => setIsScorecardOpen(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-[#AFAFAF] hover:bg-[#F7F7F7] hover:text-[#4B4B4B] transition-colors"
+                className="flex h-9 w-9 items-center justify-center rounded-xl text-[#AFAFAF] hover:bg-[#F7F7F7] hover:text-[#4B4B4B] transition-colors cursor-pointer"
                 aria-label="Close scorecard"
               >
                 <X className="h-6 w-6 stroke-[2.5]" />
@@ -388,4 +492,3 @@ export function LessonComplete({
     </div>
   );
 }
-

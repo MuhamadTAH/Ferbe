@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { PushButton } from "@/components/duo/PushButton";
+import { QuestChest } from "@/components/duo/QuestChest";
 
 export const STATUS_OPTIONS = [
   { emoji: "⚡", label: "Charged" },
@@ -451,14 +452,17 @@ export function RightSidebar({
           <h3 className="text-base font-extrabold text-[#4B4B4B]">
             Daily Quests
           </h3>
-          <span className="text-xs font-extrabold uppercase tracking-wide text-[#1CB0F6] hover:underline cursor-pointer">
-            View All
-          </span>
+          <Link
+            href="/quests"
+            className="text-xs font-extrabold uppercase tracking-wide text-[#1CB0F6] hover:underline cursor-pointer"
+          >
+            VIEW ALL
+          </Link>
         </div>
 
         <div className="flex flex-col gap-3.5">
           {/* Quest 1: Earn 10 XP */}
-          <div className="flex items-center gap-3">
+          <Link href="/quests" className="flex items-center gap-3 group">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFF9E6] text-[#FFC800]">
               <Zap className="h-5 w-5 fill-[#FFC800]" />
             </div>
@@ -478,41 +482,39 @@ export function RightSidebar({
                 />
               </div>
             </div>
-            {xpQuestDone && (
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#58CC02] text-white">
-                <Check className="h-3.5 w-3.5 stroke-[3]" />
-              </div>
-            )}
-          </div>
+            <div className="shrink-0 transition-transform group-hover:scale-105">
+              <QuestChest isOpen={xpQuestDone} size={30} />
+            </div>
+          </Link>
 
           {/* Quest 2: Spend 5 minutes learning */}
-          <div className="flex items-center gap-3">
+          <Link href="/quests" className="flex items-center gap-3 group">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#DDF4FF] text-[#1CB0F6]">
               <Clock className="h-5 w-5" />
             </div>
             <div className="flex-1">
               <div className="flex justify-between text-xs font-extrabold text-[#4B4B4B]">
                 <span>Spend 5 mins</span>
-                <span className="text-[#777777]">5 / 5</span>
+                <span className="text-[#58CC02]">5 / 5</span>
               </div>
               <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-[#E5E5E5]">
                 <div className="h-full w-full rounded-full bg-[#1CB0F6]" />
               </div>
             </div>
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#58CC02] text-white">
-              <Check className="h-3.5 w-3.5 stroke-[3]" />
+            <div className="shrink-0 transition-transform group-hover:scale-105">
+              <QuestChest isOpen size={30} />
             </div>
-          </div>
+          </Link>
 
           {/* Quest 3: 80% accuracy */}
-          <div className="flex items-center gap-3">
+          <Link href="/quests" className="flex items-center gap-3 group">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8FAD4] text-[#58CC02]">
               <Target className="h-5 w-5" />
             </div>
             <div className="flex-1">
               <div className="flex justify-between text-xs font-extrabold text-[#4B4B4B]">
                 <span>Score 80%+</span>
-                <span className="text-[#777777]">
+                <span className={completedLessonsCount > 0 ? "text-[#58CC02]" : "text-[#777777]"}>
                   {completedLessonsCount > 0 ? "1 / 1" : "0 / 1"}
                 </span>
               </div>
@@ -525,22 +527,20 @@ export function RightSidebar({
                 />
               </div>
             </div>
-            {completedLessonsCount > 0 && (
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#58CC02] text-white">
-                <Check className="h-3.5 w-3.5 stroke-[3]" />
-              </div>
-            )}
-          </div>
+            <div className="shrink-0 transition-transform group-hover:scale-105">
+              <QuestChest isOpen={completedLessonsCount > 0} size={30} />
+            </div>
+          </Link>
 
           {/* Quest 4: Daily streak */}
-          <div className="flex items-center gap-3">
+          <Link href="/quests" className="flex items-center gap-3 group">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFF4E5] text-[#FF9600]">
               <Flame className="h-5 w-5 fill-[#FF9600]" />
             </div>
             <div className="flex-1">
               <div className="flex justify-between text-xs font-extrabold text-[#4B4B4B]">
                 <span>Keep streak</span>
-                <span className="text-[#FF9600]">
+                <span className={currentStreak > 0 ? "text-[#58CC02]" : "text-[#FF9600]"}>
                   {currentStreak > 0 ? `${currentStreak} day` : "0 / 1"}
                 </span>
               </div>
@@ -553,12 +553,10 @@ export function RightSidebar({
                 />
               </div>
             </div>
-            {currentStreak > 0 && (
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#58CC02] text-white">
-                <Check className="h-3.5 w-3.5 stroke-[3]" />
-              </div>
-            )}
-          </div>
+            <div className="shrink-0 transition-transform group-hover:scale-105">
+              <QuestChest isOpen={currentStreak > 0} size={30} />
+            </div>
+          </Link>
         </div>
       </div>
 
