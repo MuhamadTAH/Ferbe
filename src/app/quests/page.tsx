@@ -10,11 +10,11 @@ import {
   Gift,
   Trophy,
   Flame,
-  Award,
 } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
 import { ConfigRequired, ErrorBoundary } from "@/components/states/ScreenState";
+import { RightSidebar } from "@/components/learn/RightSidebar";
 
 interface Stats {
   currentStreak: number;
@@ -237,43 +237,14 @@ function QuestsInner() {
       </main>
 
       {/* Right Column (Desktop Sticky) */}
-      <aside className="sticky top-20 hidden w-80 shrink-0 flex-col gap-5 lg:flex">
-        {/* Quest Streak Card */}
-        <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
-          <div className="mb-2 flex items-center gap-2">
-            <Award className="h-5 w-5 text-[#FF9600]" />
-            <h3 className="text-base font-extrabold text-[#4B4B4B]">
-              Quest Milestones
-            </h3>
-          </div>
-          <p className="text-xs font-bold leading-relaxed text-[#777777]">
-            Completing daily quests counts toward your monthly badges and unlocks
-            bonus gems to spend in the Shop!
-          </p>
-        </div>
-
-        {/* Badges Preview */}
-        <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
-          <h3 className="mb-3 text-base font-extrabold text-[#4B4B4B]">
-            Recent Badges
-          </h3>
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-3 rounded-2xl bg-[#FFF9E6] p-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FFC800] text-white">
-                <Trophy className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 className="text-xs font-extrabold text-[#4B4B4B]">
-                  August Kurdish Star
-                </h4>
-                <p className="text-[11px] font-bold text-[#58CC02]">
-                  Unlocked · 30/30 Quests
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
+      {/* Right Column (Desktop Sticky with HUD pills) */}
+      <RightSidebar
+        currentStreak={stats.currentStreak}
+        totalXp={stats.totalXp}
+        completedLessonsCount={Math.floor(stats.totalXp / 10)}
+        signedIn={stats.signedIn}
+        hearts={stats.hearts}
+      />
     </div>
   );
 }

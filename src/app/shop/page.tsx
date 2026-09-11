@@ -5,7 +5,6 @@ import { useQuery, useMutation } from "convex/react";
 import {
   Heart,
   Flame,
-  Sparkles,
   Shield,
   Check,
   Dumbbell,
@@ -15,6 +14,7 @@ import Link from "next/link";
 import { api } from "../../../convex/_generated/api";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
 import { ConfigRequired, ErrorBoundary } from "@/components/states/ScreenState";
+import { RightSidebar } from "@/components/learn/RightSidebar";
 
 interface Stats {
   currentStreak: number;
@@ -274,21 +274,14 @@ function ShopInner() {
         </section>
       </main>
 
-      {/* Right Column (Desktop Sticky) */}
-      <aside className="sticky top-20 hidden w-80 shrink-0 flex-col gap-5 lg:flex">
-        <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
-          <div className="mb-2 flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-[#1CB0F6]" />
-            <h3 className="text-base font-extrabold text-[#4B4B4B]">
-              Earning Gems
-            </h3>
-          </div>
-          <p className="text-xs font-bold leading-relaxed text-[#777777]">
-            Earn gems by completing daily quests, finishing entire units, and
-            leveling up your Kurdish Sorani skills!
-          </p>
-        </div>
-      </aside>
+      {/* Right Column (Desktop Sticky with HUD pills) */}
+      <RightSidebar
+        currentStreak={stats.currentStreak}
+        totalXp={stats.totalXp}
+        completedLessonsCount={Math.floor(stats.totalXp / 10)}
+        signedIn={stats.signedIn}
+        hearts={stats.hearts}
+      />
     </div>
   );
 }

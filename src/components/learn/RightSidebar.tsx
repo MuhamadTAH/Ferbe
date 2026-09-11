@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Trophy, Zap, Sparkles, Check, Clock, Target, Flame } from "lucide-react";
+import { Trophy, Zap, Sparkles, Check, Clock, Target, Flame, Heart } from "lucide-react";
 import { PushButton } from "@/components/duo/PushButton";
 
 interface RightSidebarProps {
@@ -9,6 +9,7 @@ interface RightSidebarProps {
   totalXp: number;
   completedLessonsCount: number;
   signedIn: boolean;
+  hearts?: number;
 }
 
 export function RightSidebar({
@@ -16,6 +17,7 @@ export function RightSidebar({
   totalXp,
   completedLessonsCount,
   signedIn,
+  hearts = 5,
 }: RightSidebarProps) {
   const lessonsToUnlockLeaderboard = Math.max(0, 3 - completedLessonsCount);
   const xpQuestTarget = 10;
@@ -23,7 +25,52 @@ export function RightSidebar({
   const xpQuestDone = totalXp >= xpQuestTarget;
 
   return (
-    <aside className="sticky top-20 hidden w-80 shrink-0 flex-col gap-5 lg:flex">
+    <aside className="sticky top-6 hidden w-84 shrink-0 flex-col gap-5 lg:flex">
+      {/* 0. Top HUD Status Pills on Desktop (Duolingo layout) */}
+      <div className="flex items-center justify-between px-1 py-1">
+        {/* Kurdish Flag Pill */}
+        <div
+          className="flex items-center gap-2 rounded-xl border-2 border-[#E5E5E5] px-2.5 py-1 text-xs font-extrabold text-[#4B4B4B] hover:bg-[#F7F7F7] cursor-pointer"
+          title="Kurdish Sorani (کوردی)"
+        >
+          <span className="flex h-3.5 w-5 flex-col overflow-hidden rounded-[2px] border border-black/10 shadow-xs">
+            <span className="h-1/3 w-full bg-[#ED1C24]" />
+            <span className="flex h-1/3 w-full items-center justify-center bg-white">
+              <span className="h-1 w-1 rounded-full bg-[#FFD700]" />
+            </span>
+            <span className="h-1/3 w-full bg-[#278E43]" />
+          </span>
+          <span>Sorani</span>
+        </div>
+
+        {/* Streak Pill */}
+        <div
+          className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold text-[#FF9600] transition-colors hover:bg-[#FFF4E5]"
+          title="Day Streak"
+        >
+          <Flame className="h-5 w-5 fill-[#FF9600] text-[#FF9600]" />
+          <span>{currentStreak}</span>
+        </div>
+
+        {/* Gems Pill */}
+        <div
+          className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold text-[#1CB0F6] transition-colors hover:bg-[#DDF4FF]"
+          title="Gems"
+        >
+          <span className="text-sm">💎</span>
+          <span>{500 + totalXp}</span>
+        </div>
+
+        {/* Hearts Pill */}
+        <div
+          className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold text-[#FF4B4B] transition-colors hover:bg-[#FFDFDF]"
+          title="Hearts remaining"
+        >
+          <Heart className="h-5 w-5 fill-[#FF4B4B] text-[#FF4B4B]" />
+          <span>{hearts}</span>
+        </div>
+      </div>
+
       {/* 1. Unlock Leaderboards Card */}
       <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
         <div className="mb-3 flex items-center justify-between">

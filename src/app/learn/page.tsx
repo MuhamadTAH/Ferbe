@@ -206,6 +206,7 @@ function PathPage() {
         totalXp={stats.totalXp}
         completedLessonsCount={completedLessonsCount}
         signedIn={stats.signedIn}
+        hearts={stats.hearts}
       />
 
       {/* Unit Guidebook Modal */}

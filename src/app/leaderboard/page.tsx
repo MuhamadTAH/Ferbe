@@ -5,13 +5,13 @@ import {
   Trophy,
   Clock,
   ArrowUp,
-  Shield,
   Zap,
   Flame,
 } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
 import { ConfigRequired, ErrorBoundary } from "@/components/states/ScreenState";
+import { RightSidebar } from "@/components/learn/RightSidebar";
 
 interface LeaderboardPlayer {
   id: string;
@@ -20,6 +20,13 @@ interface LeaderboardPlayer {
   totalXp: number;
   currentStreak: number;
   isCurrentUser: boolean;
+}
+
+interface Stats {
+  currentStreak: number;
+  hearts: number;
+  totalXp: number;
+  signedIn: boolean;
 }
 
 interface LeaderboardData {
@@ -31,19 +38,11 @@ interface LeaderboardData {
   currentUserRank: number | null;
 }
 
-const LEAGUES = [
-  { name: "Bronze League", color: "text-[#CD7F32]", bg: "bg-[#FFF4E5]" },
-  { name: "Silver League", color: "text-[#AFAFAF]", bg: "bg-[#F7F7F7]" },
-  { name: "Gold League", color: "text-[#FFC800]", bg: "bg-[#FFF9E6]" },
-  { name: "Sapphire League", color: "text-[#1CB0F6]", bg: "bg-[#DDF4FF]" },
-  { name: "Ruby League", color: "text-[#FF4B4B]", bg: "bg-[#FFDFDF]" },
-  { name: "Diamond League", color: "text-[#00CD9C]", bg: "bg-[#D6FFF5]" },
-];
-
 function LeaderboardInner() {
   const data = useQuery(api.curriculum.getLeaderboard, {}) as
     | LeaderboardData
     | undefined;
+  const stats = useQuery(api.curriculum.getMyStats, {}) as Stats | undefined;
 
   if (data === undefined) {
     return (
@@ -172,53 +171,14 @@ function LeaderboardInner() {
         </div>
       </main>
 
-      {/* Right Column (Desktop Sticky) */}
-      <aside className="sticky top-20 hidden w-80 shrink-0 flex-col gap-5 lg:flex">
-        {/* Info Card */}
-        <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
-          <div className="mb-2 flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-[#FFC800]" />
-            <h3 className="text-base font-extrabold text-[#4B4B4B]">
-              What are Leaderboards?
-            </h3>
-          </div>
-          <p className="text-xs font-bold leading-relaxed text-[#777777]">
-            Earn XP from lessons and practice to climb the ranks. The top 10
-            learners advance to higher leagues every Sunday!
-          </p>
-        </div>
-
-        {/* Leagues Roadmap */}
-        <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
-          <h3 className="mb-3 text-base font-extrabold text-[#4B4B4B]">
-            Leagues Overview
-          </h3>
-          <div className="flex flex-col gap-2">
-            {LEAGUES.map((league, idx) => (
-              <div
-                key={league.name}
-                className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs font-extrabold ${
-                  idx === 0 ? "border-2 border-[#FFC800] bg-[#FFF9E6]" : "text-[#777777]"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <Shield className={`h-4 w-4 ${league.color}`} />
-                  <span className={idx === 0 ? "text-[#FFC800]" : ""}>
-                    {league.name}
-                  </span>
-                </div>
-                {idx === 0 ? (
-                  <span className="text-[10px] uppercase text-[#58CC02]">
-                    Current
-                  </span>
-                ) : (
-                  <span className="text-[10px] text-[#AFAFAF]">Locked</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </aside>
+      {/* Right Column (Desktop Sticky with HUD pills) */}
+      <RightSidebar
+        currentStreak={stats?.currentStreak ?? 0}
+        totalXp={stats?.totalXp ?? 0}
+        completedLessonsCount={Math.floor((stats?.totalXp ?? 0) / 10)}
+        signedIn={stats?.signedIn ?? false}
+        hearts={stats?.hearts ?? 5}
+      />
     </div>
   );
 }

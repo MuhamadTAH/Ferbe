@@ -63,7 +63,7 @@ export function AppHeader() {
   const { hasConvex, hasClerk } = useAppConfig();
 
   return (
-    <header className="sticky top-0 z-40 border-b-2 border-[#E5E5E5] bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b-2 border-[#E5E5E5] bg-white/95 backdrop-blur lg:hidden">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
         <Link
           href="/learn"
