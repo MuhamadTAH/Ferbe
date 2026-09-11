@@ -146,4 +146,44 @@ describe("lesson session machine", () => {
     }
     expect(progressPercent(s)).toBeLessThanOrEqual(100);
   });
+
+  it("dynamically tracks progress based on remaining cards in active queue", () => {
+    let s = started(); // 3 items
+    expect(progressPercent(s)).toBe(0);
+
+    // Answer incorrectly: exercise is re-queued, so queue still has 3 items
+    s = sessionReducer(s, { type: "SELECT", value: "Wrong" });
+    s = sessionReducer(s, { type: "SUBMIT" });
+    s = sessionReducer(s, { type: "EVALUATE" });
+    expect(s.phase).toBe("FEEDBACK_ERROR");
+    expect(progressPercent(s)).toBe(0); // queue.length = 3, progress remains 0%
+
+    // Answer correctly: item removed from queue
+    s = sessionReducer(s, { type: "CONTINUE" });
+    const correct1 = currentExercise(s)?.solutionData.correct ?? "";
+    s = sessionReducer(s, { type: "SELECT", value: correct1 });
+    s = sessionReducer(s, { type: "SUBMIT" });
+    s = sessionReducer(s, { type: "EVALUATE" });
+    expect(s.phase).toBe("FEEDBACK_SUCCESS");
+    expect(progressPercent(s)).toBe(33); // 2 items left, 1/3 completed
+
+    // Another correct answer
+    s = sessionReducer(s, { type: "CONTINUE" });
+    const correct2 = currentExercise(s)?.solutionData.correct ?? "";
+    s = sessionReducer(s, { type: "SELECT", value: correct2 });
+    s = sessionReducer(s, { type: "SUBMIT" });
+    s = sessionReducer(s, { type: "EVALUATE" });
+    expect(progressPercent(s)).toBe(67); // 1 item left, 2/3 completed
+
+    // Final correct answer (the re-queued one)
+    s = sessionReducer(s, { type: "CONTINUE" });
+    const correct3 = currentExercise(s)?.solutionData.correct ?? "";
+    s = sessionReducer(s, { type: "SELECT", value: correct3 });
+    s = sessionReducer(s, { type: "SUBMIT" });
+    s = sessionReducer(s, { type: "EVALUATE" });
+    s = sessionReducer(s, { type: "CONTINUE" });
+    expect(s.phase).toBe("SESSION_COMPLETE");
+    expect(progressPercent(s)).toBe(100);
+  });
 });
+

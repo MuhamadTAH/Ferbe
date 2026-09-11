@@ -156,11 +156,19 @@ export function evaluateAnswer(
   };
 }
 
-/** Session progress as a percentage, capped at 100 (repeats included). */
+/**
+ * Session progress as a percentage based on remaining cards in the active queue.
+ * Completing an exercise removes it from queue (advancing progress).
+ * An incorrect answer keeps the exercise in the queue (moved to the end),
+ * preventing premature progress bar advancement.
+ */
 export function progressPercent(state: SessionState): number {
   if (state.total <= 0) return 0;
-  return Math.min(100, Math.round((state.answeredCount / state.total) * 100));
+  if (state.phase === "SESSION_COMPLETE") return 100;
+  const completed = Math.max(0, state.total - state.queue.length);
+  return Math.min(100, Math.max(0, Math.round((completed / state.total) * 100)));
 }
+
 
 // ---------------------------------------------------------------------------
 // Actions

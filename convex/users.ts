@@ -1,4 +1,4 @@
-import { MutationCtx, QueryCtx } from "./_generated/server";
+import { mutation, MutationCtx, QueryCtx } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
 
 /**
@@ -10,10 +10,18 @@ export async function getUserOrNull(ctx: QueryCtx): Promise<Doc<"users"> | null>
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) return null;
 
-  const existing = await ctx.db
+  let existing = await ctx.db
     .query("users")
     .withIndex("by_token", (q) => q.eq("tokenIdentifier", identity.subject))
     .unique();
+
+  if (!existing && identity.tokenIdentifier && identity.tokenIdentifier !== identity.subject) {
+    existing = await ctx.db
+      .query("users")
+      .withIndex("by_token", (q) => q.eq("tokenIdentifier", identity.tokenIdentifier))
+      .unique();
+  }
+
   return existing ?? null;
 }
 
@@ -30,10 +38,18 @@ export async function requireUser(ctx: MutationCtx): Promise<Doc<"users">> {
     throw new Error("UNAUTHENTICATED: sign in to continue");
   }
 
-  const existing = await ctx.db
+  let existing = await ctx.db
     .query("users")
     .withIndex("by_token", (q) => q.eq("tokenIdentifier", identity.subject))
     .unique();
+
+  if (!existing && identity.tokenIdentifier && identity.tokenIdentifier !== identity.subject) {
+    existing = await ctx.db
+      .query("users")
+      .withIndex("by_token", (q) => q.eq("tokenIdentifier", identity.tokenIdentifier))
+      .unique();
+  }
+
   if (existing) return existing;
 
   const userId = await ctx.db.insert("users", {
@@ -54,3 +70,15 @@ export async function requireUser(ctx: MutationCtx): Promise<Doc<"users">> {
   if (!created) throw new Error("Failed to create user record");
   return created;
 }
+
+/**
+ * Automatically creates or syncs the user's Convex record on sign-up / sign-in
+ * and initializes their default stats (streak 0, total XP 0, hearts 5).
+ */
+export const syncUser = mutation({
+  args: {},
+  handler: async (ctx) => {
+    return await requireUser(ctx);
+  },
+});
+
