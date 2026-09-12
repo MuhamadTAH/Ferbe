@@ -21,7 +21,7 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
-import { SignedIn, SignedOut, UserButton, useClerk } from "@clerk/nextjs";
+import { UserButton, useClerk, useAuth } from "@clerk/nextjs";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
 import { SquirrelAvatar } from "@/components/duo/SquirrelAvatar";
 
@@ -77,6 +77,7 @@ interface MoreSubActionsProps {
 
 function ClerkMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
   const clerk = useClerk();
+  const { isSignedIn } = useAuth();
 
   return (
     <>
@@ -89,7 +90,7 @@ function ClerkMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
         <span>Smorik Studio · سمۆڕە</span>
       </Link>
 
-      <SignedIn>
+      {isSignedIn && (
         <button
           type="button"
           onClick={() => {
@@ -101,7 +102,7 @@ function ClerkMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
           <Settings className="h-5 w-5 text-[#AFAFAF]" />
           <span>Settings</span>
         </button>
-      </SignedIn>
+      )}
 
       <button
         type="button"
@@ -115,7 +116,7 @@ function ClerkMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
         <span>Help & FAQ</span>
       </button>
 
-      <SignedIn>
+      {isSignedIn && (
         <button
           type="button"
           onClick={() => {
@@ -127,7 +128,7 @@ function ClerkMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
           <LogOut className="h-5 w-5 text-[#FF4B4B]" />
           <span>Log Out</span>
         </button>
-      </SignedIn>
+      )}
     </>
   );
 }
@@ -168,7 +169,31 @@ function DefaultMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
   );
 }
 
+function SidebarAccountSection() {
+  const { isSignedIn } = useAuth();
+
+  if (isSignedIn) {
+    return (
+      <div className="flex items-center gap-3">
+        <UserButton />
+        <span className="text-xs font-bold text-[#777777] dark:text-[#8495A0]">Account</span>
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href="/sign-in"
+      className="flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-[#1899D6] bg-[#1CB0F6] py-2.5 text-xs font-extrabold uppercase tracking-wide text-white hover:bg-[#4FC3F9] active:translate-y-[2px] active:border-b-2"
+    >
+      <User className="h-4 w-4" />
+      <span>Sign In</span>
+    </Link>
+  );
+}
+
 export function SidebarNav() {
+
   const pathname = usePathname();
   const { hasClerk } = useAppConfig();
   const [moreOpen, setMoreOpen] = useState(false);
@@ -369,21 +394,7 @@ export function SidebarNav() {
 
           {hasClerk && (
             <div>
-              <SignedIn>
-                <div className="flex items-center gap-3">
-                  <UserButton />
-                  <span className="text-xs font-bold text-[#777777] dark:text-[#8495A0]">Account</span>
-                </div>
-              </SignedIn>
-              <SignedOut>
-                <Link
-                  href="/sign-in"
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-[#1899D6] bg-[#1CB0F6] py-2.5 text-xs font-extrabold uppercase tracking-wide text-white hover:bg-[#4FC3F9] active:translate-y-[2px] active:border-b-2"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Sign In</span>
-                </Link>
-              </SignedOut>
+              <SidebarAccountSection />
             </div>
           )}
         </div>

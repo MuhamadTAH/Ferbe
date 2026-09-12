@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { BookOpen, Dumbbell, User, Flame, Heart } from "lucide-react";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { UserButton, useAuth } from "@clerk/nextjs";
 import { SquirrelAvatar } from "@/components/duo/SquirrelAvatar";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -75,6 +75,24 @@ function HeaderStatsPills() {
   );
 }
 
+function HeaderAuthSection() {
+  const { isSignedIn } = useAuth();
+
+  if (isSignedIn) {
+    return <UserButton />;
+  }
+
+  return (
+    <Link
+      href="/sign-in"
+      className="flex items-center gap-1.5 rounded-2xl border-b-4 border-[#1899D6] bg-[#1CB0F6] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wide text-white hover:bg-[#4FC3F9] sm:px-4 sm:py-2 sm:text-sm"
+    >
+      <User className="h-4 w-4" />
+      <span>Sign in</span>
+    </Link>
+  );
+}
+
 /** App header with auth-aware actions and Duolingo HUD status pills. */
 export function AppHeader() {
   const { hasConvex, hasClerk } = useAppConfig();
@@ -121,22 +139,7 @@ export function AppHeader() {
             <span className="hidden sm:inline">Practice</span>
           </Link>
 
-          {hasClerk ? (
-            <>
-              <SignedOut>
-                <Link
-                  href="/sign-in"
-                  className="flex items-center gap-1.5 rounded-2xl border-b-4 border-[#1899D6] bg-[#1CB0F6] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wide text-white hover:bg-[#4FC3F9] sm:px-4 sm:py-2 sm:text-sm"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Sign in</span>
-                </Link>
-              </SignedOut>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-            </>
-          ) : null}
+          {hasClerk ? <HeaderAuthSection /> : null}
         </nav>
       </div>
     </header>
