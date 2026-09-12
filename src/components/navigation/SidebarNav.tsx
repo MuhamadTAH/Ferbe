@@ -80,6 +80,15 @@ function ClerkMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
 
   return (
     <>
+      <Link
+        href="/character"
+        onClick={onClose}
+        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-xs font-extrabold text-[#4B4B4B] dark:text-white hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] transition-colors text-left"
+      >
+        <SquirrelAvatar size={22} mood="happy" variant="orange" shape="rounded" />
+        <span>Smorik Studio · سمۆڕە</span>
+      </Link>
+
       <SignedIn>
         <button
           type="button"
@@ -87,7 +96,7 @@ function ClerkMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
             onClose();
             clerk.openUserProfile();
           }}
-          className="flex w-full items-center gap-3 rounded-xl p-2.5 text-xs font-extrabold text-[#4B4B4B] hover:bg-[#F7F7F7] transition-colors cursor-pointer text-left"
+          className="flex w-full items-center gap-3 rounded-xl p-2.5 text-xs font-extrabold text-[#4B4B4B] dark:text-white hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] transition-colors cursor-pointer text-left"
         >
           <Settings className="h-5 w-5 text-[#AFAFAF]" />
           <span>Settings</span>
@@ -127,9 +136,18 @@ function DefaultMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
   return (
     <>
       <Link
+        href="/character"
+        onClick={onClose}
+        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-xs font-extrabold text-[#4B4B4B] dark:text-white hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] transition-colors text-left"
+      >
+        <SquirrelAvatar size={22} mood="happy" variant="orange" shape="rounded" />
+        <span>Smorik Studio · سمۆڕە</span>
+      </Link>
+
+      <Link
         href="/profile"
         onClick={onClose}
-        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-xs font-extrabold text-[#4B4B4B] hover:bg-[#F7F7F7] transition-colors text-left"
+        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-xs font-extrabold text-[#4B4B4B] dark:text-white hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] transition-colors text-left"
       >
         <Settings className="h-5 w-5 text-[#AFAFAF]" />
         <span>Settings</span>
@@ -141,7 +159,7 @@ function DefaultMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
           onClose();
           onOpenHelp();
         }}
-        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-xs font-extrabold text-[#4B4B4B] hover:bg-[#F7F7F7] transition-colors cursor-pointer text-left"
+        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-xs font-extrabold text-[#4B4B4B] dark:text-white hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] transition-colors cursor-pointer text-left"
       >
         <HelpCircle className="h-5 w-5 text-[#AFAFAF]" />
         <span>Help & FAQ</span>
