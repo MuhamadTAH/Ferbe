@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import {
   Trophy,
   Clock,
@@ -31,7 +31,9 @@ interface LeaderboardPlayer {
 interface Stats {
   currentStreak: number;
   hearts: number;
+  gems?: number;
   totalXp: number;
+  activeStatus?: string | null;
   signedIn: boolean;
 }
 
@@ -49,6 +51,7 @@ function LeaderboardInner() {
     | LeaderboardData
     | undefined;
   const stats = useQuery(api.curriculum.getMyStats, {}) as Stats | undefined;
+  const setUserStatusMutation = useMutation(api.curriculum.setUserStatus);
 
   const [userStatus, setUserStatus] = useState<string | null>(() => {
     if (typeof window !== "undefined") {
@@ -59,7 +62,7 @@ function LeaderboardInner() {
     return null;
   });
 
-  const handleSetStatus = (status: string | null) => {
+  const handleSetStatus = async (status: string | null) => {
     setUserStatus(status);
     try {
       if (status) {
@@ -67,6 +70,7 @@ function LeaderboardInner() {
       } else {
         localStorage.removeItem("ferbe_user_status");
       }
+      await setUserStatusMutation({ status });
     } catch {}
   };
 
@@ -325,8 +329,9 @@ function LeaderboardInner() {
         completedLessonsCount={completedLessonsCount}
         signedIn={stats?.signedIn ?? false}
         hearts={stats?.hearts ?? 5}
+        gems={stats?.gems}
         showSetStatus={!isLocked}
-        activeStatus={userStatus}
+        activeStatus={userStatus ?? stats?.activeStatus ?? null}
         onSetStatus={handleSetStatus}
         userName={stats?.signedIn ? "You" : "Gemini"}
       />

@@ -15,7 +15,15 @@ export const getMyStats = query({
   handler: async (ctx) => {
     const user = await getUserOrNull(ctx);
     if (!user) {
-      return { currentStreak: 0, hearts: 5, totalXp: 0, signedIn: false };
+      return {
+        currentStreak: 0,
+        hearts: 5,
+        gems: 500,
+        totalXp: 0,
+        activeStatus: null,
+        streakFreezeActive: false,
+        signedIn: false,
+      };
     }
     const stats = await ctx.db
       .query("userStats")
@@ -24,7 +32,10 @@ export const getMyStats = query({
     return {
       currentStreak: stats?.currentStreak ?? 0,
       hearts: stats?.hearts ?? 5,
+      gems: stats?.gems ?? 500,
       totalXp: stats?.totalXp ?? 0,
+      activeStatus: stats?.activeStatus ?? null,
+      streakFreezeActive: stats?.streakFreezeActive ?? false,
       signedIn: true,
     };
   },
@@ -239,9 +250,25 @@ export const completeLesson = mutation({
       yesterdayKey()
     );
     const totalXp = stats.totalXp + xpEarned;
-    await ctx.db.patch(stats._id, { totalXp, currentStreak: streak, lastActiveDate: today });
+    const currentGems = stats.gems ?? 500;
+    const gemsAwarded = 5;
+    const newGems = currentGems + gemsAwarded;
+    await ctx.db.patch(stats._id, {
+      totalXp,
+      currentStreak: streak,
+      lastActiveDate: today,
+      gems: newGems,
+    });
 
-    return { xpEarned, totalXp, currentStreak: streak, isCompleted, score: pct };
+    return {
+      xpEarned,
+      totalXp,
+      gemsAwarded,
+      gems: newGems,
+      currentStreak: streak,
+      isCompleted,
+      score: pct,
+    };
   },
 });
 
@@ -313,24 +340,42 @@ export const buyShopItem = mutation({
       .first();
     if (!stats) throw new Error("User stats missing");
 
+    const currentGems = stats.gems ?? 500;
+
     if (args.item === "heart_refill") {
-      await ctx.db.patch(stats._id, { hearts: 5 });
-      return { success: true, hearts: 5, message: "Hearts refilled to 5!" };
+      const COST = 350;
+      if (currentGems < COST) {
+        throw new Error(
+          `Insufficient gems: heart refill costs ${COST} gems, you have ${currentGems}.`
+        );
+      }
+      const newGems = currentGems - COST;
+      await ctx.db.patch(stats._id, { hearts: 5, gems: newGems });
+      return { success: true, hearts: 5, gems: newGems, message: "Hearts refilled to 5!" };
     }
 
     if (args.item === "streak_freeze") {
-      return { success: true, message: "Streak Freeze equipped for 1 day!" };
+      const COST = 200;
+      if (currentGems < COST) {
+        throw new Error(
+          `Insufficient gems: streak freeze costs ${COST} gems, you have ${currentGems}.`
+        );
+      }
+      const newGems = currentGems - COST;
+      await ctx.db.patch(stats._id, { streakFreezeActive: true, gems: newGems });
+      return { success: true, gems: newGems, message: "Streak Freeze equipped for 1 day!" };
     }
 
     return { success: false, message: "Unknown item" };
   },
 });
 
-/** Claims a completed daily quest reward (+XP). */
+/** Claims a completed daily quest reward (+XP and +Gems) and saves claim record. */
 export const claimQuestReward = mutation({
   args: {
     questId: v.string(),
     xpReward: v.number(),
+    gemReward: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const user = await requireUser(ctx);
@@ -340,9 +385,68 @@ export const claimQuestReward = mutation({
       .first();
     if (!stats) throw new Error("User stats missing");
 
-    const totalXp = stats.totalXp + args.xpReward;
-    await ctx.db.patch(stats._id, { totalXp });
+    const existingClaim = await ctx.db
+      .query("userQuests")
+      .withIndex("by_user_quest", (q) =>
+        q.eq("userId", user._id).eq("questId", args.questId)
+      )
+      .first();
+    if (existingClaim) {
+      return {
+        success: false,
+        message: "Quest already claimed today",
+        totalXp: stats.totalXp,
+        gems: stats.gems ?? 500,
+      };
+    }
 
-    return { success: true, totalXp, xpReward: args.xpReward };
+    const gemReward = args.gemReward ?? 5;
+    const currentGems = stats.gems ?? 500;
+    const totalXp = stats.totalXp + args.xpReward;
+    const newGems = currentGems + gemReward;
+
+    await ctx.db.patch(stats._id, { totalXp, gems: newGems });
+    await ctx.db.insert("userQuests", {
+      userId: user._id,
+      questId: args.questId,
+      claimedAt: Date.now(),
+    });
+
+    return { success: true, totalXp, xpReward: args.xpReward, gems: newGems, gemReward };
+  },
+});
+
+/** Real-time list of claimed quest IDs for the signed-in user. */
+export const getMyQuests = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getUserOrNull(ctx);
+    if (!user) return [];
+    const quests = await ctx.db
+      .query("userQuests")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+    return quests.map((q) => q.questId);
+  },
+});
+
+/** Sets or clears the user's custom daily status emoji/label. */
+export const setUserStatus = mutation({
+  args: {
+    status: v.union(v.string(), v.null()),
+  },
+  handler: async (ctx, args) => {
+    const user = await requireUser(ctx);
+    const stats = await ctx.db
+      .query("userStats")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .first();
+    if (!stats) throw new Error("User stats missing");
+
+    await ctx.db.patch(stats._id, {
+      activeStatus: args.status ?? undefined,
+    });
+
+    return { success: true, status: args.status };
   },
 });

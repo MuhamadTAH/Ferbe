@@ -17,6 +17,8 @@ import {
 export interface CompleteLessonResult {
   xpEarned: number;
   totalXp: number;
+  gemsEarned?: number;
+  gems?: number;
   currentStreak: number;
   isCompleted: boolean;
   score: number;

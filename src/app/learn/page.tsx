@@ -2,15 +2,24 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useQuery } from "convex/react";
-import { Check, Lock, BookOpen, ChevronRight, ArrowUp } from "lucide-react";
+import { useQuery, useMutation } from "convex/react";
+import {
+  Check,
+  Star,
+  Lock,
+  BookOpen,
+  ChevronRight,
+  Flame,
+  Zap,
+  ArrowUp,
+} from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
 import { ConfigRequired, ErrorBoundary } from "@/components/states/ScreenState";
+import { RightSidebar } from "@/components/learn/RightSidebar";
 import { LessonPopover } from "@/components/learn/LessonPopover";
 import { UnitGuidebookModal } from "@/components/learn/UnitGuidebookModal";
 import { TreasureChestNode } from "@/components/learn/TreasureChestNode";
-import { RightSidebar } from "@/components/learn/RightSidebar";
 
 interface LessonView {
   _id: string;
@@ -33,7 +42,9 @@ interface Curriculum {
 interface Stats {
   currentStreak: number;
   hearts: number;
+  gems?: number;
   totalXp: number;
+  activeStatus?: string | null;
   signedIn: boolean;
 }
 
@@ -46,6 +57,8 @@ function PathPage() {
     order: number;
   } | null>(null);
   const [showScrollToCurrent, setShowScrollToCurrent] = useState(false);
+  const [localStatus, setLocalStatus] = useState<string | null>(null);
+  const setUserStatus = useMutation(api.curriculum.setUserStatus);
 
   useEffect(() => {
     function handleScroll() {
@@ -238,6 +251,17 @@ function PathPage() {
         completedLessonsCount={completedLessonsCount}
         signedIn={stats.signedIn}
         hearts={stats.hearts}
+        gems={stats.gems}
+        showSetStatus={true}
+        activeStatus={localStatus ?? stats.activeStatus ?? null}
+        onSetStatus={async (newStatus) => {
+          setLocalStatus(newStatus);
+          try {
+            await setUserStatus({ status: newStatus });
+          } catch {
+            // fallback
+          }
+        }}
       />
 
       {/* Unit Guidebook Modal */}

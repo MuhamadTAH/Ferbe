@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import {
   Target,
@@ -22,18 +22,28 @@ import { PushButton } from "@/components/duo/PushButton";
 interface Stats {
   currentStreak: number;
   hearts: number;
+  gems?: number;
   totalXp: number;
   signedIn: boolean;
 }
 
 function QuestsInner() {
   const stats = useQuery(api.curriculum.getMyStats, {}) as Stats | undefined;
+  const dbClaimedQuests = useQuery(api.curriculum.getMyQuests, {}) as string[] | undefined;
   const claimReward = useMutation(api.curriculum.claimQuestReward);
-  const [claimedQuests, setClaimedQuests] = useState<Set<string>>(new Set());
+  const [localClaimed, setLocalClaimed] = useState<Set<string>>(new Set());
   const [celebrationReward, setCelebrationReward] = useState<{
     questTitle: string;
     gemReward: number;
   } | null>(null);
+
+  const claimedQuests = useMemo(() => {
+    const combined = new Set(localClaimed);
+    if (dbClaimedQuests) {
+      dbClaimedQuests.forEach((q) => combined.add(q));
+    }
+    return combined;
+  }, [localClaimed, dbClaimedQuests]);
 
   if (stats === undefined) {
     return (
@@ -49,12 +59,12 @@ function QuestsInner() {
       return;
     }
     try {
-      await claimReward({ questId, xpReward });
-      setClaimedQuests((prev) => new Set(prev).add(questId));
+      await claimReward({ questId, xpReward, gemReward });
+      setLocalClaimed((prev) => new Set(prev).add(questId));
       setCelebrationReward({ questTitle: title, gemReward });
     } catch {
       // safe fallback
-      setClaimedQuests((prev) => new Set(prev).add(questId));
+      setLocalClaimed((prev) => new Set(prev).add(questId));
       setCelebrationReward({ questTitle: title, gemReward });
     }
   };
@@ -288,6 +298,7 @@ function QuestsInner() {
         completedLessonsCount={Math.floor(stats.totalXp / 10)}
         signedIn={stats.signedIn}
         hearts={stats.hearts}
+        gems={stats.gems}
       />
 
       {/* Duolingo "You earned 5 gems!" Quest Celebration Modal */}

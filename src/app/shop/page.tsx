@@ -19,7 +19,9 @@ import { RightSidebar } from "@/components/learn/RightSidebar";
 interface Stats {
   currentStreak: number;
   hearts: number;
+  gems?: number;
   totalXp: number;
+  streakFreezeActive?: boolean;
   signedIn: boolean;
 }
 
@@ -37,7 +39,7 @@ function ShopInner() {
     );
   }
 
-  const gems = 500 + stats.totalXp;
+  const gems = stats.gems ?? (500 + stats.totalXp);
 
   const handleBuyHearts = async () => {
     if (stats.hearts >= 5) {
@@ -47,18 +49,22 @@ function ShopInner() {
     try {
       const res = await buyShopItem({ item: "heart_refill" });
       setPurchaseStatus(res.message);
-    } catch {
-      setPurchaseStatus("Refilled hearts to 5!");
+    } catch (err: unknown) {
+      setPurchaseStatus(
+        err instanceof Error ? err.message : "Refilled hearts to 5!"
+      );
     }
   };
 
   const handleBuyStreakFreeze = async () => {
     try {
-      await buyShopItem({ item: "streak_freeze" });
+      const res = await buyShopItem({ item: "streak_freeze" });
       setIsEquippedFreeze(true);
-      setPurchaseStatus("Streak Freeze equipped!");
-    } catch {
-      setPurchaseStatus("Streak Freeze equipped!");
+      setPurchaseStatus(res.message);
+    } catch (err: unknown) {
+      setPurchaseStatus(
+        err instanceof Error ? err.message : "Streak Freeze equipped!"
+      );
     }
   };
 
@@ -281,6 +287,7 @@ function ShopInner() {
         completedLessonsCount={Math.floor(stats.totalXp / 10)}
         signedIn={stats.signedIn}
         hearts={stats.hearts}
+        gems={gems}
       />
     </div>
   );

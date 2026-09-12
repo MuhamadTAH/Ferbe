@@ -63,6 +63,7 @@ export async function requireUser(ctx: MutationCtx): Promise<Doc<"users">> {
     userId,
     currentStreak: 0,
     hearts: 5,
+    gems: 500,
     totalXp: 0,
   });
 

@@ -100,6 +100,7 @@ const CEFR_INFO: Record<string, { title: string; desc: string }> = {
 interface Stats {
   currentStreak: number;
   hearts: number;
+  gems?: number;
   totalXp: number;
   signedIn: boolean;
 }
@@ -293,6 +294,7 @@ function SectionsInner() {
         completedLessonsCount={completedLessonsCount}
         signedIn={stats.signedIn}
         hearts={stats.hearts}
+        gems={stats.gems}
       />
 
       {/* CEFR Level Info Modal */}

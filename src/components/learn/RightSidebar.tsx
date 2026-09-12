@@ -40,6 +40,7 @@ interface RightSidebarProps {
   completedLessonsCount: number;
   signedIn: boolean;
   hearts?: number;
+  gems?: number;
   showSetStatus?: boolean;
   activeStatus?: string | null;
   onSetStatus?: (status: string | null) => void;
@@ -53,6 +54,7 @@ export function RightSidebar({
   completedLessonsCount,
   signedIn,
   hearts = 5,
+  gems,
   showSetStatus = false,
   activeStatus = null,
   onSetStatus,
@@ -133,7 +135,7 @@ export function RightSidebar({
             title="💎 Gems · Visit Shop"
           >
             <span className="text-sm">💎</span>
-            <span>{500 + totalXp}</span>
+            <span>{gems ?? (500 + totalXp)}</span>
           </Link>
 
           {/* Hearts Pill */}

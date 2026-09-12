@@ -43,7 +43,7 @@ function HeaderStatsPills() {
         title="Gems"
       >
         <span className="text-sm">💎</span>
-        <span>{500 + stats.totalXp}</span>
+        <span>{stats.gems ?? (500 + stats.totalXp)}</span>
       </div>
 
       {/* Hearts Pill */}

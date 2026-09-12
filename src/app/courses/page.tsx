@@ -17,6 +17,7 @@ import { RightSidebar } from "@/components/learn/RightSidebar";
 interface Stats {
   currentStreak: number;
   hearts: number;
+  gems?: number;
   totalXp: number;
   signedIn: boolean;
 }
@@ -291,6 +292,7 @@ function CoursesInner() {
         completedLessonsCount={Math.floor(stats.totalXp / 10)}
         signedIn={stats.signedIn}
         hearts={stats.hearts}
+        gems={stats.gems}
       />
     </div>
   );

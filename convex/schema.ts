@@ -17,8 +17,11 @@ export default defineSchema({
     userId: v.id("users"),
     currentStreak: v.number(),
     hearts: v.number(),
+    gems: v.optional(v.number()),
     lastActiveDate: v.optional(v.string()),
     totalXp: v.number(),
+    activeStatus: v.optional(v.string()),
+    streakFreezeActive: v.optional(v.boolean()),
   }).index("by_user", ["userId"]),
 
   courses: defineTable({
@@ -89,4 +92,12 @@ export default defineSchema({
   })
     .index("by_user", ["userId"])
     .index("by_user_lesson", ["userId", "lessonId"]),
+
+  userQuests: defineTable({
+    userId: v.id("users"),
+    questId: v.string(),
+    claimedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_quest", ["userId", "questId"]),
 });

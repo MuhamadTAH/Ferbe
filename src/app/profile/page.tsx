@@ -21,7 +21,9 @@ import { FriendsSidebarCard } from "@/components/profile/FriendsSidebarCard";
 interface Stats {
   currentStreak: number;
   hearts: number;
+  gems?: number;
   totalXp: number;
+  activeStatus?: string | null;
   signedIn: boolean;
 }
 
@@ -347,6 +349,8 @@ function ProfileInner() {
         completedLessonsCount={Math.floor(stats.totalXp / 10)}
         signedIn={stats.signedIn}
         hearts={stats.hearts}
+        gems={stats.gems}
+        activeStatus={stats.activeStatus}
         customCard={<FriendsSidebarCard />}
       />
     </div>
