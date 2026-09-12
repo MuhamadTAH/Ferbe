@@ -376,21 +376,21 @@ export function SquirrelMascot({
                 {mood === "fire" && (
                   <g className={`smorik-flame-${uniqueId}`}>
                     <path
-                      d="M 85 140 C 45 140, 10 115, 12 70 C 14 25, 48 -2, 85 0 C 98 1, 106 12, 100 24 C 94 36, 80 36, 68 45 C 50 56, 44 86, 56 112 C 64 128, 78 138, 88 142 Z"
+                      d="M 85 140 C 48 140, 18 115, 20 78 C 22 42, 50 20, 80 22 C 92 23, 100 32, 94 42 C 88 52, 74 50, 64 58 C 48 68, 44 94, 56 114 C 64 128, 78 138, 88 142 Z"
                       fill={`url(#flameGrad-${uniqueId})`}
                       opacity="0.75"
                     />
                     {/* Secondary Flame Lick */}
                     <path
-                      d="M 55 18 C 65 6, 80 8, 86 16 C 78 18, 68 20, 60 28 C 50 38, 48 54, 52 70 C 42 55, 46 32, 55 18 Z"
+                      d="M 54 36 C 62 26, 74 28, 80 34 C 72 36, 64 38, 58 44 C 50 52, 48 64, 52 76 C 44 64, 46 46, 54 36 Z"
                       fill="#FFF176"
                     />
                   </g>
                 )}
 
-                {/* Main Tail Body */}
+                {/* Main Tail Body (Slightly shorter, proportional woodland S-curve) */}
                 <path
-                  d="M 82 144 C 54 144, 22 120, 24 82 C 26 42, 54 16, 84 18 C 98 19, 102 30, 96 38 C 90 46, 76 46, 65 54 C 48 64, 44 92, 56 114 C 64 128, 76 138, 86 142 Z"
+                  d="M 82 144 C 56 144, 28 122, 30 90 C 32 58, 54 38, 78 40 C 90 41, 96 50, 90 56 C 84 62, 72 60, 64 68 C 50 78, 46 98, 58 116 C 66 128, 76 138, 86 142 Z"
                   fill={`url(#tailGrad-${uniqueId})`}
                 />
 
@@ -402,13 +402,13 @@ export function SquirrelMascot({
 
                 {/* Top Highlight on Tail Arch */}
                 <path
-                  d="M 44 60 C 40 38, 60 22, 84 22 C 70 24, 48 38, 48 60 Z"
+                  d="M 46 76 C 42 56, 58 44, 76 44 C 64 46, 48 56, 48 76 Z"
                   fill="#FF9B42"
                 />
 
                 {/* Decorative Fur Tufts on Tail Tip */}
                 <path
-                  d="M 84 18 C 88 12, 95 12, 98 16 C 94 18, 88 20, 84 18 Z"
+                  d="M 76 40 C 80 34, 87 34, 90 38 C 86 40, 80 42, 76 40 Z"
                   fill="#FFB673"
                 />
               </g>
