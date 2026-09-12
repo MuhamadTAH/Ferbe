@@ -19,21 +19,36 @@ import {
 import { useActiveCourse } from "@/hooks/useActiveCourse";
 import { PushButton } from "@/components/duo/PushButton";
 import { QuestChest } from "@/components/duo/QuestChest";
+import {
+  StatusFlair,
+  STATUS_FLAIRS,
+  TIER_CONFIG,
+  resolveFlair,
+  readStoredUserStatus,
+  writeStoredUserStatus,
+  STATUS_CHANGE_EVENT,
+  UserStatusState,
+} from "@/components/profile/statusFlairs";
+import { AvatarWithFlair } from "@/components/profile/AvatarWithFlair";
+import { ProfileStatusModal } from "@/components/profile/ProfileStatusModal";
 
-export const STATUS_OPTIONS = [
-  { emoji: "⚡", label: "Charged" },
-  { emoji: "🔥", label: "On fire" },
-  { emoji: "☕", label: "Caffeinated" },
-  { emoji: "🧠", label: "Big brain" },
-  { emoji: "👑", label: "Champion" },
-  { emoji: "💎", label: "Flawless" },
-  { emoji: "🚀", label: "Unstoppable" },
-  { emoji: "🎯", label: "Laser focused" },
-  { emoji: "📖", label: "Scholar" },
-  { emoji: "🦁", label: "Lionhearted" },
-  { emoji: "🌟", label: "Superstar" },
-  { emoji: "🕶️", label: "Cool" },
+export const STATUS_OPTIONS = STATUS_FLAIRS.map((f) => ({
+  emoji: f.emoji,
+  label: f.labelEn,
+}));
+
+const QUICK_FLAIR_IDS = [
+  "kurdistan_sun",
+  "polyglot",
+  "mountain_eagle",
+  "beast_mode",
+  "unstoppable_streak",
+  "diamond_league",
 ];
+
+const QUICK_FLAIRS = QUICK_FLAIR_IDS.map(
+  (id) => STATUS_FLAIRS.find((f) => f.id === id)!
+).filter(Boolean);
 
 interface RightSidebarProps {
   currentStreak: number;
@@ -46,6 +61,7 @@ interface RightSidebarProps {
   activeStatus?: string | null;
   onSetStatus?: (status: string | null) => void;
   userName?: string;
+  avatarUrl?: string;
   customCard?: React.ReactNode;
 }
 
@@ -60,6 +76,7 @@ export function RightSidebar({
   activeStatus = null,
   onSetStatus,
   userName = "Gemini",
+  avatarUrl,
   customCard,
 }: RightSidebarProps) {
   const { currentCourse, activeCourseSlug, courses, selectCourse } = useActiveCourse();
@@ -68,6 +85,41 @@ export function RightSidebar({
   >(null);
   const [showFriendStreaksModal, setShowFriendStreaksModal] = useState(false);
   const [showStreakSocietyModal, setShowStreakSocietyModal] = useState(false);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [storedStatusState, setStoredStatusState] = useState<UserStatusState>(() =>
+    readStoredUserStatus()
+  );
+
+  useEffect(() => {
+    function handleStatusSync() {
+      setStoredStatusState(readStoredUserStatus());
+    }
+    window.addEventListener(STATUS_CHANGE_EVENT, handleStatusSync);
+    window.addEventListener("storage", handleStatusSync);
+    return () => {
+      window.removeEventListener(STATUS_CHANGE_EVENT, handleStatusSync);
+      window.removeEventListener("storage", handleStatusSync);
+    };
+  }, []);
+
+  const effectiveFlair =
+    storedStatusState.flair || resolveFlair(activeStatus, false);
+  const effectiveStatusText = storedStatusState.statusText;
+  const tierConfig = effectiveFlair ? TIER_CONFIG[effectiveFlair.tier] : null;
+
+  const handleClearStatus = () => {
+    writeStoredUserStatus(null, null);
+    onSetStatus?.(null);
+  };
+
+  const handleQuickSelectFlair = (flair: StatusFlair) => {
+    writeStoredUserStatus(flair.id, effectiveStatusText);
+    onSetStatus?.(flair.emoji);
+  };
+
+  const handleModalSave = (flair: StatusFlair | null, text: string | null) => {
+    onSetStatus?.(flair ? flair.emoji : null);
+  };
   const hudRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -412,64 +464,111 @@ export function RightSidebar({
         )}
       </div>
 
-      {/* 1. Set Your Status Card (Duolingo authentic on Leaderboard / Profile) OR Unlock Leaderboards Card */}
+      {/* 1. Set Your Status Card (Duolingo-grade Status & Flair Ecosystem) */}
       {showSetStatus ? (
         <div className="rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-5 shadow-sm">
-          <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-base font-extrabold text-[#4B4B4B] dark:text-white">
-              Set your status
-            </h3>
-            {activeStatus && (
+          <div className="mb-3.5 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-[#1CB0F6] dark:text-[#3BC0F8]" />
+              <h3 className="text-base font-extrabold text-[#4B4B4B] dark:text-white">
+                Status & Flair
+              </h3>
+            </div>
+            {(effectiveFlair || effectiveStatusText) && (
               <button
                 type="button"
-                onClick={() => onSetStatus?.(null)}
-                className="text-xs font-extrabold uppercase tracking-wide text-[#AFAFAF] hover:text-[#EA2B2B] transition-colors cursor-pointer"
+                onClick={handleClearStatus}
+                className="text-xs font-extrabold uppercase tracking-wide text-[#AFAFAF] hover:text-[#EA2B2B] dark:text-[#8495A0] dark:hover:text-[#FF4B4B] transition-colors cursor-pointer"
               >
                 CLEAR
               </button>
             )}
           </div>
 
-          {/* Current Avatar with Status Badge */}
-          <div className="flex items-center gap-3.5 mb-4 p-2.5 rounded-2xl bg-[#F7F7F7] dark:bg-[#202F36]">
-            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#1CB0F6] text-lg font-extrabold text-white shadow-xs">
-              <span>{userName.charAt(0).toUpperCase()}</span>
-              {activeStatus && (
-                <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-white dark:bg-[#131F24] text-xs shadow-md border border-[#E5E5E5] dark:border-[#37464F]">
-                  {activeStatus}
-                </span>
+          {/* Current Avatar with Rich Flair Pill */}
+          <div
+            onClick={() => setIsStatusModalOpen(true)}
+            className="group mb-4 flex items-center gap-3.5 rounded-2xl border-2 border-[#E5E5E5] bg-[#F7F7F7] p-3 transition-all hover:border-[#1CB0F6] dark:border-[#37464F] dark:bg-[#202F36] dark:hover:border-[#3BC0F8] cursor-pointer"
+            role="button"
+            tabIndex={0}
+            title="Click to customize your Kurdish flair"
+          >
+            <AvatarWithFlair
+              displayName={userName}
+              avatarUrl={avatarUrl}
+              flair={effectiveFlair}
+              size="md"
+            />
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-xs font-extrabold text-[#4B4B4B] dark:text-white truncate">
+                  {effectiveFlair ? effectiveFlair.labelEn : "No status set"}
+                </p>
+                {effectiveFlair && tierConfig && (
+                  <span
+                    className={`shrink-0 rounded-md px-1.5 py-0.2 text-[9px] font-extrabold uppercase tracking-wide ${tierConfig.badgeBg} ${tierConfig.badgeText}`}
+                  >
+                    {tierConfig.nameEn}
+                  </span>
+                )}
+              </div>
+
+              {effectiveFlair ? (
+                <p className="text-[11px] font-bold text-[#1899D6] dark:text-[#3BC0F8] truncate">
+                  {effectiveFlair.labelKu}
+                </p>
+              ) : (
+                <p className="text-[11px] font-bold text-[#AFAFAF] dark:text-[#8495A0]">
+                  Pick a badge or set custom status
+                </p>
               )}
-            </div>
-            <div>
-              <p className="text-xs font-extrabold text-[#4B4B4B] dark:text-white">
-                {activeStatus ? "Current Status" : "No status set"}
-              </p>
-              <p className="text-[11px] font-bold text-[#777777] dark:text-[#8495A0]">
-                {activeStatus
-                  ? STATUS_OPTIONS.find((s) => s.emoji === activeStatus)?.label
-                  : "Pick an emoji below to show how you feel!"}
-              </p>
+
+              {effectiveStatusText && (
+                <p className="mt-1 text-[11px] font-bold text-[#777777] dark:text-[#D1D5DB] truncate italic">
+                  &ldquo;{effectiveStatusText}&rdquo;
+                </p>
+              )}
             </div>
           </div>
 
-          {/* Grid of 12 Status Emoji Badges */}
-          <div className="grid grid-cols-6 gap-2">
-            {STATUS_OPTIONS.map((opt) => (
-              <button
-                key={opt.emoji}
-                type="button"
-                onClick={() => onSetStatus?.(opt.emoji)}
-                title={opt.label}
-                className={`flex h-10 w-10 items-center justify-center rounded-xl border-2 text-lg transition-transform cursor-pointer hover:scale-110 active:scale-95 ${
-                  activeStatus === opt.emoji
-                    ? "border-[#1CB0F6] bg-[#DDF4FF] dark:bg-[#1C3B4E] shadow-xs ring-2 ring-[#1CB0F6]/30"
-                    : "border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] hover:bg-[#F7F7F7] dark:hover:bg-[#202F36]"
-                }`}
-              >
-                {opt.emoji}
-              </button>
-            ))}
+          {/* Quick Flair Badges Grid */}
+          <div className="mb-3.5">
+            <div className="mb-2 flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-[#AFAFAF] dark:text-[#8495A0]">
+              <span>Quick Badges</span>
+              <span>نیشانەی خێرا</span>
+            </div>
+            <div className="grid grid-cols-6 gap-1.5">
+              {QUICK_FLAIRS.map((opt) => {
+                const isSelected = effectiveFlair?.id === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => handleQuickSelectFlair(opt)}
+                    title={`${opt.labelEn} (${opt.labelKu}) - ${opt.description}`}
+                    className={`flex h-10 w-10 items-center justify-center rounded-xl border-2 text-lg transition-transform cursor-pointer hover:scale-110 active:scale-95 ${
+                      isSelected
+                        ? "border-[#1CB0F6] bg-[#DDF4FF] dark:bg-[#1C3B4E] shadow-xs ring-2 ring-[#1CB0F6]/30"
+                        : "border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] hover:bg-[#F7F7F7] dark:hover:bg-[#202F36]"
+                    }`}
+                  >
+                    {opt.emoji}
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          {/* Customize Status Button */}
+          <button
+            type="button"
+            onClick={() => setIsStatusModalOpen(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border-b-4 border-[#1899D6] bg-[#1CB0F6] py-2.5 text-xs font-extrabold uppercase tracking-wider text-white shadow-xs transition-all hover:bg-[#4FC3F9] active:translate-y-[2px] active:border-b-2 cursor-pointer"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Customize Status · دەستکاری</span>
+          </button>
         </div>
       ) : (
         <div className="rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-5 shadow-sm">
@@ -835,6 +934,17 @@ export function RightSidebar({
           </div>
         </div>
       )}
+
+      {/* Duolingo-Grade Profile Status & Flair Modal */}
+      <ProfileStatusModal
+        isOpen={isStatusModalOpen}
+        onClose={() => setIsStatusModalOpen(false)}
+        currentFlairId={effectiveFlair?.id ?? null}
+        currentStatusText={effectiveStatusText}
+        userName={userName}
+        avatarUrl={avatarUrl}
+        onSave={handleModalSave}
+      />
     </aside>
   );
 }

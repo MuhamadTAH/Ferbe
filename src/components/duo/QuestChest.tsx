@@ -1,155 +1,479 @@
-interface QuestChestProps {
+"use client";
+
+import React from "react";
+
+export interface QuestChestProps {
   isOpen?: boolean;
   className?: string;
   size?: number;
+  animated?: boolean;
+  state?: "idle" | "shaking" | "opening" | "open" | "closed";
+  glow?: boolean;
 }
 
 export function QuestChest({
   isOpen = false,
   className = "",
   size = 40,
+  animated = false,
+  state,
+  glow = false,
 }: QuestChestProps) {
-  if (isOpen) {
-    return (
+  // Determine effective visual state
+  const effectiveState =
+    state ?? (isOpen ? "open" : animated ? "idle" : "closed");
+
+  const isChestOpen = effectiveState === "open" || effectiveState === "opening";
+  const isShaking = effectiveState === "shaking";
+  const isIdle = effectiveState === "idle";
+
+  return (
+    <div
+      className={`relative inline-flex items-center justify-center select-none ${
+        isIdle && animated ? "animate-[chest-float_3s_ease-in-out_infinite]" : ""
+      } ${isShaking ? "animate-[chest-shake_0.4s_ease-in-out_infinite]" : ""} ${className}`}
+      style={{ width: size, height: size }}
+    >
+      {/* Ambient Outer Glow */}
+      {(glow || isChestOpen || isShaking) && (
+        <div
+          className={`absolute inset-0 -m-1.5 rounded-full blur-md pointer-events-none transition-opacity duration-300 ${
+            isChestOpen
+              ? "bg-[#FFC800]/40 dark:bg-[#FFC800]/30 animate-pulse"
+              : isShaking
+              ? "bg-[#FF9600]/50 animate-ping"
+              : "bg-[#FFD900]/25"
+          }`}
+        />
+      )}
+
       <svg
         width={size}
         height={size}
-        viewBox="0 0 64 64"
+        viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className={`drop-shadow-md transition-transform duration-300 ${className}`}
+        className="w-full h-full drop-shadow-md overflow-visible transition-transform duration-300"
       >
-        {/* Sparkle bursts */}
-        <path
-          d="M32 4L34 11L41 13L34 15L32 22L30 15L23 13L30 11L32 4Z"
-          fill="#FFD900"
-        />
-        <path
-          d="M50 18L51.5 22.5L56 24L51.5 25.5L50 30L48.5 25.5L44 24L48.5 22.5L50 18Z"
-          fill="#FFD900"
-        />
-        <path
-          d="M14 20L15.5 24.5L20 26L15.5 27.5L14 32L12.5 27.5L8 26L12.5 24.5L14 20Z"
-          fill="#FFD900"
-        />
+        <defs>
+          {/* Wood Textures */}
+          <linearGradient id="chestWoodLid" x1="50" y1="18" x2="50" y2="48" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#C86D3B" />
+            <stop offset="35%" stopColor="#A65B2E" />
+            <stop offset="100%" stopColor="#7A3B18" />
+          </linearGradient>
 
-        {/* Chest Open Lid (tilted back) */}
-        <path
-          d="M8 26C8 20 18 16 32 16C46 16 56 20 56 26L52 29C48 24 38 21 32 21C26 21 16 24 12 29L8 26Z"
-          fill="#854623"
-        />
-        <path
-          d="M12 29C16 24 26 21 32 21C38 21 48 24 52 29H12Z"
-          fill="#5C2D13"
-        />
-        {/* Gold trim on open lid */}
-        <path
-          d="M30 16.5C30 16.5 31 16 32 16C33 16 34 16.5 34 16.5V21.5C33 21.2 32 21 31 21C30.5 21 30 21.2 30 21.5V16.5Z"
-          fill="#FFC800"
-        />
+          <linearGradient id="chestWoodBase" x1="50" y1="46" x2="50" y2="86" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#964C23" />
+            <stop offset="60%" stopColor="#7E3D19" />
+            <stop offset="100%" stopColor="#5E2A0E" />
+          </linearGradient>
 
-        {/* Chest Interior Glow & Gold Pile */}
-        <ellipse cx="32" cy="33" rx="22" ry="11" fill="#FFC800" />
-        <ellipse cx="32" cy="32" rx="19" ry="8" fill="#FFE55C" />
+          <linearGradient id="chestWoodInterior" x1="50" y1="20" x2="50" y2="52" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#4A1E07" />
+            <stop offset="100%" stopColor="#2D1103" />
+          </linearGradient>
 
-        {/* Overbrimming Gold Coins & Gemstones */}
-        {/* Red Ruby */}
-        <polygon points="24,28 29,26 33,29 31,35 26,35" fill="#FF4B4B" />
-        <polygon points="27,27 29,26 31,28 29,32" fill="#FF8585" />
-        {/* Blue Sapphire */}
-        <polygon points="34,27 39,25 43,28 41,33 36,33" fill="#1CB0F6" />
-        <polygon points="37,26 39,25 41,27 39,30" fill="#70D6FF" />
-        {/* Front Gold Coins */}
-        <circle cx="21" cy="33" r="4.5" fill="#FFC800" stroke="#E5A500" strokeWidth="1" />
-        <circle cx="28" cy="34" r="5" fill="#FFD900" stroke="#E5A500" strokeWidth="1" />
-        <circle cx="36" cy="34" r="5" fill="#FFC800" stroke="#E5A500" strokeWidth="1" />
-        <circle cx="43" cy="33" r="4.5" fill="#FFD900" stroke="#E5A500" strokeWidth="1" />
-        <circle cx="32" cy="31" r="4" fill="#FFF066" />
+          {/* Gold Brass Metallic Gradients */}
+          <linearGradient id="chestGoldLight" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#FFF280" />
+            <stop offset="25%" stopColor="#FFD900" />
+            <stop offset="70%" stopColor="#FFC800" />
+            <stop offset="100%" stopColor="#D99B00" />
+          </linearGradient>
 
-        {/* Chest Lower Body (Wood Front) */}
-        <path
-          d="M10 32C10 32 9 52 11 54C12 55.5 15 56 32 56C49 56 52 55.5 53 54C55 52 54 32 54 32L51 34C51 49 48 52 32 52C16 52 13 49 13 34L10 32Z"
-          fill="#6B371B"
-        />
-        <path
-          d="M13 34C13 49 16 52 32 52C48 52 51 49 51 34H13Z"
-          fill="#8B4513"
-        />
+          <linearGradient id="chestGoldDark" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#FFD900" />
+            <stop offset="50%" stopColor="#E5A500" />
+            <stop offset="100%" stopColor="#B37D00" />
+          </linearGradient>
 
-        {/* Gold Bands on Base */}
-        <path
-          d="M18 34C18 48 19 51.5 21 52H24C22 51.5 21 48 21 34H18Z"
-          fill="#FFC800"
-        />
-        <path
-          d="M43 34C43 48 42 51.5 40 52H43C45 51.5 46 48 46 34H43Z"
-          fill="#FFC800"
-        />
+          {/* Treasure Interior Glow */}
+          <radialGradient id="chestInteriorGlow" cx="50" cy="50" r="32" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#FFFBE6" />
+            <stop offset="30%" stopColor="#FFE066" />
+            <stop offset="70%" stopColor="#FFC800" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#FF9600" stopOpacity="0" />
+          </radialGradient>
 
-        {/* Keyhole / Clasp Base */}
-        <rect x="29" y="36" width="6" height="8" rx="2" fill="#FFC800" />
-        <circle cx="32" cy="39" r="1.5" fill="#5C2D13" />
-        <polygon points="31.5,39 32.5,39 33,42 31,42" fill="#5C2D13" />
+          {/* Gemstone Gradients */}
+          <linearGradient id="rubyGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#FF8585" />
+            <stop offset="40%" stopColor="#FF4B4B" />
+            <stop offset="100%" stopColor="#C41515" />
+          </linearGradient>
+
+          <linearGradient id="sapphireGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#8BE3FF" />
+            <stop offset="45%" stopColor="#1CB0F6" />
+            <stop offset="100%" stopColor="#0B79B3" />
+          </linearGradient>
+
+          <linearGradient id="emeraldGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#A8F560" />
+            <stop offset="45%" stopColor="#58CC02" />
+            <stop offset="100%" stopColor="#3E9101" />
+          </linearGradient>
+
+          <linearGradient id="amethystGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#E599FF" />
+            <stop offset="45%" stopColor="#B539F7" />
+            <stop offset="100%" stopColor="#7E15B8" />
+          </linearGradient>
+
+          {/* Custom keyframe styles */}
+          <style>{`
+            @keyframes chest-float {
+              0%, 100% { transform: translateY(0px) rotate(0deg); }
+              50% { transform: translateY(-4px) rotate(-1deg); }
+            }
+            @keyframes chest-shake {
+              0%, 100% { transform: translateX(0) rotate(0deg); }
+              20% { transform: translateX(-3px) rotate(-3deg) scale(1.02); }
+              40% { transform: translateX(3px) rotate(3deg) scale(1.03); }
+              60% { transform: translateX(-3px) rotate(-2deg); }
+              80% { transform: translateX(2px) rotate(2deg); }
+            }
+            @keyframes lid-open {
+              0% { transform: translateY(0) scaleY(1); }
+              100% { transform: translateY(-12px) scaleY(0.75); }
+            }
+          `}</style>
+        </defs>
+
+        {isChestOpen ? (
+          /* ========================================================================= */
+          /* OPEN CHEST (Tilted lid back, glowing hoard, gold coins, gems & sparkles)  */
+          /* ========================================================================= */
+          <g id="open-chest-group">
+            {/* Sparkle bursts above chest */}
+            <g id="sparkles">
+              {/* Center Top Big Star */}
+              <path
+                d="M50 4L52.5 12.5L61 15L52.5 17.5L50 26L47.5 17.5L39 15L47.5 12.5L50 4Z"
+                fill="#FFF280"
+                stroke="#FFC800"
+                strokeWidth="0.75"
+              />
+              {/* Right Sparkle */}
+              <path
+                d="M77 16L78.5 21L83.5 22.5L78.5 24L77 29L75.5 24L70.5 22.5L75.5 21L77 16Z"
+                fill="#FFD900"
+              />
+              {/* Left Sparkle */}
+              <path
+                d="M23 18L24.5 23L29.5 24.5L24.5 26L23 31L21.5 26L16.5 24.5L21.5 23L23 18Z"
+                fill="#FFD900"
+              />
+            </g>
+
+            {/* Open Lid swung backward in perspective */}
+            <g id="open-lid">
+              {/* Outer lid rim tilted back */}
+              <path
+                d="M14 36C14 26 28 20 50 20C72 20 86 26 86 36L82 41C68 33 32 33 18 41L14 36Z"
+                fill="#7A3B18"
+              />
+              {/* Interior curved underside of lid */}
+              <path
+                d="M18 41C32 33 68 33 82 41L84 45C68 38 32 38 16 45L18 41Z"
+                fill="url(#chestWoodInterior)"
+              />
+              {/* Gold bands on opened lid (hinges) */}
+              <path
+                d="M27 25C31 24.5 35 24 35 34L31 36C31 28 29 26 27 25Z"
+                fill="url(#chestGoldLight)"
+              />
+              <path
+                d="M73 25C69 24.5 65 24 65 34L69 36C69 28 71 26 73 25Z"
+                fill="url(#chestGoldLight)"
+              />
+            </g>
+
+            {/* Interior Chest Cavity */}
+            <path
+              d="M16 45H84V56C84 56 81 60 50 60C19 60 16 56 16 56V45Z"
+              fill="#3A1705"
+            />
+
+            {/* Glowing treasure radiant center */}
+            <ellipse cx="50" cy="50" rx="34" ry="14" fill="url(#chestInteriorGlow)" />
+
+            {/* Overbrimming Hoard: Gemstones & Gold Coins */}
+            <g id="treasure-hoard">
+              {/* Back Gold Coins */}
+              <ellipse cx="32" cy="46" rx="7" ry="4" fill="#FFC800" stroke="#E5A500" strokeWidth="1" />
+              <ellipse cx="68" cy="46" rx="7" ry="4" fill="#FFD900" stroke="#E5A500" strokeWidth="1" />
+              <ellipse cx="50" cy="45" rx="8" ry="4.5" fill="#FFE55C" stroke="#E5A500" strokeWidth="1" />
+
+              {/* Purple Amethyst (Left) */}
+              <polygon
+                points="22,43 27,39 31,43 28,49 24,49"
+                fill="url(#amethystGrad)"
+                stroke="#640A99"
+                strokeWidth="0.8"
+              />
+              <polygon points="25,41 27,39 29,42 27,45" fill="#F4B8FF" opacity="0.6" />
+
+              {/* Emerald Green Gem (Right) */}
+              <polygon
+                points="72,42 77,38 81,42 79,48 74,48"
+                fill="url(#emeraldGrad)"
+                stroke="#2C6901"
+                strokeWidth="0.8"
+              />
+              <polygon points="75,40 77,38 79,41 76,44" fill="#C5FCA4" opacity="0.7" />
+
+              {/* Central Cut Ruby */}
+              <polygon
+                points="36,46 43,40 50,45 47,54 39,54"
+                fill="url(#rubyGrad)"
+                stroke="#8A0B0B"
+                strokeWidth="1"
+              />
+              {/* Ruby Highlight Facet */}
+              <polygon points="40,42 43,40 46,43 43,48" fill="#FFA3A3" opacity="0.75" />
+
+              {/* Radiant Blue Sapphire */}
+              <polygon
+                points="52,44 60,39 67,44 64,52 56,52"
+                fill="url(#sapphireGrad)"
+                stroke="#065682"
+                strokeWidth="1"
+              />
+              {/* Sapphire Highlight Facet */}
+              <polygon points="56,41 60,39 63,42 60,47" fill="#BDEEFF" opacity="0.8" />
+
+              {/* Front Mountain of Gold Coins */}
+              {/* Coin 1 */}
+              <circle cx="27" cy="52" r="6" fill="url(#chestGoldLight)" stroke="#D99B00" strokeWidth="1.2" />
+              <circle cx="27" cy="52" r="4" fill="#FFE55C" opacity="0.5" />
+
+              {/* Coin 2 */}
+              <circle cx="41" cy="53" r="6.5" fill="url(#chestGoldLight)" stroke="#D99B00" strokeWidth="1.2" />
+              <circle cx="41" cy="53" r="4.2" fill="#FFE55C" opacity="0.5" />
+
+              {/* Coin 3 */}
+              <circle cx="59" cy="53" r="6.5" fill="url(#chestGoldLight)" stroke="#D99B00" strokeWidth="1.2" />
+              <circle cx="59" cy="53" r="4.2" fill="#FFE55C" opacity="0.5" />
+
+              {/* Coin 4 */}
+              <circle cx="73" cy="52" r="6" fill="url(#chestGoldLight)" stroke="#D99B00" strokeWidth="1.2" />
+              <circle cx="73" cy="52" r="4" fill="#FFE55C" opacity="0.5" />
+
+              {/* Front Center Overflow Coin */}
+              <circle cx="50" cy="54" r="7" fill="url(#chestGoldLight)" stroke="#B37D00" strokeWidth="1.3" />
+              <circle cx="50" cy="54" r="4.8" stroke="#FFE55C" strokeWidth="1" fill="none" />
+              {/* Star on center coin */}
+              <path
+                d="M50 51.5L51 53.5L53 54L51 54.5L50 56.5L49 54.5L47 54L49 53.5L50 51.5Z"
+                fill="#FF9600"
+              />
+            </g>
+
+            {/* Chest Base / Box */}
+            <g id="chest-base">
+              {/* Outer Wooden Hull */}
+              <path
+                d="M14 52H86V76C86 82 81 86 74 86H26C19 86 14 82 14 76V52Z"
+                fill="url(#chestWoodBase)"
+              />
+
+              {/* Wood Grain Planks (horizontal accent lines) */}
+              <path d="M15 63H85" stroke="#5E2A0E" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M15 74H85" stroke="#5E2A0E" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M16 64H84" stroke="#B86937" strokeWidth="0.8" opacity="0.7" />
+              <path d="M16 75H84" stroke="#B86937" strokeWidth="0.8" opacity="0.7" />
+
+              {/* Left Gold Vertical Band */}
+              <rect x="25" y="52" width="8" height="34" rx="1.5" fill="url(#chestGoldLight)" />
+              <rect x="25" y="52" width="1.5" height="34" fill="#FFF280" opacity="0.7" />
+              <rect x="31.5" y="52" width="1.5" height="34" fill="#B37D00" opacity="0.8" />
+
+              {/* Left Band Rivets */}
+              <circle cx="29" cy="57" r="1.8" fill="#FFF280" />
+              <circle cx="29" cy="57" r="1.4" fill="#D99B00" />
+              <circle cx="29" cy="68" r="1.8" fill="#FFF280" />
+              <circle cx="29" cy="68" r="1.4" fill="#D99B00" />
+              <circle cx="29" cy="79" r="1.8" fill="#FFF280" />
+              <circle cx="29" cy="79" r="1.4" fill="#D99B00" />
+
+              {/* Right Gold Vertical Band */}
+              <rect x="67" y="52" width="8" height="34" rx="1.5" fill="url(#chestGoldLight)" />
+              <rect x="67" y="52" width="1.5" height="34" fill="#FFF280" opacity="0.7" />
+              <rect x="73.5" y="52" width="1.5" height="34" fill="#B37D00" opacity="0.8" />
+
+              {/* Right Band Rivets */}
+              <circle cx="71" cy="57" r="1.8" fill="#FFF280" />
+              <circle cx="71" cy="57" r="1.4" fill="#D99B00" />
+              <circle cx="71" cy="68" r="1.8" fill="#FFF280" />
+              <circle cx="71" cy="68" r="1.4" fill="#D99B00" />
+              <circle cx="71" cy="79" r="1.8" fill="#FFF280" />
+              <circle cx="71" cy="79" r="1.4" fill="#D99B00" />
+
+              {/* Base Bottom Gold Trim */}
+              <path
+                d="M17 83C25 85 40 86 50 86C60 86 75 85 83 83V84C83 87 78 88 74 88H26C22 88 17 87 17 84V83Z"
+                fill="url(#chestGoldDark)"
+              />
+
+              {/* Bottom Edge Rim */}
+              <rect x="13" y="50" width="74" height="4" rx="2" fill="#5E2A0E" />
+              <rect x="13" y="49" width="74" height="3" rx="1.5" fill="url(#chestGoldLight)" />
+
+              {/* Open Lock / Clasp hanging open */}
+              <g id="open-lock-clasp">
+                <rect x="45" y="53" width="10" height="12" rx="2.5" fill="url(#chestGoldLight)" stroke="#B37D00" strokeWidth="1" />
+                <rect x="46" y="54" width="8" height="1.5" fill="#FFF280" />
+                {/* Keyhole */}
+                <circle cx="50" cy="58" r="1.8" fill="#3A1705" />
+                <polygon points="49.2,58 50.8,58 51.3,62 48.7,62" fill="#3A1705" />
+              </g>
+            </g>
+          </g>
+        ) : (
+          /* ========================================================================= */
+          /* CLOSED CHEST (Rich wood grain, gold bands, 3D rivets, glowing keyhole)    */
+          /* ========================================================================= */
+          <g id="closed-chest-group">
+            {/* Top Arched Dome Lid */}
+            <g id="closed-lid">
+              {/* Lid Wood Background */}
+              <path
+                d="M14 43C14 26 27 21 50 21C73 21 86 26 86 43V47H14V43Z"
+                fill="url(#chestWoodLid)"
+              />
+
+              {/* Lid Wood Planks Curvature / Grain */}
+              <path
+                d="M15 36C22 28 35 24 50 24C65 24 78 28 85 36"
+                stroke="#D87D43"
+                strokeWidth="1.2"
+                opacity="0.8"
+                fill="none"
+              />
+              <path
+                d="M14 42C23 35 36 32 50 32C64 32 77 35 86 42"
+                stroke="#5E2A0E"
+                strokeWidth="1.2"
+                fill="none"
+              />
+
+              {/* Lid Horizontal Bottom Rim / Gasket */}
+              <rect x="12" y="44" width="76" height="6" rx="2.5" fill="#5E2A0E" />
+              <rect x="12" y="43" width="76" height="4.5" rx="2" fill="url(#chestGoldLight)" />
+              <rect x="13" y="43.5" width="74" height="1.2" fill="#FFF280" opacity="0.75" />
+
+              {/* Left Gold Band on Lid */}
+              <path
+                d="M25 24C27 28 27 36 27 44H33C33 36 33 28 31 24H25Z"
+                fill="url(#chestGoldLight)"
+              />
+              <path d="M25 24V44" stroke="#FFF280" strokeWidth="1" opacity="0.7" />
+              <path d="M33 24V44" stroke="#B37D00" strokeWidth="1" opacity="0.8" />
+              {/* Lid Left Band Rivets */}
+              <circle cx="29" cy="28" r="1.7" fill="#FFF280" />
+              <circle cx="29" cy="28" r="1.3" fill="#D99B00" />
+              <circle cx="30" cy="37" r="1.7" fill="#FFF280" />
+              <circle cx="30" cy="37" r="1.3" fill="#D99B00" />
+
+              {/* Right Gold Band on Lid */}
+              <path
+                d="M75 24C73 28 73 36 73 44H67C67 36 67 28 69 24H75Z"
+                fill="url(#chestGoldLight)"
+              />
+              <path d="M67 24V44" stroke="#FFF280" strokeWidth="1" opacity="0.7" />
+              <path d="M75 24V44" stroke="#B37D00" strokeWidth="1" opacity="0.8" />
+              {/* Lid Right Band Rivets */}
+              <circle cx="71" cy="28" r="1.7" fill="#FFF280" />
+              <circle cx="71" cy="28" r="1.3" fill="#D99B00" />
+              <circle cx="70" cy="37" r="1.7" fill="#FFF280" />
+              <circle cx="70" cy="37" r="1.3" fill="#D99B00" />
+            </g>
+
+            {/* Chest Lower Box Hull */}
+            <g id="closed-base">
+              <path
+                d="M14 48H86V76C86 82 81 86 74 86H26C19 86 14 82 14 76V48Z"
+                fill="url(#chestWoodBase)"
+              />
+
+              {/* Horizontal Plank Seams */}
+              <path d="M15 60H85" stroke="#5E2A0E" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M15 72H85" stroke="#5E2A0E" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M16 61H84" stroke="#B86937" strokeWidth="0.8" opacity="0.7" />
+              <path d="M16 73H84" stroke="#B86937" strokeWidth="0.8" opacity="0.7" />
+
+              {/* Left Gold Vertical Band */}
+              <rect x="25" y="48" width="8" height="38" rx="1" fill="url(#chestGoldLight)" />
+              <rect x="25" y="48" width="1.5" height="38" fill="#FFF280" opacity="0.7" />
+              <rect x="31.5" y="48" width="1.5" height="38" fill="#B37D00" opacity="0.8" />
+
+              {/* Left Base Rivets */}
+              <circle cx="29" cy="54" r="1.8" fill="#FFF280" />
+              <circle cx="29" cy="54" r="1.4" fill="#D99B00" />
+              <circle cx="29" cy="66" r="1.8" fill="#FFF280" />
+              <circle cx="29" cy="66" r="1.4" fill="#D99B00" />
+              <circle cx="29" cy="78" r="1.8" fill="#FFF280" />
+              <circle cx="29" cy="78" r="1.4" fill="#D99B00" />
+
+              {/* Right Gold Vertical Band */}
+              <rect x="67" y="48" width="8" height="38" rx="1" fill="url(#chestGoldLight)" />
+              <rect x="67" y="48" width="1.5" height="38" fill="#FFF280" opacity="0.7" />
+              <rect x="73.5" y="48" width="1.5" height="38" fill="#B37D00" opacity="0.8" />
+
+              {/* Right Base Rivets */}
+              <circle cx="71" cy="54" r="1.8" fill="#FFF280" />
+              <circle cx="71" cy="54" r="1.4" fill="#D99B00" />
+              <circle cx="71" cy="66" r="1.8" fill="#FFF280" />
+              <circle cx="71" cy="66" r="1.4" fill="#D99B00" />
+              <circle cx="71" cy="78" r="1.8" fill="#FFF280" />
+              <circle cx="71" cy="78" r="1.4" fill="#D99B00" />
+
+              {/* Bottom Gold Reinforcement Strip */}
+              <path
+                d="M17 83C25 85 40 86 50 86C60 86 75 85 83 83V84C83 87 78 88 74 88H26C22 88 17 87 17 84V83Z"
+                fill="url(#chestGoldDark)"
+              />
+            </g>
+
+            {/* Front Lock Clasp Plate & Keyhole */}
+            <g id="closed-clasp">
+              {/* Clasp Shadow */}
+              <rect x="43" y="42" width="14" height="20" rx="3.5" fill="#421C07" opacity="0.6" />
+
+              {/* Brass Lock Plate */}
+              <rect
+                x="44"
+                y="41"
+                width="12"
+                height="19"
+                rx="3"
+                fill="url(#chestGoldLight)"
+                stroke="#B37D00"
+                strokeWidth="1.2"
+              />
+              <rect x="45" y="42" width="10" height="1.8" fill="#FFF280" />
+
+              {/* Rivet on top clasp */}
+              <circle cx="50" cy="45" r="1.4" fill="#FFE55C" />
+              <circle cx="50" cy="45" r="1" fill="#D99B00" />
+
+              {/* Keyhole Glow when shaking or active */}
+              {(isShaking || glow) && (
+                <circle cx="50" cy="51" r="5" fill="#FFC800" opacity="0.6" className="animate-pulse" />
+              )}
+
+              {/* Dark Keyhole Cutout */}
+              <circle cx="50" cy="51" r="2.2" fill={isShaking ? "#FFE55C" : "#381705"} />
+              <polygon
+                points="48.9,51 51.1,51 51.8,56 48.2,56"
+                fill={isShaking ? "#FFE55C" : "#381705"}
+              />
+            </g>
+          </g>
+        )}
       </svg>
-    );
-  }
-
-  // Closed Bronze/Wood Chest (Duolingo style)
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={`drop-shadow-sm transition-transform duration-200 ${className}`}
-    >
-      {/* Top Rounded Dome Lid */}
-      <path
-        d="M10 28C10 19 18 16 32 16C46 16 54 19 54 28V32H10V28Z"
-        fill="#A65B2E"
-      />
-      <path
-        d="M11 28C11 20 18.5 17.5 32 17.5C45.5 17.5 53 20 53 28V30H11V28Z"
-        fill="#B86937"
-      />
-      {/* Lid Rim / Shadow */}
-      <rect x="8" y="30" width="48" height="5" rx="2" fill="#8A441D" />
-
-      {/* Gold Bands across Lid */}
-      <path
-        d="M19 18C20 23 20 27 20 30H24C24 27 24 23 23 18H19Z"
-        fill="#FFC800"
-      />
-      <path
-        d="M41 18C40 23 40 27 40 30H44C44 27 44 23 45 18H41Z"
-        fill="#FFC800"
-      />
-
-      {/* Chest Base */}
-      <path
-        d="M10 33H54V50C54 53 50 55 32 55C14 55 10 53 10 50V33Z"
-        fill="#8A441D"
-      />
-      <path
-        d="M12 35H52V49C52 51.5 48 53.5 32 53.5C16 53.5 12 51.5 12 49V35Z"
-        fill="#9C4E22"
-      />
-
-      {/* Gold Vertical Bands on Base */}
-      <rect x="20" y="34" width="4" height="19" rx="1" fill="#FFC800" />
-      <rect x="40" y="34" width="4" height="19" rx="1" fill="#FFC800" />
-
-      {/* Bottom Trim */}
-      <path
-        d="M12 51C17 53 24 54 32 54C40 54 47 53 52 51V52C52 53 48 55 32 55C16 55 12 53 12 52V51Z"
-        fill="#FFC800"
-      />
-
-      {/* Clasp & Lock Plate */}
-      <rect x="28" y="29" width="8" height="11" rx="2.5" fill="#FFC800" />
-      <circle cx="32" cy="33" r="1.5" fill="#5C2D13" />
-      <polygon points="31.2,33 32.8,33 33.3,37 30.7,37" fill="#5C2D13" />
-    </svg>
+    </div>
   );
 }

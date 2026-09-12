@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Trophy, Gift, Check } from "lucide-react";
+import { Check, Trophy } from "lucide-react";
+import { QuestChest } from "@/components/duo/QuestChest";
+import { TreasureOpeningModal } from "@/components/duo/TreasureOpeningModal";
 
 interface TreasureChestNodeProps {
   unitOrder: number;
@@ -17,19 +19,19 @@ export function TreasureChestNode({
 
   const handleClick = () => {
     if (!isUnlocked) return;
-    if (!claimed) {
-      setClaimed(true);
-      setShowRewardModal(true);
-    } else {
-      setShowRewardModal(true);
-    }
+    setShowRewardModal(true);
+  };
+
+  const handleCollect = () => {
+    setClaimed(true);
+    setShowRewardModal(false);
   };
 
   return (
     <div className="relative flex flex-col items-center py-6">
       {/* Glow pulse when unlocked and unclaimed */}
       {isUnlocked && !claimed && (
-        <div className="absolute h-20 w-20 rounded-full bg-[#FFC800]/30 animate-ping" />
+        <div className="absolute h-20 w-20 rounded-full bg-[#FFC800]/30 animate-ping pointer-events-none" />
       )}
 
       <button
@@ -37,7 +39,7 @@ export function TreasureChestNode({
         onClick={handleClick}
         disabled={!isUnlocked}
         aria-label={`Unit ${unitOrder} Milestone Chest`}
-        className={`relative flex h-[76px] w-[76px] items-center justify-center rounded-3xl border-b-[6px] transition-all ${
+        className={`relative flex h-[76px] w-[76px] items-center justify-center rounded-3xl border-b-[6px] transition-all duration-200 ${
           isUnlocked
             ? claimed
               ? "border-[#46A302] bg-[#58CC02] text-white hover:bg-[#61E002] active:translate-y-[2px] active:border-b-2"
@@ -47,8 +49,22 @@ export function TreasureChestNode({
       >
         {claimed ? (
           <Check className="h-9 w-9 stroke-[3]" />
+        ) : isUnlocked ? (
+          <div className="transition-transform hover:scale-110 active:scale-95">
+            <QuestChest
+              isOpen={false}
+              animated
+              glow
+              size={54}
+            />
+          </div>
         ) : (
-          <Gift className={`h-9 w-9 ${isUnlocked ? "animate-bounce" : ""}`} />
+          <div className="opacity-50 grayscale">
+            <QuestChest
+              isOpen={false}
+              size={48}
+            />
+          </div>
         )}
       </button>
 
@@ -56,50 +72,18 @@ export function TreasureChestNode({
         {claimed ? `Unit ${unitOrder} Trophy` : isUnlocked ? "Claim Reward!" : "Unit Chest"}
       </span>
 
-      {/* Reward Modal */}
-      {showRewardModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-in fade-in"
-          onClick={() => setShowRewardModal(false)}
-        >
-          <div
-            className="w-full max-w-sm rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-8 text-center shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#FFDFE0]/30 dark:bg-[#FFDFE0]/10">
-              <Trophy className="h-10 w-10 text-[#FFC800]" />
-              <Sparkles className="absolute -top-1 -right-1 h-6 w-6 text-[#FFC800] animate-pulse" />
-            </div>
-            <h3 className="mt-4 text-2xl font-extrabold text-[#4B4B4B] dark:text-white">
-              Unit {unitOrder} Completed!
-            </h3>
-            <p className="mt-2 text-sm text-[#777777] dark:text-[#8495A0]">
-              Congratulations! You mastered all the foundational exercises in this unit.
-            </p>
-            <div className="my-5 flex justify-center gap-4">
-              <div className="rounded-2xl border-2 border-[#FFC800] bg-[#FFF9E6] dark:bg-[#342805] px-4 py-2 text-center">
-                <span className="text-xl font-extrabold text-[#FFC800]">+25</span>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#AFAFAF] dark:text-[#8495A0]">
-                  Bonus XP
-                </p>
-              </div>
-              <div className="rounded-2xl border-2 border-[#1CB0F6] bg-[#DDF4FF] dark:bg-[#1C3B4E] px-4 py-2 text-center">
-                <span className="text-xl font-extrabold text-[#1CB0F6]">+15</span>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#AFAFAF] dark:text-[#8495A0]">
-                  Gems
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setShowRewardModal(false)}
-              className="w-full rounded-2xl border-b-4 border-[#46A302] bg-[#58CC02] py-3 text-sm font-extrabold uppercase tracking-wide text-white hover:bg-[#61E002] active:translate-y-[2px] active:border-b-2"
-            >
-              Continue
-            </button>
-          </div>
-        </div>
-      )}
+      {/* 2D Vector Animated Treasure Opening Modal */}
+      <TreasureOpeningModal
+        isOpen={showRewardModal}
+        onClose={() => setShowRewardModal(false)}
+        onCollect={handleCollect}
+        title={`Unit ${unitOrder} Completed!`}
+        subtitle="Congratulations! You mastered all the foundational exercises in this unit."
+        xpReward={25}
+        gemReward={15}
+        badgeName={`Unit ${unitOrder} Master`}
+        badgeIcon={<Trophy className="h-5 w-5 fill-white stroke-white" />}
+      />
     </div>
   );
 }

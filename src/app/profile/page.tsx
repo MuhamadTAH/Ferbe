@@ -1,7 +1,8 @@
 "use client";
 
 import { useUser, useClerk } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
+import { useState, useEffect } from "react";
 import {
   Flame,
   Zap,
@@ -11,12 +12,24 @@ import {
   GraduationCap,
   Shield,
   Settings,
+  Sparkles,
 } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
 import { ConfigRequired, ErrorBoundary } from "@/components/states/ScreenState";
 import { RightSidebar } from "@/components/learn/RightSidebar";
 import { FriendsSidebarCard } from "@/components/profile/FriendsSidebarCard";
+import {
+  StatusFlair,
+  resolveFlair,
+  readStoredUserStatus,
+  writeStoredUserStatus,
+  STATUS_CHANGE_EVENT,
+  TIER_CONFIG,
+  UserStatusState,
+} from "@/components/profile/statusFlairs";
+import { AvatarWithFlair } from "@/components/profile/AvatarWithFlair";
+import { ProfileStatusModal } from "@/components/profile/ProfileStatusModal";
 
 interface Stats {
   currentStreak: number;
@@ -31,38 +44,119 @@ interface HeaderDisplayProps {
   displayName: string;
   username: string;
   avatarUrl?: string;
+  stats: Stats;
   onOpenSettings?: () => void;
 }
 
-function ProfileHeaderDisplay({ displayName, username, avatarUrl, onOpenSettings }: HeaderDisplayProps) {
+function ProfileHeaderDisplay({
+  displayName,
+  username,
+  avatarUrl,
+  stats,
+  onOpenSettings,
+}: HeaderDisplayProps) {
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [storedStatus, setStoredStatus] = useState<UserStatusState>(() =>
+    readStoredUserStatus()
+  );
+  const setUserStatusMutation = useMutation(api.curriculum.setUserStatus);
+
+  useEffect(() => {
+    function handleSync() {
+      setStoredStatus(readStoredUserStatus());
+    }
+    window.addEventListener(STATUS_CHANGE_EVENT, handleSync);
+    window.addEventListener("storage", handleSync);
+    return () => {
+      window.removeEventListener(STATUS_CHANGE_EVENT, handleSync);
+      window.removeEventListener("storage", handleSync);
+    };
+  }, []);
+
+  const effectiveFlair =
+    storedStatus.flair || resolveFlair(stats.activeStatus, false);
+  const effectiveStatusText = storedStatus.statusText;
+  const tierConfig = effectiveFlair ? TIER_CONFIG[effectiveFlair.tier] : null;
+
+  const handleSaveStatus = async (
+    flair: StatusFlair | null,
+    text: string | null
+  ) => {
+    try {
+      await setUserStatusMutation({
+        status: text || flair?.emoji || null,
+      });
+    } catch {}
+  };
+
   return (
     <div className="rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-6 shadow-sm">
-      <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-        {/* Avatar */}
-        <div className="relative">
-          {avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={avatarUrl}
-              alt={displayName}
-              className="h-24 w-24 rounded-full border-4 border-[#58CC02] object-cover shadow-sm"
-            />
-          ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-[#58CC02] bg-[#E8FAD4] dark:bg-[#1E3B20] text-3xl font-extrabold text-[#58CC02] shadow-sm">
-              {displayName.charAt(0).toUpperCase()}
-            </div>
-          )}
-          <span className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white dark:border-[#131F24] bg-[#58CC02] text-xs text-white">
-            ☀️
-          </span>
-        </div>
+      <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-start">
+        {/* Avatar with active flair ring */}
+        <AvatarWithFlair
+          displayName={displayName}
+          avatarUrl={avatarUrl}
+          flair={effectiveFlair}
+          size="xl"
+          interactive
+          onClick={() => setIsStatusModalOpen(true)}
+        />
 
         {/* Profile Info */}
-        <div className="flex-1 text-center sm:text-left">
-          <h1 className="text-2xl font-extrabold text-[#4B4B4B] dark:text-white">
-            {displayName}
-          </h1>
-          <p className="text-xs font-bold text-[#AFAFAF] dark:text-[#8495A0]">@{username}</p>
+        <div className="flex-1 text-center sm:text-left min-w-0">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+            <h1 className="text-2xl font-extrabold text-[#4B4B4B] dark:text-white">
+              {displayName}
+            </h1>
+          </div>
+          <p className="text-xs font-bold text-[#AFAFAF] dark:text-[#8495A0]">
+            @{username}
+          </p>
+
+          {/* Active Status Flair Pill & Edit Status Button */}
+          <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-2">
+            {effectiveFlair && (
+              <button
+                type="button"
+                onClick={() => setIsStatusModalOpen(true)}
+                title="Click to edit your Kurdish flair"
+                className="inline-flex items-center gap-2 rounded-2xl border-2 border-[#E5E5E5] bg-[#F7F7F7] px-3 py-1.5 transition-all hover:border-[#1CB0F6] dark:border-[#37464F] dark:bg-[#202F36] dark:hover:border-[#3BC0F8] cursor-pointer"
+              >
+                <span className="text-base select-none">{effectiveFlair.emoji}</span>
+                <span className="text-xs font-extrabold text-[#4B4B4B] dark:text-white">
+                  {effectiveFlair.labelEn}
+                </span>
+                <span className="text-xs font-bold text-[#1899D6] dark:text-[#3BC0F8]">
+                  ({effectiveFlair.labelKu})
+                </span>
+                {tierConfig && (
+                  <span
+                    className={`rounded-md px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wide ${tierConfig.badgeBg} ${tierConfig.badgeText}`}
+                  >
+                    {tierConfig.nameEn} · {tierConfig.nameKu}
+                  </span>
+                )}
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setIsStatusModalOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-2xl border-2 border-[#E5E5E5] bg-white px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-[#777777] shadow-2xs transition-all hover:border-[#1CB0F6] hover:bg-[#F7F7F7] hover:text-[#1CB0F6] dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#8495A0] dark:hover:border-[#3BC0F8] dark:hover:bg-[#202F36] dark:hover:text-white cursor-pointer"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-[#FF9600]" />
+              <span>{effectiveFlair ? "Edit Status" : "Set Status & Flair"}</span>
+            </button>
+          </div>
+
+          {/* Custom Status Quote */}
+          {effectiveStatusText && (
+            <div className="mt-2.5 flex items-center justify-center sm:justify-start">
+              <span className="inline-flex items-center gap-1.5 rounded-xl border border-[#E5E5E5] bg-[#F7F7F7] px-3 py-1 text-xs font-bold italic text-[#555555] dark:border-[#37464F] dark:bg-[#202F36] dark:text-[#D1D5DB]">
+                &ldquo;{effectiveStatusText}&rdquo;
+              </span>
+            </div>
+          )}
 
           <div className="mt-3 flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-[#777777] dark:text-[#8495A0] sm:justify-start">
             <span className="flex items-center gap-1.5">
@@ -79,7 +173,7 @@ function ProfileHeaderDisplay({ displayName, username, avatarUrl, onOpenSettings
           <div className="mt-3 flex items-center justify-center gap-2 sm:justify-start">
             <span className="flex h-3.5 w-5 flex-col overflow-hidden rounded-[2px] border border-black/10">
               <span className="h-1/3 w-full bg-[#ED1C24]" />
-              <span className="h-1/3 w-full bg-white flex items-center justify-center">
+              <span className="flex h-1/3 w-full bg-white flex items-center justify-center">
                 <span className="h-1 w-1 rounded-full bg-[#FFD700]" />
               </span>
               <span className="h-1/3 w-full bg-[#278E43]" />
@@ -104,6 +198,17 @@ function ProfileHeaderDisplay({ displayName, username, avatarUrl, onOpenSettings
           </div>
         )}
       </div>
+
+      {/* Status & Flair Modal */}
+      <ProfileStatusModal
+        isOpen={isStatusModalOpen}
+        onClose={() => setIsStatusModalOpen(false)}
+        currentFlairId={effectiveFlair?.id ?? null}
+        currentStatusText={effectiveStatusText}
+        userName={displayName}
+        avatarUrl={avatarUrl}
+        onSave={handleSaveStatus}
+      />
     </div>
   );
 }
@@ -124,6 +229,7 @@ function ClerkUserProfileHeader({ stats }: { stats: Stats }) {
       displayName={displayName}
       username={username}
       avatarUrl={avatarUrl}
+      stats={stats}
       onOpenSettings={() => clerk.openUserProfile()}
     />
   );
@@ -138,6 +244,7 @@ function DefaultUserProfileHeader({ stats }: { stats: Stats }) {
       displayName={displayName}
       username={username}
       avatarUrl={undefined}
+      stats={stats}
     />
   );
 }
@@ -348,6 +455,7 @@ function ProfileInner() {
         signedIn={stats.signedIn}
         hearts={stats.hearts}
         gems={stats.gems}
+        showSetStatus={true}
         activeStatus={stats.activeStatus}
         customCard={<FriendsSidebarCard />}
       />

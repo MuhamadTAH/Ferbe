@@ -18,6 +18,7 @@ import { ConfigRequired, ErrorBoundary } from "@/components/states/ScreenState";
 import { RightSidebar } from "@/components/learn/RightSidebar";
 import { QuestChest } from "@/components/duo/QuestChest";
 import { PushButton } from "@/components/duo/PushButton";
+import { TreasureOpeningModal } from "@/components/duo/TreasureOpeningModal";
 
 interface Stats {
   currentStreak: number;
@@ -32,8 +33,10 @@ function QuestsInner() {
   const dbClaimedQuests = useQuery(api.curriculum.getMyQuests, {}) as string[] | undefined;
   const claimReward = useMutation(api.curriculum.claimQuestReward);
   const [localClaimed, setLocalClaimed] = useState<Set<string>>(new Set());
-  const [celebrationReward, setCelebrationReward] = useState<{
-    questTitle: string;
+  const [openingQuest, setOpeningQuest] = useState<{
+    id: string;
+    title: string;
+    xpReward: number;
     gemReward: number;
   } | null>(null);
 
@@ -53,20 +56,28 @@ function QuestsInner() {
     );
   }
 
-  const handleClaim = async (questId: string, title: string, xpReward: number, gemReward: number) => {
-    if (claimedQuests.has(questId)) {
-      setCelebrationReward({ questTitle: title, gemReward });
-      return;
+  const handleOpenChest = (quest: {
+    id: string;
+    title: string;
+    xpReward: number;
+    gemReward: number;
+  }) => {
+    setOpeningQuest(quest);
+  };
+
+  const handleCollectReward = async () => {
+    if (!openingQuest) return;
+    const { id, xpReward, gemReward } = openingQuest;
+    if (!claimedQuests.has(id)) {
+      try {
+        await claimReward({ questId: id, xpReward, gemReward });
+        setLocalClaimed((prev) => new Set(prev).add(id));
+      } catch {
+        // safe fallback
+        setLocalClaimed((prev) => new Set(prev).add(id));
+      }
     }
-    try {
-      await claimReward({ questId, xpReward, gemReward });
-      setLocalClaimed((prev) => new Set(prev).add(questId));
-      setCelebrationReward({ questTitle: title, gemReward });
-    } catch {
-      // safe fallback
-      setLocalClaimed((prev) => new Set(prev).add(questId));
-      setCelebrationReward({ questTitle: title, gemReward });
-    }
+    setOpeningQuest(null);
   };
 
   const quests = [
@@ -231,12 +242,12 @@ function QuestsInner() {
                       </span>
                     </div>
 
-                    {/* Chest (Closed when in progress, Open glowing treasure chest when completed) */}
+                    {/* Chest (Closed when in progress, Animated & glowing when completed, Open when claimed) */}
                     <button
                       type="button"
                       onClick={() => {
                         if (isCompleted) {
-                          handleClaim(quest.id, quest.title, quest.xpReward, quest.gemReward);
+                          handleOpenChest(quest);
                         }
                       }}
                       className={`shrink-0 transition-transform ${
@@ -246,12 +257,19 @@ function QuestsInner() {
                       }`}
                       title={
                         isCompleted
-                          ? "Quest complete! Click to claim reward"
+                          ? isClaimed
+                            ? "Quest reward claimed!"
+                            : "Quest complete! Click to open chest"
                           : `In progress: ${quest.current} / ${quest.target}`
                       }
                       aria-label={`${quest.title} chest`}
                     >
-                      <QuestChest isOpen={isCompleted || isClaimed} size={38} />
+                      <QuestChest
+                        isOpen={isClaimed}
+                        animated={isCompleted && !isClaimed}
+                        glow={isCompleted && !isClaimed}
+                        size={38}
+                      />
                     </button>
                   </div>
                 </div>
@@ -264,7 +282,7 @@ function QuestsInner() {
                 ) : isCompleted ? (
                   <button
                     type="button"
-                    onClick={() => handleClaim(quest.id, quest.title, quest.xpReward, quest.gemReward)}
+                    onClick={() => handleOpenChest(quest)}
                     className="shrink-0 rounded-2xl border-b-4 border-[#46A302] bg-[#58CC02] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wide text-white transition-all hover:bg-[#61E002] active:translate-y-[2px] active:border-b-2 shadow-xs cursor-pointer"
                   >
                     Claim
@@ -301,45 +319,18 @@ function QuestsInner() {
         gems={stats.gems}
       />
 
-      {/* Duolingo "You earned 5 gems!" Quest Celebration Modal */}
-      {celebrationReward && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-in fade-in"
-          onClick={() => setCelebrationReward(null)}
-        >
-          <div
-            className="w-full max-w-sm rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-8 text-center shadow-2xl animate-in zoom-in-95"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative mx-auto flex h-24 w-24 items-center justify-center">
-              <div className="absolute inset-0 rounded-full bg-[#1CB0F6]/20 animate-ping" />
-              <QuestChest isOpen size={84} />
-              <Sparkles className="absolute -top-1 -right-1 h-7 w-7 text-[#FFC800] animate-pulse" />
-            </div>
-
-            <h3 className="mt-4 text-2xl font-extrabold text-[#4B4B4B] dark:text-white">
-              You earned {celebrationReward.gemReward} gems!
-            </h3>
-            <p className="mt-1 text-sm font-bold text-[#777777] dark:text-[#8495A0]">
-              Nice job reaching your daily goal!
-            </p>
-
-            <div className="my-5 flex items-center justify-center gap-2 rounded-2xl border-2 border-[#1CB0F6]/30 bg-[#DDF4FF]/50 dark:bg-[#1C3B4E] py-3">
-              <span className="text-2xl">💎</span>
-              <span className="text-xl font-extrabold text-[#1CB0F6] dark:text-[#3BC0F8]">
-                +{celebrationReward.gemReward} GEMS
-              </span>
-            </div>
-
-            <PushButton
-              variant="green"
-              onClick={() => setCelebrationReward(null)}
-              className="w-full py-3 text-sm font-extrabold uppercase tracking-wider"
-            >
-              CONTINUE
-            </PushButton>
-          </div>
-        </div>
+      {/* Duolingo 2D Vector Animated Treasure Chest Opening Celebration Modal */}
+      {openingQuest && (
+        <TreasureOpeningModal
+          isOpen={Boolean(openingQuest)}
+          onClose={() => setOpeningQuest(null)}
+          onCollect={handleCollectReward}
+          title="Daily Quest Complete!"
+          questTitle={openingQuest.title}
+          subtitle="Awesome job reaching your daily goal!"
+          xpReward={openingQuest.xpReward}
+          gemReward={openingQuest.gemReward}
+        />
       )}
     </div>
   );
