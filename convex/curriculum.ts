@@ -41,6 +41,21 @@ export const getMyStats = query({
   },
 });
 
+/** Lists all available courses (e.g. Kurdish Sorani, English for Kurdish). */
+export const getCourses = query({
+  args: {},
+  handler: async (ctx) => {
+    const courses = await ctx.db.query("courses").collect();
+    return courses.map((c) => ({
+      _id: c._id,
+      title: c.title,
+      slug: c.slug,
+      sourceLanguage: c.sourceLanguage,
+      targetLanguage: c.targetLanguage,
+    }));
+  },
+});
+
 /** Full course -> units -> lessons tree with the user's completion state. */
 export const getCourseCurriculum = query({
   args: { courseSlug: v.optional(v.string()) },
@@ -103,15 +118,10 @@ export const getCourseCurriculum = query({
   },
 });
 
-/** Lesson + ordered exercises for one session. Requires an identity. */
+/** Lesson + ordered exercises for one session. Read-only, open to all learners. */
 export const getLessonSession = query({
   args: { lessonId: v.id("lessons") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("UNAUTHENTICATED: sign in to continue");
-    }
-
     const lesson = await ctx.db.get(args.lessonId);
     if (!lesson) return null;
 

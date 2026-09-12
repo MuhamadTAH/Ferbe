@@ -51,15 +51,17 @@ export function FeedbackBanner({
       <div
         className={cn(
           "fixed inset-x-0 bottom-0 z-40 border-t-2 shadow-lg",
-          correct ? "border-[#A5ED6E] bg-[#D7FFB8]" : "border-[#FFB2B2] bg-[#FFDFE0]"
+          correct
+            ? "border-[#A5ED6E] bg-[#D7FFB8] dark:border-[#58CC02] dark:bg-[#153118]"
+            : "border-[#FFB2B2] bg-[#FFDFE0] dark:border-[#EA2B2B] dark:bg-[#2D1418]"
         )}
         role="status"
       >
         <div className="mx-auto flex max-w-2xl items-center gap-4 px-4 py-4 sm:px-6">
           <span
             className={cn(
-              "flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white shadow-xs",
-              correct ? "text-[#58A700]" : "text-[#EA2B2B]"
+              "flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white shadow-xs dark:bg-[#131F24]",
+              correct ? "text-[#58A700] dark:text-[#58CC02]" : "text-[#EA2B2B] dark:text-[#FF5252]"
             )}
           >
             {correct ? (
@@ -73,7 +75,7 @@ export function FeedbackBanner({
             <p
               className={cn(
                 "text-lg font-extrabold",
-                correct ? "text-[#58A700]" : "text-[#EA2B2B]"
+                correct ? "text-[#58A700] dark:text-[#58CC02]" : "text-[#EA2B2B] dark:text-[#FF5252]"
               )}
             >
               {correct ? "Awesome!" : "Correct solution:"}
@@ -161,13 +163,13 @@ export function FeedbackBanner({
       {/* Duolingo Report Issue Modal */}
       {isReportOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-3xl border-2 border-[#E5E5E5] bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95">
+          <div className="w-full max-w-md rounded-3xl border-2 border-[#E5E5E5] bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95 dark:border-[#37464F] dark:bg-[#131F24]">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-extrabold text-[#4B4B4B]">Report an issue</h3>
+              <h3 className="text-base font-extrabold text-[#4B4B4B] dark:text-white">Report an issue</h3>
               <button
                 type="button"
                 onClick={() => setIsReportOpen(false)}
-                className="rounded-xl p-1 text-[#AFAFAF] hover:bg-[#F7F7F7] hover:text-[#4B4B4B]"
+                className="rounded-xl p-1 text-[#AFAFAF] hover:bg-[#F7F7F7] hover:text-[#4B4B4B] dark:text-[#8495A0] dark:hover:bg-[#202F36] dark:hover:text-white"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -177,7 +179,7 @@ export function FeedbackBanner({
               <div className="py-8 text-center text-[#58CC02]">
                 <CheckCircle2 className="mx-auto h-12 w-12" />
                 <p className="mt-3 text-sm font-extrabold">Thank you for reporting!</p>
-                <p className="mt-1 text-xs text-[#777777]">
+                <p className="mt-1 text-xs text-[#777777] dark:text-[#8495A0]">
                   Our Kurdish linguists will review this question.
                 </p>
               </div>
@@ -190,8 +192,8 @@ export function FeedbackBanner({
                       className={cn(
                         "flex items-center gap-3 rounded-2xl border-2 p-3 text-xs font-bold transition-all cursor-pointer",
                         selectedReason === reason
-                          ? "border-[#1CB0F6] bg-[#DDF4FF] text-[#1899D6]"
-                          : "border-[#E5E5E5] hover:bg-[#F7F7F7] text-[#4B4B4B]"
+                          ? "border-[#1CB0F6] bg-[#DDF4FF] text-[#1899D6] dark:border-[#3BC0F8] dark:bg-[#202F36] dark:text-[#3BC0F8]"
+                          : "border-[#E5E5E5] hover:bg-[#F7F7F7] text-[#4B4B4B] dark:border-[#37464F] dark:text-[#DCE6EC] dark:hover:bg-[#202F36]"
                       )}
                     >
                       <input
@@ -210,7 +212,7 @@ export function FeedbackBanner({
                   <button
                     type="button"
                     onClick={() => setIsReportOpen(false)}
-                    className="flex-1 rounded-2xl border-2 border-[#E5E5E5] py-2.5 text-xs font-extrabold uppercase text-[#777777] hover:bg-[#F7F7F7]"
+                    className="flex-1 rounded-2xl border-2 border-[#E5E5E5] py-2.5 text-xs font-extrabold uppercase text-[#777777] hover:bg-[#F7F7F7] dark:border-[#37464F] dark:text-[#8495A0] dark:hover:bg-[#202F36]"
                   >
                     Cancel
                   </button>

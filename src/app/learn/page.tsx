@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useQuery, useMutation } from "convex/react";
 import {
@@ -20,6 +20,7 @@ import { RightSidebar } from "@/components/learn/RightSidebar";
 import { LessonPopover } from "@/components/learn/LessonPopover";
 import { UnitGuidebookModal } from "@/components/learn/UnitGuidebookModal";
 import { TreasureChestNode } from "@/components/learn/TreasureChestNode";
+import { useActiveCourse } from "@/hooks/useActiveCourse";
 
 interface LessonView {
   _id: string;
@@ -51,6 +52,7 @@ interface Stats {
 const ZIGZAG = [0, 48, 80, 48, 0, -48, -80, -48];
 
 function PathPage() {
+  const { activeCourseSlug, currentCourse } = useActiveCourse();
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
   const [guidebookUnit, setGuidebookUnit] = useState<{
     title: string;
@@ -68,10 +70,9 @@ function PathPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const curriculum = useQuery(api.curriculum.getCourseCurriculum, {}) as
-    | Curriculum
-    | null
-    | undefined;
+  const curriculum = useQuery(api.curriculum.getCourseCurriculum, {
+    courseSlug: activeCourseSlug,
+  }) as Curriculum | null | undefined;
   const stats = useQuery(api.curriculum.getMyStats, {}) as Stats | undefined;
 
   if (curriculum === undefined || stats === undefined) {
@@ -89,7 +90,7 @@ function PathPage() {
           No curriculum yet
         </h1>
         <p className="mt-2 text-sm text-[#777777]">
-          The course content has not been seeded. From the repo root run{" "}
+          The course content for &quot;{currentCourse.title}&quot; has not been seeded. Run{" "}
           <code className="rounded bg-[#F7F7F7] px-1.5 py-0.5 font-mono text-xs">
             npm run seed
           </code>{" "}
@@ -127,7 +128,9 @@ function PathPage() {
                   </Link>
                   <h2 className="text-xl font-extrabold">{unit.title}</h2>
                   <p className="mt-0.5 text-xs text-white/90">
-                    Master essential Kurdish Sorani vocabulary & greetings
+                    {currentCourse.slug === "english-from-kurdish"
+                      ? "فێربوونی وشە و ڕێزمانی سەرەکی زمانی ئینگلیزی"
+                      : "Master essential Kurdish Sorani vocabulary & greetings"}
                   </p>
                 </div>
                 <Link
@@ -159,26 +162,26 @@ function PathPage() {
                         <button
                           type="button"
                           onClick={() => setActiveLessonId(lesson._id)}
-                          className="absolute -top-9 z-10 whitespace-nowrap rounded-xl border-2 border-[#E5E5E5] bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-[#58CC02] shadow-sm animate-bounce"
+                          className="absolute -top-9 z-10 whitespace-nowrap rounded-xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-[#58CC02] shadow-sm animate-bounce"
                         >
                           Start
-                          <span className="absolute left-1/2 top-full -translate-x-1/2 border-8 border-transparent border-t-white" />
+                          <span className="absolute left-1/2 top-full -translate-x-1/2 border-8 border-transparent border-t-white dark:border-t-[#131F24]" />
                         </button>
                       ) : null}
 
                       {/* Mascot Character on Path Side (Duolingo Path Character) */}
                       {i === 1 && (
                         <div className="absolute -right-28 -top-2 hidden sm:flex flex-col items-center select-none animate-in fade-in duration-300">
-                          <div className="relative mb-1 rounded-2xl border-2 border-[#E5E5E5] bg-white px-2.5 py-1 text-[11px] font-extrabold text-[#4B4B4B] shadow-xs">
+                          <div className="relative mb-1 rounded-2xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] px-2.5 py-1 text-[11px] font-extrabold text-[#4B4B4B] dark:text-white shadow-xs">
                             <span className="font-kurdish text-xs font-bold text-[#58CC02] kurdish-word">
                               هەر بژی!
                             </span>
-                            <span className="ml-1 text-[10px] text-[#AFAFAF]">
+                            <span className="ml-1 text-[10px] text-[#AFAFAF] dark:text-[#8495A0]">
                               (Keep going!)
                             </span>
-                            <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-white" />
+                            <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-white dark:border-t-[#131F24]" />
                           </div>
-                          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-[#58CC02]/30 bg-gradient-to-br from-[#E8FAD4] to-[#BFF582] text-3xl shadow-sm transform hover:scale-105 transition-transform cursor-pointer">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-[#58CC02]/30 bg-gradient-to-br from-[#E8FAD4] to-[#BFF582] dark:from-[#1E3B20] dark:to-[#2A522C] text-3xl shadow-sm transform hover:scale-105 transition-transform cursor-pointer">
                             🦉
                           </div>
                         </div>
@@ -209,7 +212,7 @@ function PathPage() {
                           )}
                         </button>
                       ) : (
-                        <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full border-b-[6px] border-[#C7C7C7] bg-[#E5E5E5] text-[#AFAFAF]">
+                        <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full border-b-[6px] border-[#C7C7C7] dark:border-[#2B383F] bg-[#E5E5E5] dark:bg-[#37464F] text-[#AFAFAF] dark:text-[#52656D]">
                           <Lock className="h-7 w-7" />
                         </span>
                       )}
@@ -226,7 +229,7 @@ function PathPage() {
                         />
                       )}
 
-                      <p className="mt-2 text-center text-xs font-bold text-[#777777]">
+                      <p className="mt-2 text-center text-xs font-bold text-[#777777] dark:text-[#8495A0]">
                         {lesson.title}
                       </p>
                     </li>
@@ -297,7 +300,15 @@ export default function LearnPage() {
   }
   return (
     <ErrorBoundary>
-      <PathPage />
+      <Suspense
+        fallback={
+          <div className="py-24 text-center font-extrabold text-[#AFAFAF]">
+            Loading your path...
+          </div>
+        }
+      >
+        <PathPage />
+      </Suspense>
     </ErrorBoundary>
   );
 }

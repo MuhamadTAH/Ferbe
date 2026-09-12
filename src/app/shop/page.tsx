@@ -73,19 +73,19 @@ function ShopInner() {
       {/* Main Column */}
       <main className="w-full max-w-xl">
         {/* Gems Balance Banner */}
-        <div className="flex items-center justify-between rounded-3xl border-2 border-[#1CB0F6]/30 bg-gradient-to-r from-[#DDF4FF] to-white p-6 shadow-sm">
+        <div className="flex items-center justify-between rounded-3xl border-2 border-[#1CB0F6]/30 bg-gradient-to-r from-[#DDF4FF] to-white dark:from-[#1C3B4E] dark:to-[#131F24] p-6 shadow-sm">
           <div className="flex items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#1CB0F6] text-white shadow-md shadow-[#1CB0F6]/30">
               <span className="text-3xl">💎</span>
             </div>
             <div>
-              <span className="text-xs font-extrabold uppercase tracking-wider text-[#1899D6]">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-[#1899D6] dark:text-[#3BC0F8]">
                 Your Gem Balance
               </span>
-              <h1 className="text-3xl font-extrabold text-[#4B4B4B]">
+              <h1 className="text-3xl font-extrabold text-[#4B4B4B] dark:text-white">
                 {gems} Gems
               </h1>
-              <p className="text-xs font-bold text-[#777777]">
+              <p className="text-xs font-bold text-[#777777] dark:text-[#8495A0]">
                 Spend gems on power-ups to protect your streak & hearts
               </p>
             </div>
@@ -94,7 +94,7 @@ function ShopInner() {
 
         {/* Purchase Notification Toast */}
         {purchaseStatus && (
-          <div className="mt-4 flex items-center justify-between rounded-2xl bg-[#E8FAD4] px-4 py-3 text-xs font-extrabold text-[#58CC02] animate-in fade-in">
+          <div className="mt-4 flex items-center justify-between rounded-2xl bg-[#E8FAD4] dark:bg-[#1E3B20] px-4 py-3 text-xs font-extrabold text-[#58CC02] animate-in fade-in">
             <div className="flex items-center gap-2">
               <Check className="h-4 w-4 stroke-[3]" />
               <span>{purchaseStatus}</span>
@@ -102,7 +102,7 @@ function ShopInner() {
             <button
               type="button"
               onClick={() => setPurchaseStatus(null)}
-              className="text-[#777777] hover:text-[#4B4B4B]"
+              className="text-[#777777] dark:text-[#8495A0] hover:text-[#4B4B4B] dark:hover:text-white"
             >
               ✕
             </button>
@@ -111,19 +111,19 @@ function ShopInner() {
 
         {/* Section 1: Hearts */}
         <section className="mt-8">
-          <h2 className="text-xl font-extrabold text-[#4B4B4B]">Hearts</h2>
+          <h2 className="text-xl font-extrabold text-[#4B4B4B] dark:text-white">Hearts</h2>
           <div className="mt-4 flex flex-col gap-4">
             {/* Refill Hearts */}
-            <div className="flex items-center justify-between rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-5 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FFDFDF] text-[#FF4B4B]">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FFDFDF] dark:bg-[#3E1C1C] text-[#FF4B4B]">
                   <Heart className="h-7 w-7 fill-[#FF4B4B]" />
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-[#4B4B4B]">
+                  <h3 className="text-base font-extrabold text-[#4B4B4B] dark:text-white">
                     Refill Hearts
                   </h3>
-                  <p className="text-xs font-bold leading-relaxed text-[#777777]">
+                  <p className="text-xs font-bold leading-relaxed text-[#777777] dark:text-[#8495A0]">
                     Get full hearts so you can worry less about making mistakes in
                     a lesson.
                   </p>
@@ -139,7 +139,7 @@ function ShopInner() {
                 disabled={stats.hearts >= 5}
                 className={`shrink-0 rounded-2xl border-b-4 px-4 py-2.5 text-xs font-extrabold uppercase tracking-wide transition-all ${
                   stats.hearts >= 5
-                    ? "cursor-not-allowed border-[#C7C7C7] bg-[#E5E5E5] text-[#AFAFAF]"
+                    ? "cursor-not-allowed border-[#C7C7C7] dark:border-[#2B383F] bg-[#E5E5E5] dark:bg-[#37464F] text-[#AFAFAF] dark:text-[#52656D]"
                     : "border-[#1899D6] bg-[#1CB0F6] text-white hover:bg-[#4FC3F9] active:translate-y-[2px] active:border-b-2 shadow-sm"
                 }`}
               >
@@ -148,16 +148,16 @@ function ShopInner() {
             </div>
 
             {/* Practice for Hearts (Free) */}
-            <div className="flex items-center justify-between rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-5 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#E8FAD4] text-[#58CC02]">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#E8FAD4] dark:bg-[#1E3B20] text-[#58CC02]">
                   <Dumbbell className="h-7 w-7" />
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-[#4B4B4B]">
+                  <h3 className="text-base font-extrabold text-[#4B4B4B] dark:text-white">
                     Free Practice Refill
                   </h3>
-                  <p className="text-xs font-bold leading-relaxed text-[#777777]">
+                  <p className="text-xs font-bold leading-relaxed text-[#777777] dark:text-[#8495A0]">
                     Review vocabulary and alphabet flashcards to restore hearts
                     for free.
                   </p>
@@ -178,19 +178,19 @@ function ShopInner() {
 
         {/* Section 2: Power-Ups */}
         <section className="mt-8">
-          <h2 className="text-xl font-extrabold text-[#4B4B4B]">Power-Ups</h2>
+          <h2 className="text-xl font-extrabold text-[#4B4B4B] dark:text-white">Power-Ups</h2>
           <div className="mt-4 flex flex-col gap-4">
             {/* Streak Freeze */}
-            <div className="flex items-center justify-between rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-5 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#DDF4FF] text-[#1CB0F6]">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#DDF4FF] dark:bg-[#1C3B4E] text-[#1CB0F6]">
                   <Shield className="h-7 w-7" />
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-[#4B4B4B]">
+                  <h3 className="text-base font-extrabold text-[#4B4B4B] dark:text-white">
                     Streak Freeze
                   </h3>
-                  <p className="text-xs font-bold leading-relaxed text-[#777777]">
+                  <p className="text-xs font-bold leading-relaxed text-[#777777] dark:text-[#8495A0]">
                     Allows your streak to remain in place for one full day of
                     inactivity.
                   </p>
@@ -203,23 +203,23 @@ function ShopInner() {
               <button
                 type="button"
                 onClick={handleBuyStreakFreeze}
-                className="shrink-0 rounded-2xl border-b-4 border-[#E5E5E5] bg-white px-4 py-2.5 text-xs font-extrabold uppercase tracking-wide text-[#4B4B4B] hover:bg-[#F7F7F7] active:translate-y-[2px] active:border-b-2 shadow-sm"
+                className="shrink-0 rounded-2xl border-b-4 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#202F36] px-4 py-2.5 text-xs font-extrabold uppercase tracking-wide text-[#4B4B4B] dark:text-white hover:bg-[#F7F7F7] dark:hover:bg-[#2B3E48] active:translate-y-[2px] active:border-b-2 shadow-sm"
               >
                 {isEquippedFreeze ? "Equipped" : "💎 200 Equip"}
               </button>
             </div>
 
             {/* Double or Nothing */}
-            <div className="flex items-center justify-between rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-5 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FFF4E5] text-[#FF9600]">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#FFF4E5] dark:bg-[#341F05] text-[#FF9600]">
                   <Flame className="h-7 w-7 fill-[#FF9600]" />
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-[#4B4B4B]">
+                  <h3 className="text-base font-extrabold text-[#4B4B4B] dark:text-white">
                     Double or Nothing
                   </h3>
-                  <p className="text-xs font-bold leading-relaxed text-[#777777]">
+                  <p className="text-xs font-bold leading-relaxed text-[#777777] dark:text-[#8495A0]">
                     Attempt to double your 50 gem wager by maintaining a 7-day
                     streak.
                   </p>
@@ -229,7 +229,7 @@ function ShopInner() {
               <button
                 type="button"
                 onClick={() => setPurchaseStatus("Double or Nothing wager active!")}
-                className="shrink-0 rounded-2xl border-b-4 border-[#E5E5E5] bg-white px-4 py-2.5 text-xs font-extrabold uppercase tracking-wide text-[#4B4B4B] hover:bg-[#F7F7F7] active:translate-y-[2px] active:border-b-2 shadow-sm"
+                className="shrink-0 rounded-2xl border-b-4 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#202F36] px-4 py-2.5 text-xs font-extrabold uppercase tracking-wide text-[#4B4B4B] dark:text-white hover:bg-[#F7F7F7] dark:hover:bg-[#2B3E48] active:translate-y-[2px] active:border-b-2 shadow-sm"
               >
                 💎 50 Wager
               </button>

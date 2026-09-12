@@ -39,15 +39,34 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${nunito.variable} ${notoSansArabic.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${inter.variable} ${nunito.variable} ${notoSansArabic.variable} h-full antialiased dark`}
     >
-      <body className="flex min-h-full flex-col bg-[#F7F7F7] text-[#4B4B4B] antialiased">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var theme = localStorage.getItem('ferbe_theme');
+                if (theme === 'light') {
+                  document.documentElement.classList.remove('dark');
+                } else {
+                  document.documentElement.classList.add('dark');
+                }
+              } catch (e) {
+                document.documentElement.classList.add('dark');
+              }
+            `,
+          }}
+        />
+      </head>
+      <body className="flex min-h-full flex-col bg-white dark:bg-[#131F24] text-[#4B4B4B] dark:text-white antialiased transition-colors">
         <ConvexClientProvider>
-          <div className="flex min-h-screen">
+          <div className="flex min-h-screen bg-white dark:bg-[#131F24]">
             <SidebarNav />
-            <div className="flex flex-1 flex-col pb-16 lg:pb-0">
+            <div className="flex flex-1 flex-col pb-16 lg:pb-0 bg-white dark:bg-[#131F24]">
               <AppHeader />
-              <main className="flex flex-1 flex-col">{children}</main>
+              <main className="flex flex-1 flex-col bg-white dark:bg-[#131F24]">{children}</main>
             </div>
           </div>
           <MobileNav />

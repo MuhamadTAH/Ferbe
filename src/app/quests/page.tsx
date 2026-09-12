@@ -174,15 +174,15 @@ function QuestsInner() {
         {/* Daily Quests Header */}
         <div className="mt-8 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-extrabold text-[#4B4B4B]">
+            <h2 className="text-xl font-extrabold text-[#4B4B4B] dark:text-white">
               Daily Quests
             </h2>
-            <p className="text-xs font-bold text-[#777777]">
+            <p className="text-xs font-bold text-[#777777] dark:text-[#8495A0]">
               Quests refresh every day at midnight
             </p>
           </div>
-          <span className="flex items-center gap-1.5 rounded-xl bg-[#F7F7F7] px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-[#777777]">
-            <Clock className="h-4 w-4 text-[#AFAFAF]" />
+          <span className="flex items-center gap-1.5 rounded-xl bg-[#F7F7F7] dark:bg-[#202F36] px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-[#777777] dark:text-[#8495A0]">
+            <Clock className="h-4 w-4 text-[#AFAFAF] dark:text-[#52656D]" />
             21 hours
           </span>
         </div>
@@ -197,7 +197,7 @@ function QuestsInner() {
             return (
               <div
                 key={quest.id}
-                className="flex items-center gap-4 rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-xs transition-all hover:border-[#CCCCCC]"
+                className="flex items-center gap-4 rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-5 shadow-xs transition-all hover:border-[#CCCCCC] dark:hover:border-[#52656D]"
               >
                 {/* Icon */}
                 <div
@@ -209,14 +209,14 @@ function QuestsInner() {
                 {/* Details */}
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-extrabold text-[#4B4B4B]">
+                    <h3 className="text-sm font-extrabold text-[#4B4B4B] dark:text-white">
                       {quest.title}
                     </h3>
                   </div>
 
                   {/* Duolingo Progress Bar + Integrated Chest */}
                   <div className="mt-2.5 flex items-center gap-3">
-                    <div className="relative h-5 flex-1 overflow-hidden rounded-full bg-[#E5E5E5]">
+                    <div className="relative h-5 flex-1 overflow-hidden rounded-full bg-[#E5E5E5] dark:bg-[#37464F]">
                       <div
                         className={`h-full rounded-full transition-all duration-500 ${quest.barColor}`}
                         style={{
@@ -304,29 +304,29 @@ function QuestsInner() {
       {/* Duolingo "You earned 5 gems!" Quest Celebration Modal */}
       {celebrationReward && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-in fade-in"
           onClick={() => setCelebrationReward(null)}
         >
           <div
-            className="relative w-full max-w-sm rounded-3xl bg-white p-7 text-center shadow-2xl animate-in zoom-in-95 duration-200"
+            className="w-full max-w-sm rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-8 text-center shadow-2xl animate-in zoom-in-95"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative mx-auto flex h-28 w-28 items-center justify-center">
+            <div className="relative mx-auto flex h-24 w-24 items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-[#1CB0F6]/20 animate-ping" />
               <QuestChest isOpen size={84} />
               <Sparkles className="absolute -top-1 -right-1 h-7 w-7 text-[#FFC800] animate-pulse" />
             </div>
 
-            <h3 className="mt-4 text-2xl font-extrabold text-[#4B4B4B]">
+            <h3 className="mt-4 text-2xl font-extrabold text-[#4B4B4B] dark:text-white">
               You earned {celebrationReward.gemReward} gems!
             </h3>
-            <p className="mt-1 text-sm font-bold text-[#777777]">
+            <p className="mt-1 text-sm font-bold text-[#777777] dark:text-[#8495A0]">
               Nice job reaching your daily goal!
             </p>
 
-            <div className="my-5 flex items-center justify-center gap-2 rounded-2xl border-2 border-[#1CB0F6]/30 bg-[#DDF4FF]/50 py-3">
+            <div className="my-5 flex items-center justify-center gap-2 rounded-2xl border-2 border-[#1CB0F6]/30 bg-[#DDF4FF]/50 dark:bg-[#1C3B4E] py-3">
               <span className="text-2xl">💎</span>
-              <span className="text-xl font-extrabold text-[#1CB0F6]">
+              <span className="text-xl font-extrabold text-[#1CB0F6] dark:text-[#3BC0F8]">
                 +{celebrationReward.gemReward} GEMS
               </span>
             </div>

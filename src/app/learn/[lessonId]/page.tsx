@@ -127,17 +127,17 @@ function SessionInner({ lessonId }: { lessonId: string }) {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col">
+    <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-white dark:bg-[#131F24]">
       {/* Lesson top bar */}
       <div className="mx-auto flex w-full max-w-2xl items-center gap-4 px-4 py-5">
         <Link
           href="/learn"
           aria-label="Exit lesson"
-          className="text-[#AFAFAF] transition-colors hover:text-[#777777]"
+          className="text-[#AFAFAF] transition-colors hover:text-[#777777] dark:text-[#8495A0] dark:hover:text-white"
         >
           <X className="h-8 w-8 stroke-[3]" />
         </Link>
-        <div className="h-4 flex-1 overflow-hidden rounded-full bg-[#E5E5E5]">
+        <div className="h-4 flex-1 overflow-hidden rounded-full bg-[#E5E5E5] dark:bg-[#37464F]">
           <div
             className="h-full rounded-full bg-[#58CC02] transition-all duration-300"
             style={{ width: `${progress}%` }}
@@ -162,7 +162,7 @@ function SessionInner({ lessonId }: { lessonId: string }) {
               selected={state.selected}
               lastCorrect={state.lastCorrect}
               onSelect={select}
-              kurdishPrompt
+              kurdishPrompt={/[\u0600-\u06FF]/.test(exercise.promptText)}
             />
           ) : exercise.type === "audio_match" ? (
             <AudioMatchView
@@ -187,12 +187,12 @@ function SessionInner({ lessonId }: { lessonId: string }) {
 
       {/* Check footer (hidden while the feedback banner is up) */}
       {!showFeedback ? (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-[#E5E5E5] bg-white">
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-[#E5E5E5] bg-white dark:border-[#37464F] dark:bg-[#131F24]">
           <div className="mx-auto flex max-w-2xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
             <button
               type="button"
               onClick={submit}
-              className="rounded-2xl border-2 border-[#E5E5E5] border-b-4 bg-white px-6 py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#AFAFAF] transition-all hover:bg-[#F7F7F7] hover:text-[#777777] active:translate-y-[2px] active:border-b-2 shadow-xs"
+              className="rounded-2xl border-2 border-[#E5E5E5] border-b-4 bg-white px-6 py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#AFAFAF] transition-all hover:bg-[#F7F7F7] hover:text-[#777777] active:translate-y-[2px] active:border-b-2 shadow-xs dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#8495A0] dark:hover:bg-[#202F36] dark:hover:text-white"
             >
               Skip
             </button>

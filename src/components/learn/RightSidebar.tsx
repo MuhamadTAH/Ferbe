@@ -16,6 +16,7 @@ import {
   Compass,
   X,
 } from "lucide-react";
+import { useActiveCourse } from "@/hooks/useActiveCourse";
 import { PushButton } from "@/components/duo/PushButton";
 import { QuestChest } from "@/components/duo/QuestChest";
 
@@ -61,6 +62,7 @@ export function RightSidebar({
   userName = "Gemini",
   customCard,
 }: RightSidebarProps) {
+  const { currentCourse, activeCourseSlug, courses, selectCourse } = useActiveCourse();
   const [activePopover, setActivePopover] = useState<
     "flag" | "streak" | "hearts" | null
   >(null);
@@ -88,7 +90,7 @@ export function RightSidebar({
       {/* 0. Top HUD Status Pills on Desktop (Duolingo layout with interactive Popovers) */}
       <div ref={hudRef} className="relative z-30 px-1 py-1">
         <div className="flex items-center justify-between">
-          {/* Kurdish Flag Pill */}
+          {/* Active Course Flag Pill */}
           <button
             type="button"
             onClick={() =>
@@ -96,19 +98,32 @@ export function RightSidebar({
             }
             className={`flex items-center gap-2 rounded-xl border-2 px-2.5 py-1 text-xs font-extrabold transition-all cursor-pointer ${
               activePopover === "flag"
-                ? "border-[#1CB0F6] bg-[#DDF4FF] text-[#1899D6]"
-                : "border-[#E5E5E5] text-[#4B4B4B] hover:bg-[#F7F7F7]"
+                ? "border-[#1CB0F6] bg-[#DDF4FF] dark:bg-[#1C3B4E] text-[#1899D6] dark:text-[#3BC0F8]"
+                : "border-[#E5E5E5] dark:border-[#37464F] text-[#4B4B4B] dark:text-white hover:bg-[#F7F7F7] dark:hover:bg-[#202F36]"
             }`}
-            title="Kurdish Sorani (کوردی)"
+            title={`${currentCourse.title} (${currentCourse.nativeTitle})`}
           >
-            <span className="flex h-3.5 w-5 flex-col overflow-hidden rounded-[2px] border border-black/10 shadow-xs">
-              <span className="h-1/3 w-full bg-[#ED1C24]" />
-              <span className="flex h-1/3 w-full items-center justify-center bg-white">
-                <span className="h-1 w-1 rounded-full bg-[#FFD700]" />
+            {currentCourse.flagType === "uk" ? (
+              <svg
+                className="h-3.5 w-5 shrink-0 overflow-hidden rounded-[2px] border border-black/10 shadow-xs"
+                viewBox="0 0 60 36"
+              >
+                <path d="M0,0 v36 h60 v-36 z" fill="#012169" />
+                <path d="M0,0 L60,36 M60,0 L0,36" stroke="#ffffff" strokeWidth="7" />
+                <path d="M0,0 L60,36 M60,0 L0,36" stroke="#C8102E" strokeWidth="4" />
+                <path d="M30,0 v36 M0,18 h60" stroke="#ffffff" strokeWidth="11" />
+                <path d="M30,0 v36 M0,18 h60" stroke="#C8102E" strokeWidth="7" />
+              </svg>
+            ) : (
+              <span className="flex h-3.5 w-5 flex-col overflow-hidden rounded-[2px] border border-black/10 shadow-xs">
+                <span className="h-1/3 w-full bg-[#ED1C24]" />
+                <span className="flex h-1/3 w-full items-center justify-center bg-white">
+                  <span className="h-1 w-1 rounded-full bg-[#FFD700]" />
+                </span>
+                <span className="h-1/3 w-full bg-[#278E43]" />
               </span>
-              <span className="h-1/3 w-full bg-[#278E43]" />
-            </span>
-            <span>Sorani</span>
+            )}
+            <span>{currentCourse.shortLabel}</span>
           </button>
 
           {/* Streak Pill */}
@@ -119,8 +134,8 @@ export function RightSidebar({
             }
             className={`flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold transition-all cursor-pointer ${
               activePopover === "streak"
-                ? "bg-[#FFF4E5] text-[#FF9600] ring-2 ring-[#FF9600]/30"
-                : "text-[#FF9600] hover:bg-[#FFF4E5]"
+                ? "bg-[#FFF4E5] dark:bg-[#341F05] text-[#FF9600] ring-2 ring-[#FF9600]/30"
+                : "text-[#FF9600] hover:bg-[#FFF4E5] dark:hover:bg-[#341F05]"
             }`}
             title="Day Streak"
           >
@@ -131,7 +146,7 @@ export function RightSidebar({
           {/* Gems Pill (Direct Link to Shop) */}
           <Link
             href="/shop"
-            className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold text-[#1CB0F6] transition-colors hover:bg-[#DDF4FF]"
+            className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold text-[#1CB0F6] transition-colors hover:bg-[#DDF4FF] dark:hover:bg-[#1C3B4E]"
             title="💎 Gems · Visit Shop"
           >
             <span className="text-sm">💎</span>
@@ -146,8 +161,8 @@ export function RightSidebar({
             }
             className={`flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm font-extrabold transition-all cursor-pointer ${
               activePopover === "hearts"
-                ? "bg-[#FFDFDF] text-[#FF4B4B] ring-2 ring-[#FF4B4B]/30"
-                : "text-[#FF4B4B] hover:bg-[#FFDFDF]"
+                ? "bg-[#FFDFDF] dark:bg-[#3E1C1C] text-[#FF4B4B] ring-2 ring-[#FF4B4B]/30"
+                : "text-[#FF4B4B] hover:bg-[#FFDFDF] dark:hover:bg-[#3E1C1C]"
             }`}
             title="Hearts remaining"
           >
@@ -158,24 +173,65 @@ export function RightSidebar({
 
         {/* 1. Course Flag Popover */}
         {activePopover === "flag" && (
-          <div className="absolute left-0 top-full mt-2 w-64 rounded-3xl border-2 border-[#E5E5E5] bg-white p-4 shadow-xl animate-in zoom-in-95 duration-150">
-            <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#AFAFAF]">
+          <div className="absolute left-0 top-full mt-2 w-72 rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-4 shadow-xl animate-in zoom-in-95 duration-150">
+            <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#AFAFAF] dark:text-[#8495A0]">
               My Courses
             </p>
-            <div className="mt-3 flex items-center justify-between rounded-2xl border-2 border-[#58CC02] bg-[#E8FAD4]/40 p-2.5">
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-5 w-7 flex-col overflow-hidden rounded-[3px] border border-black/10">
-                  <span className="h-1/3 w-full bg-[#ED1C24]" />
-                  <span className="flex h-1/3 w-full items-center justify-center bg-white">
-                    <span className="h-1 w-1 rounded-full bg-[#FFD700]" />
-                  </span>
-                  <span className="h-1/3 w-full bg-[#278E43]" />
-                </span>
-                <span className="text-xs font-extrabold text-[#4B4B4B]">
-                  Kurdish (Sorani)
-                </span>
-              </div>
-              <Check className="h-4 w-4 text-[#58CC02] stroke-[3]" />
+            <div className="mt-2.5 flex flex-col gap-2">
+              {courses.map((course) => {
+                const isSelected = course.slug === activeCourseSlug;
+                return (
+                  <button
+                    key={course.slug}
+                    type="button"
+                    onClick={() => {
+                      selectCourse(course.slug);
+                      setActivePopover(null);
+                    }}
+                    className={`flex items-center justify-between rounded-2xl border-2 p-2.5 transition-all text-left cursor-pointer ${
+                      isSelected
+                        ? "border-[#58CC02] bg-[#E8FAD4]/40 dark:bg-[#1E3B20]"
+                        : "border-[#E5E5E5] dark:border-[#37464F] hover:bg-[#F7F7F7] dark:hover:bg-[#202F36]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {course.flagType === "uk" ? (
+                        <svg
+                          className="h-5 w-7 shrink-0 overflow-hidden rounded-[3px] border border-black/10 shadow-xs"
+                          viewBox="0 0 60 36"
+                        >
+                          <path d="M0,0 v36 h60 v-36 z" fill="#012169" />
+                          <path d="M0,0 L60,36 M60,0 L0,36" stroke="#ffffff" strokeWidth="7" />
+                          <path d="M0,0 L60,36 M60,0 L0,36" stroke="#C8102E" strokeWidth="4" />
+                          <path d="M30,0 v36 M0,18 h60" stroke="#ffffff" strokeWidth="11" />
+                          <path d="M30,0 v36 M0,18 h60" stroke="#C8102E" strokeWidth="7" />
+                        </svg>
+                      ) : (
+                        <span className="flex h-5 w-7 flex-col overflow-hidden rounded-[3px] border border-black/10">
+                          <span className="h-1/3 w-full bg-[#ED1C24]" />
+                          <span className="flex h-1/3 w-full items-center justify-center bg-white">
+                            <span className="h-1 w-1 rounded-full bg-[#FFD700]" />
+                          </span>
+                          <span className="h-1/3 w-full bg-[#278E43]" />
+                        </span>
+                      )}
+                      <div>
+                        <span className="block text-xs font-extrabold text-[#4B4B4B] dark:text-white">
+                          {course.title}
+                        </span>
+                        <span className="block text-[10px] font-bold text-[#AFAFAF] dark:text-[#8495A0]">
+                          {course.nativeTitle}
+                        </span>
+                      </div>
+                    </div>
+                    {isSelected && (
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#58CC02] text-white">
+                        <Check className="h-3.5 w-3.5 stroke-[3]" />
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             <Link href="/courses" className="block mt-2">
@@ -358,9 +414,9 @@ export function RightSidebar({
 
       {/* 1. Set Your Status Card (Duolingo authentic on Leaderboard / Profile) OR Unlock Leaderboards Card */}
       {showSetStatus ? (
-        <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
+        <div className="rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-5 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-base font-extrabold text-[#4B4B4B]">
+            <h3 className="text-base font-extrabold text-[#4B4B4B] dark:text-white">
               Set your status
             </h3>
             {activeStatus && (
@@ -375,20 +431,20 @@ export function RightSidebar({
           </div>
 
           {/* Current Avatar with Status Badge */}
-          <div className="flex items-center gap-3.5 mb-4 p-2.5 rounded-2xl bg-[#F7F7F7]">
+          <div className="flex items-center gap-3.5 mb-4 p-2.5 rounded-2xl bg-[#F7F7F7] dark:bg-[#202F36]">
             <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#1CB0F6] text-lg font-extrabold text-white shadow-xs">
               <span>{userName.charAt(0).toUpperCase()}</span>
               {activeStatus && (
-                <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-white text-xs shadow-md border border-[#E5E5E5]">
+                <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-white dark:bg-[#131F24] text-xs shadow-md border border-[#E5E5E5] dark:border-[#37464F]">
                   {activeStatus}
                 </span>
               )}
             </div>
             <div>
-              <p className="text-xs font-extrabold text-[#4B4B4B]">
+              <p className="text-xs font-extrabold text-[#4B4B4B] dark:text-white">
                 {activeStatus ? "Current Status" : "No status set"}
               </p>
-              <p className="text-[11px] font-bold text-[#777777]">
+              <p className="text-[11px] font-bold text-[#777777] dark:text-[#8495A0]">
                 {activeStatus
                   ? STATUS_OPTIONS.find((s) => s.emoji === activeStatus)?.label
                   : "Pick an emoji below to show how you feel!"}
@@ -406,8 +462,8 @@ export function RightSidebar({
                 title={opt.label}
                 className={`flex h-10 w-10 items-center justify-center rounded-xl border-2 text-lg transition-transform cursor-pointer hover:scale-110 active:scale-95 ${
                   activeStatus === opt.emoji
-                    ? "border-[#1CB0F6] bg-[#DDF4FF] shadow-xs ring-2 ring-[#1CB0F6]/30"
-                    : "border-[#E5E5E5] bg-white hover:bg-[#F7F7F7]"
+                    ? "border-[#1CB0F6] bg-[#DDF4FF] dark:bg-[#1C3B4E] shadow-xs ring-2 ring-[#1CB0F6]/30"
+                    : "border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] hover:bg-[#F7F7F7] dark:hover:bg-[#202F36]"
                 }`}
               >
                 {opt.emoji}
@@ -416,16 +472,16 @@ export function RightSidebar({
           </div>
         </div>
       ) : (
-        <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
+        <div className="rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-5 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-base font-extrabold text-[#4B4B4B]">
+            <h3 className="text-base font-extrabold text-[#4B4B4B] dark:text-white">
               Unlock Leaderboards!
             </h3>
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FFDFE0]/40 text-[#FF4B4B]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FFDFE0]/40 dark:bg-[#3E1C1C] text-[#FF4B4B]">
               <Trophy className="h-5 w-5 text-[#FFC800]" />
             </div>
           </div>
-          <p className="text-xs font-bold leading-relaxed text-[#777777]">
+          <p className="text-xs font-bold leading-relaxed text-[#777777] dark:text-[#8495A0]">
             {lessonsToUnlockLeaderboard > 0
               ? `Complete ${lessonsToUnlockLeaderboard} more lesson${
                   lessonsToUnlockLeaderboard === 1 ? "" : "s"
@@ -434,11 +490,11 @@ export function RightSidebar({
           </p>
 
           <div className="mt-3.5">
-            <div className="flex justify-between text-[11px] font-extrabold text-[#AFAFAF]">
+            <div className="flex justify-between text-[11px] font-extrabold text-[#AFAFAF] dark:text-[#8495A0]">
               <span>Bronze League Progress</span>
               <span>{Math.min(3, completedLessonsCount)} / 3</span>
             </div>
-            <div className="mt-1.5 h-3.5 w-full overflow-hidden rounded-full bg-[#E5E5E5]">
+            <div className="mt-1.5 h-3.5 w-full overflow-hidden rounded-full bg-[#E5E5E5] dark:bg-[#37464F]">
               <div
                 className="h-full rounded-full bg-[#FFC800] transition-all duration-300"
                 style={{
@@ -454,14 +510,14 @@ export function RightSidebar({
       {customCard}
 
       {/* 2. Daily Quests Card */}
-      <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm">
+      <div className="rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-5 shadow-sm">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-base font-extrabold text-[#4B4B4B]">
+          <h3 className="text-base font-extrabold text-[#4B4B4B] dark:text-white">
             Daily Quests
           </h3>
           <Link
             href="/quests"
-            className="text-xs font-extrabold uppercase tracking-wide text-[#1CB0F6] hover:underline cursor-pointer"
+            className="text-xs font-extrabold uppercase tracking-wide text-[#1CB0F6] dark:text-[#3BC0F8] hover:underline cursor-pointer"
           >
             VIEW ALL
           </Link>
@@ -470,17 +526,17 @@ export function RightSidebar({
         <div className="flex flex-col gap-3.5">
           {/* Quest 1: Earn 10 XP */}
           <Link href="/quests" className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFF9E6] text-[#FFC800]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFF9E6] dark:bg-[#342805] text-[#FFC800]">
               <Zap className="h-5 w-5 fill-[#FFC800]" />
             </div>
             <div className="flex-1">
-              <div className="flex justify-between text-xs font-extrabold text-[#4B4B4B]">
+              <div className="flex justify-between text-xs font-extrabold text-[#4B4B4B] dark:text-white">
                 <span>Earn 10 XP</span>
-                <span className={xpQuestDone ? "text-[#58CC02]" : "text-[#777777]"}>
+                <span className={xpQuestDone ? "text-[#58CC02]" : "text-[#777777] dark:text-[#8495A0]"}>
                   {currentXpProgress} / {xpQuestTarget}
                 </span>
               </div>
-              <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-[#E5E5E5]">
+              <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-[#E5E5E5] dark:bg-[#37464F]">
                 <div
                   className="h-full rounded-full bg-[#FFC800] transition-all duration-300"
                   style={{
@@ -496,15 +552,15 @@ export function RightSidebar({
 
           {/* Quest 2: Spend 5 minutes learning */}
           <Link href="/quests" className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#DDF4FF] text-[#1CB0F6]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#DDF4FF] dark:bg-[#1C3B4E] text-[#1CB0F6]">
               <Clock className="h-5 w-5" />
             </div>
             <div className="flex-1">
-              <div className="flex justify-between text-xs font-extrabold text-[#4B4B4B]">
+              <div className="flex justify-between text-xs font-extrabold text-[#4B4B4B] dark:text-white">
                 <span>Spend 5 mins</span>
                 <span className="text-[#58CC02]">5 / 5</span>
               </div>
-              <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-[#E5E5E5]">
+              <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-[#E5E5E5] dark:bg-[#37464F]">
                 <div className="h-full w-full rounded-full bg-[#1CB0F6]" />
               </div>
             </div>
@@ -515,17 +571,17 @@ export function RightSidebar({
 
           {/* Quest 3: 80% accuracy */}
           <Link href="/quests" className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8FAD4] text-[#58CC02]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E8FAD4] dark:bg-[#1E3B20] text-[#58CC02]">
               <Target className="h-5 w-5" />
             </div>
             <div className="flex-1">
-              <div className="flex justify-between text-xs font-extrabold text-[#4B4B4B]">
+              <div className="flex justify-between text-xs font-extrabold text-[#4B4B4B] dark:text-white">
                 <span>Score 80%+</span>
-                <span className={completedLessonsCount > 0 ? "text-[#58CC02]" : "text-[#777777]"}>
+                <span className={completedLessonsCount > 0 ? "text-[#58CC02]" : "text-[#777777] dark:text-[#8495A0]"}>
                   {completedLessonsCount > 0 ? "1 / 1" : "0 / 1"}
                 </span>
               </div>
-              <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-[#E5E5E5]">
+              <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-[#E5E5E5] dark:bg-[#37464F]">
                 <div
                   className="h-full rounded-full bg-[#58CC02] transition-all"
                   style={{
@@ -541,17 +597,17 @@ export function RightSidebar({
 
           {/* Quest 4: Daily streak */}
           <Link href="/quests" className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFF4E5] text-[#FF9600]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FFF4E5] dark:bg-[#341F05] text-[#FF9600]">
               <Flame className="h-5 w-5 fill-[#FF9600]" />
             </div>
             <div className="flex-1">
-              <div className="flex justify-between text-xs font-extrabold text-[#4B4B4B]">
+              <div className="flex justify-between text-xs font-extrabold text-[#4B4B4B] dark:text-white">
                 <span>Keep streak</span>
                 <span className={currentStreak > 0 ? "text-[#58CC02]" : "text-[#FF9600]"}>
                   {currentStreak > 0 ? `${currentStreak} day` : "0 / 1"}
                 </span>
               </div>
-              <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-[#E5E5E5]">
+              <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-[#E5E5E5] dark:bg-[#37464F]">
                 <div
                   className="h-full rounded-full bg-[#FF9600] transition-all"
                   style={{
@@ -589,14 +645,14 @@ export function RightSidebar({
           </Link>
         </div>
       ) : (
-        <div className="rounded-3xl border-2 border-[#1CB0F6] bg-[#DDF4FF]/60 p-5 shadow-sm">
+        <div className="rounded-3xl border-2 border-[#1CB0F6] dark:border-[#37464F] bg-[#DDF4FF]/60 dark:bg-[#132A36] p-5 shadow-sm">
           <div className="mb-2 flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-[#1CB0F6]" />
-            <h4 className="text-sm font-extrabold text-[#1899D6]">
+            <Sparkles className="h-5 w-5 text-[#1CB0F6] dark:text-[#3BC0F8]" />
+            <h4 className="text-sm font-extrabold text-[#1899D6] dark:text-[#3BC0F8]">
               Create a profile to save progress
             </h4>
           </div>
-          <p className="text-xs leading-relaxed text-[#4B4B4B]">
+          <p className="text-xs leading-relaxed text-[#4B4B4B] dark:text-[#E2E8F0]">
             Sync your day streak, XP and unlocked Kurdish units across all devices for free.
           </p>
           <div className="mt-4 flex flex-col gap-2.5">
@@ -606,7 +662,7 @@ export function RightSidebar({
               </PushButton>
             </Link>
             <Link href="/sign-in">
-              <PushButton variant="white" className="w-full py-2 text-xs text-[#777777]">
+              <PushButton variant="white" className="w-full py-2 text-xs text-[#777777] dark:text-[#8495A0]">
                 Sign In
               </PushButton>
             </Link>
@@ -624,23 +680,23 @@ export function RightSidebar({
           GitHub
         </a>
         <span>·</span>
-        <span className="text-[#58CC02]">Kurdish Sorani (کوردی)</span>
+        <span className="text-[#58CC02]">{currentCourse.title}</span>
       </div>
 
       {/* Friend Streaks Modal */}
       {showFriendStreaksModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in">
-          <div className="relative w-full max-w-md rounded-3xl border-2 border-[#E5E5E5] bg-white p-6 shadow-2xl animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 animate-in fade-in">
+          <div className="relative w-full max-w-md rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-6 shadow-2xl animate-in zoom-in-95">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#DDF4FF] text-[#1CB0F6]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#DDF4FF] dark:bg-[#1C3B4E] text-[#1CB0F6]">
                   <Users className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-[#4B4B4B]">
+                  <h3 className="text-base font-extrabold text-[#4B4B4B] dark:text-white">
                     Friend Streaks
                   </h3>
-                  <p className="text-xs font-bold text-[#AFAFAF]">
+                  <p className="text-xs font-bold text-[#AFAFAF] dark:text-[#8495A0]">
                     Learn together every day
                   </p>
                 </div>
@@ -648,20 +704,20 @@ export function RightSidebar({
               <button
                 type="button"
                 onClick={() => setShowFriendStreaksModal(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-xl text-[#AFAFAF] hover:bg-[#F7F7F7] hover:text-[#4B4B4B] cursor-pointer"
+                className="flex h-8 w-8 items-center justify-center rounded-xl text-[#AFAFAF] dark:text-[#8495A0] hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] hover:text-[#4B4B4B] dark:hover:text-white cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="mt-5 rounded-2xl bg-[#F7F7F7] p-5 text-center">
-              <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#DDF4FF] text-3xl">
+            <div className="mt-5 rounded-2xl bg-[#F7F7F7] dark:bg-[#202F36] p-5 text-center">
+              <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#DDF4FF] dark:bg-[#1C3B4E] text-3xl">
                 🔥👥
               </div>
-              <h4 className="text-sm font-extrabold text-[#4B4B4B]">
+              <h4 className="text-sm font-extrabold text-[#4B4B4B] dark:text-white">
                 0 Active Friend Streaks
               </h4>
-              <p className="mt-1 text-xs font-bold leading-relaxed text-[#777777]">
+              <p className="mt-1 text-xs font-bold leading-relaxed text-[#777777] dark:text-[#8495A0]">
                 Start a shared streak by inviting friends to learn Kurdish! Each person completes a lesson daily to keep the flame alive.
               </p>
             </div>
@@ -678,7 +734,7 @@ export function RightSidebar({
               <button
                 type="button"
                 onClick={() => setShowFriendStreaksModal(false)}
-                className="w-full rounded-2xl border-2 border-[#E5E5E5] py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#777777] hover:bg-[#F7F7F7] cursor-pointer"
+                className="w-full rounded-2xl border-2 border-[#E5E5E5] dark:border-[#37464F] py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#777777] dark:text-[#8495A0] hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] cursor-pointer"
               >
                 Close
               </button>
@@ -689,15 +745,15 @@ export function RightSidebar({
 
       {/* Streak Society Modal */}
       {showStreakSocietyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in">
-          <div className="relative w-full max-w-md rounded-3xl border-2 border-[#FF9600]/40 bg-white p-6 shadow-2xl animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 animate-in fade-in">
+          <div className="relative w-full max-w-md rounded-3xl border-2 border-[#FF9600]/40 dark:border-[#37464F] bg-white dark:bg-[#131F24] p-6 shadow-2xl animate-in zoom-in-95">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FFF4E5] text-[#FF9600]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FFF4E5] dark:bg-[#341F05] text-[#FF9600]">
                   <Crown className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-extrabold text-[#4B4B4B]">
+                  <h3 className="text-base font-extrabold text-[#4B4B4B] dark:text-white">
                     Streak Society
                   </h3>
                   <p className="text-xs font-bold text-[#FF9600]">
@@ -708,17 +764,17 @@ export function RightSidebar({
               <button
                 type="button"
                 onClick={() => setShowStreakSocietyModal(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-xl text-[#AFAFAF] hover:bg-[#F7F7F7] hover:text-[#4B4B4B] cursor-pointer"
+                className="flex h-8 w-8 items-center justify-center rounded-xl text-[#AFAFAF] dark:text-[#8495A0] hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] hover:text-[#4B4B4B] dark:hover:text-white cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="mt-5 rounded-2xl bg-gradient-to-br from-[#FFF4E5] to-[#FFE2BF] p-5 text-center text-[#B35300]">
-              <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-3xl bg-white shadow-md text-3xl">
+            <div className="mt-5 rounded-2xl bg-gradient-to-br from-[#FFF4E5] to-[#FFE2BF] dark:from-[#341F05] dark:to-[#4A2D07] p-5 text-center text-[#B35300] dark:text-[#FFB35A]">
+              <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-3xl bg-white dark:bg-[#202F36] shadow-md text-3xl">
                 🔥
               </div>
-              <h4 className="text-lg font-extrabold">
+              <h4 className="text-lg font-extrabold text-[#B35300] dark:text-[#FFB35A]">
                 Reach a 7-Day Streak
               </h4>
               <p className="mt-1 text-xs font-medium leading-relaxed">
@@ -727,11 +783,11 @@ export function RightSidebar({
 
               {/* Progress to 7 days */}
               <div className="mt-4">
-                <div className="flex justify-between text-xs font-extrabold text-[#B35300]">
+                <div className="flex justify-between text-xs font-extrabold text-[#B35300] dark:text-[#FFB35A]">
                   <span>Progress to Society</span>
                   <span>{currentStreak} / 7 Days</span>
                 </div>
-                <div className="mt-1.5 h-3.5 w-full overflow-hidden rounded-full bg-white/60 p-0.5">
+                <div className="mt-1.5 h-3.5 w-full overflow-hidden rounded-full bg-white/60 dark:bg-black/40 p-0.5">
                   <div
                     className="h-full rounded-full bg-[#FF9600] transition-all duration-300"
                     style={{
@@ -743,12 +799,11 @@ export function RightSidebar({
             </div>
 
             {/* Perks list */}
-            <div className="mt-5 space-y-2.5 text-xs font-bold text-[#4B4B4B]">
-              <div className="flex items-center gap-3 rounded-xl border border-[#E5E5E5] p-2.5">
+            <div className="mt-5 space-y-2.5 text-xs font-bold text-[#4B4B4B] dark:text-white">
+              <div className="flex items-center gap-3 rounded-xl border border-[#E5E5E5] dark:border-[#37464F] p-2.5 bg-white dark:bg-[#202F36]">
                 <span className="text-lg">💎</span>
                 <div>
                   <div>100 Bonus Gems</div>
-                  <div className="text-[10px] text-[#AFAFAF]">Awarded immediately upon entry</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 rounded-xl border border-[#E5E5E5] p-2.5">

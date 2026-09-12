@@ -36,7 +36,7 @@ interface HeaderDisplayProps {
 
 function ProfileHeaderDisplay({ displayName, username, avatarUrl, onOpenSettings }: HeaderDisplayProps) {
   return (
-    <div className="rounded-3xl border-2 border-[#E5E5E5] bg-white p-6 shadow-sm">
+    <div className="rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-6 shadow-sm">
       <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
         {/* Avatar */}
         <div className="relative">
@@ -48,29 +48,29 @@ function ProfileHeaderDisplay({ displayName, username, avatarUrl, onOpenSettings
               className="h-24 w-24 rounded-full border-4 border-[#58CC02] object-cover shadow-sm"
             />
           ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-[#58CC02] bg-[#E8FAD4] text-3xl font-extrabold text-[#58CC02] shadow-sm">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-[#58CC02] bg-[#E8FAD4] dark:bg-[#1E3B20] text-3xl font-extrabold text-[#58CC02] shadow-sm">
               {displayName.charAt(0).toUpperCase()}
             </div>
           )}
-          <span className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-[#58CC02] text-xs text-white">
+          <span className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white dark:border-[#131F24] bg-[#58CC02] text-xs text-white">
             ☀️
           </span>
         </div>
 
         {/* Profile Info */}
         <div className="flex-1 text-center sm:text-left">
-          <h1 className="text-2xl font-extrabold text-[#4B4B4B]">
+          <h1 className="text-2xl font-extrabold text-[#4B4B4B] dark:text-white">
             {displayName}
           </h1>
-          <p className="text-xs font-bold text-[#AFAFAF]">@{username}</p>
+          <p className="text-xs font-bold text-[#AFAFAF] dark:text-[#8495A0]">@{username}</p>
 
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-[#777777] sm:justify-start">
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-[#777777] dark:text-[#8495A0] sm:justify-start">
             <span className="flex items-center gap-1.5">
-              <Calendar className="h-4 w-4 text-[#AFAFAF]" />
+              <Calendar className="h-4 w-4 text-[#AFAFAF] dark:text-[#52656D]" />
               <span>Joined September 2026</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <Users className="h-4 w-4 text-[#AFAFAF]" />
+              <Users className="h-4 w-4 text-[#AFAFAF] dark:text-[#52656D]" />
               <span>0 Following · 0 Followers</span>
             </span>
           </div>
@@ -84,7 +84,7 @@ function ProfileHeaderDisplay({ displayName, username, avatarUrl, onOpenSettings
               </span>
               <span className="h-1/3 w-full bg-[#278E43]" />
             </span>
-            <span className="text-xs font-extrabold text-[#4B4B4B]">
+            <span className="text-xs font-extrabold text-[#4B4B4B] dark:text-white">
               Kurdish (Sorani) Course
             </span>
           </div>
@@ -96,7 +96,7 @@ function ProfileHeaderDisplay({ displayName, username, avatarUrl, onOpenSettings
             <button
               type="button"
               onClick={onOpenSettings}
-              className="flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-[#E5E5E5] text-[#777777] hover:bg-[#F7F7F7] hover:text-[#4B4B4B] transition-colors cursor-pointer"
+              className="flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-[#E5E5E5] dark:border-[#37464F] text-[#777777] dark:text-[#8495A0] hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] hover:text-[#4B4B4B] dark:hover:text-white transition-colors cursor-pointer"
               title="Account Settings"
             >
               <Settings className="h-5 w-5" />
@@ -218,55 +218,55 @@ function ProfileInner() {
 
         {/* Statistics Section */}
         <section className="mt-8">
-          <h2 className="text-xl font-extrabold text-[#4B4B4B]">Statistics</h2>
+          <h2 className="text-xl font-extrabold text-[#4B4B4B] dark:text-white">Statistics</h2>
           <div className="mt-4 grid grid-cols-2 gap-4">
             {/* Day Streak */}
-            <div className="flex items-center gap-3.5 rounded-3xl border-2 border-[#E5E5E5] bg-white p-4 shadow-sm">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FFF4E5] text-[#FF9600]">
+            <div className="flex items-center gap-3.5 rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-4 shadow-sm">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FFF4E5] dark:bg-[#341F05] text-[#FF9600]">
                 <Flame className="h-6 w-6 fill-[#FF9600]" />
               </div>
               <div>
-                <span className="text-xl font-extrabold text-[#4B4B4B]">
+                <span className="text-xl font-extrabold text-[#4B4B4B] dark:text-white">
                   {stats.currentStreak}
                 </span>
-                <p className="text-xs font-bold text-[#AFAFAF]">Day streak</p>
+                <p className="text-xs font-bold text-[#AFAFAF] dark:text-[#8495A0]">Day streak</p>
               </div>
             </div>
 
             {/* Total XP */}
-            <div className="flex items-center gap-3.5 rounded-3xl border-2 border-[#E5E5E5] bg-white p-4 shadow-sm">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FFF9E6] text-[#FFC800]">
+            <div className="flex items-center gap-3.5 rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-4 shadow-sm">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FFF9E6] dark:bg-[#342805] text-[#FFC800]">
                 <Zap className="h-6 w-6 fill-[#FFC800]" />
               </div>
               <div>
-                <span className="text-xl font-extrabold text-[#4B4B4B]">
+                <span className="text-xl font-extrabold text-[#4B4B4B] dark:text-white">
                   {stats.totalXp}
                 </span>
-                <p className="text-xs font-bold text-[#AFAFAF]">Total XP</p>
+                <p className="text-xs font-bold text-[#AFAFAF] dark:text-[#8495A0]">Total XP</p>
               </div>
             </div>
 
             {/* Current League */}
-            <div className="flex items-center gap-3.5 rounded-3xl border-2 border-[#E5E5E5] bg-white p-4 shadow-sm">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FFF4E5] text-[#CD7F32]">
+            <div className="flex items-center gap-3.5 rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-4 shadow-sm">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FFF4E5] dark:bg-[#341F05] text-[#CD7F32]">
                 <Shield className="h-6 w-6 fill-[#CD7F32]" />
               </div>
               <div>
-                <span className="text-base font-extrabold text-[#4B4B4B]">
+                <span className="text-base font-extrabold text-[#4B4B4B] dark:text-white">
                   Bronze
                 </span>
-                <p className="text-xs font-bold text-[#AFAFAF]">Current league</p>
+                <p className="text-xs font-bold text-[#AFAFAF] dark:text-[#8495A0]">Current league</p>
               </div>
             </div>
 
             {/* Top 3 Finishes */}
-            <div className="flex items-center gap-3.5 rounded-3xl border-2 border-[#E5E5E5] bg-white p-4 shadow-sm">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FFF9E6] text-[#FFC800]">
+            <div className="flex items-center gap-3.5 rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-4 shadow-sm">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FFF9E6] dark:bg-[#342805] text-[#FFC800]">
                 <Trophy className="h-6 w-6" />
               </div>
               <div>
-                <span className="text-xl font-extrabold text-[#4B4B4B]">0</span>
-                <p className="text-xs font-bold text-[#AFAFAF]">Top 3 finishes</p>
+                <span className="text-xl font-extrabold text-[#4B4B4B] dark:text-white">0</span>
+                <p className="text-xs font-bold text-[#AFAFAF] dark:text-[#8495A0]">Top 3 finishes</p>
               </div>
             </div>
           </div>
@@ -275,10 +275,10 @@ function ProfileInner() {
         {/* Achievements Section */}
         <section className="mt-8 mb-12">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-extrabold text-[#4B4B4B]">
+            <h2 className="text-xl font-extrabold text-[#4B4B4B] dark:text-white">
               Achievements
             </h2>
-            <span className="text-xs font-extrabold text-[#1CB0F6]">
+            <span className="text-xs font-extrabold text-[#1CB0F6] dark:text-[#3BC0F8]">
               View All
             </span>
           </div>
@@ -291,7 +291,7 @@ function ProfileInner() {
               return (
                 <div
                   key={item.id}
-                  className="flex items-center gap-4 rounded-3xl border-2 border-[#E5E5E5] bg-white p-5 shadow-sm"
+                  className="flex items-center gap-4 rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-5 shadow-sm"
                 >
                   <div
                     className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${item.bg} ${item.color}`}
@@ -301,30 +301,28 @@ function ProfileInner() {
 
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-extrabold text-[#4B4B4B]">
+                      <h3 className="text-sm font-extrabold text-[#4B4B4B] dark:text-white">
                         {item.title}
                       </h3>
-                      <span className="text-[11px] font-extrabold uppercase text-[#AFAFAF]">
+                      <span className="text-[11px] font-extrabold uppercase text-[#AFAFAF] dark:text-[#8495A0]">
                         Level {item.level}
                       </span>
                     </div>
-                    <p className="mt-0.5 text-xs text-[#777777]">
+                    <p className="mt-0.5 text-xs text-[#777777] dark:text-[#8495A0]">
                       {item.description}
                     </p>
 
                     {/* Progress */}
                     <div className="mt-2.5">
-                      <div className="flex justify-between text-[11px] font-extrabold text-[#AFAFAF]">
+                      <div className="flex justify-between text-[11px] font-extrabold text-[#AFAFAF] dark:text-[#8495A0]">
                         <span>
                           {Math.min(item.current, item.target)} / {item.target}
                         </span>
-                        {isUnlocked && (
-                          <span className="text-[#58CC02]">Completed</span>
-                        )}
+                        <span>{isUnlocked ? "COMPLETED" : `${Math.floor((Math.min(item.current, item.target) / item.target) * 100)}%`}</span>
                       </div>
-                      <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-[#E5E5E5]">
+                      <div className="mt-1 h-3 w-full overflow-hidden rounded-full bg-[#E5E5E5] dark:bg-[#37464F]">
                         <div
-                          className={`h-full rounded-full transition-all ${item.barColor}`}
+                          className={`h-full rounded-full transition-all duration-300 ${item.barColor}`}
                           style={{
                             width: `${Math.min(
                               100,

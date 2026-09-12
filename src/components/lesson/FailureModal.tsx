@@ -19,23 +19,23 @@ export function FailureModal({
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-xl">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#FFDFE0]">
-          <HeartCrack className="h-10 w-10 text-[#EA2B2B]" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+      <div className="w-full max-w-sm rounded-3xl border-2 border-[#E5E5E5] bg-white p-8 text-center shadow-xl dark:border-[#37464F] dark:bg-[#131F24]">
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#FFDFE0] dark:bg-[#3A181D]">
+          <HeartCrack className="h-10 w-10 text-[#EA2B2B] dark:text-[#FF5252]" />
         </div>
-        <h2 className="mt-4 text-2xl font-extrabold text-[#4B4B4B]">
+        <h2 className="mt-4 text-2xl font-extrabold text-[#4B4B4B] dark:text-white">
           You ran out of hearts!
         </h2>
         {correctSolution ? (
-          <p className="mt-2 text-sm font-bold text-[#777777]">
+          <p className="mt-2 text-sm font-bold text-[#777777] dark:text-[#8495A0]">
             Last correct solution:{" "}
-            <span dir="rtl" lang="ku" className="font-kurdish text-base kurdish-word">
+            <span dir="rtl" lang="ku" className="font-kurdish text-base kurdish-word text-[#EA2B2B] dark:text-[#FF5252]">
               {correctSolution}
             </span>
           </p>
         ) : null}
-        <p className="mt-2 text-sm text-[#777777]">
+        <p className="mt-2 text-sm text-[#777777] dark:text-[#8495A0]">
           Practice the words to sharpen up, then try the lesson again.
         </p>
 
@@ -50,7 +50,7 @@ export function FailureModal({
           </Link>
           <Link
             href="/learn"
-            className="text-sm font-extrabold uppercase tracking-wide text-[#AFAFAF] hover:text-[#777777]"
+            className="text-sm font-extrabold uppercase tracking-wide text-[#AFAFAF] hover:text-[#777777] dark:text-[#8495A0] dark:hover:text-white"
           >
             Exit lesson
           </Link>

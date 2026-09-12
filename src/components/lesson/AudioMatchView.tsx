@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Check, Volume2, VolumeX, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Exercise } from "@/lib/sessionMachine";
@@ -24,11 +25,46 @@ export function AudioMatchView({
   onSelect,
 }: AudioMatchViewProps) {
   const { play, isPlayingUrl, isAudioUnavailable } = useAudioPlayer();
-  const audioUrl = exercise.solutionData.audioUrl ?? null;
-  const unavailable = isAudioUnavailable(audioUrl);
+  const [speaking, setSpeaking] = useState(false);
+  const audioUrl = (exercise.solutionData.audioUrl as string | undefined) ?? null;
   const answered = lastCorrect !== null;
-  const correctAnswer = (exercise.solutionData.correct ?? "").trim();
+  const correctAnswer = ((exercise.solutionData.correct as string) ?? "").trim();
   const isKurdishAudio = exercise.solutionData.audioLang === "kurdish";
+  const isEnglishAudio =
+    exercise.solutionData.audioLang === "english" ||
+    (!isKurdishAudio && /^[a-zA-Z\s,.'!?-]+$/.test(correctAnswer));
+
+  // If we have HTML5 audio URL, check its availability. If not, check speech synthesis capability.
+  const hasSpeechSynth = typeof window !== "undefined" && "speechSynthesis" in window;
+  const unavailable = audioUrl
+    ? isAudioUnavailable(audioUrl)
+    : !hasSpeechSynth || !correctAnswer;
+
+  const isPlaying = isPlayingUrl(audioUrl) || speaking;
+
+  // Cleanup speech on unmount or exercise switch
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [exercise._id]);
+
+  const handlePlay = () => {
+    if (audioUrl && !isAudioUnavailable(audioUrl)) {
+      play(audioUrl);
+    } else if (hasSpeechSynth && correctAnswer) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(correctAnswer);
+      utterance.lang = "en-US";
+      utterance.rate = 0.85;
+      utterance.onstart = () => setSpeaking(true);
+      utterance.onend = () => setSpeaking(false);
+      utterance.onerror = () => setSpeaking(false);
+      window.speechSynthesis.speak(utterance);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -36,30 +72,43 @@ export function AudioMatchView({
         <button
           type="button"
           disabled={unavailable}
-          onClick={() => play(audioUrl)}
+          onClick={handlePlay}
           aria-label="Play audio"
           className={cn(
             "flex h-24 w-24 items-center justify-center rounded-3xl border-b-4 text-white transition-all",
             unavailable
               ? "cursor-not-allowed border-[#E5E5E5] bg-[#E5E5E5] text-[#AFAFAF]"
-              : isPlayingUrl(audioUrl)
+              : isPlaying
                 ? "translate-y-[2px] border-b-2 border-[#1899D6] bg-[#1CB0F6]"
-                : "border-[#1899D6] bg-[#1CB0F6] hover:bg-[#4FC3F9] active:translate-y-[2px] active:border-b-2"
+                : "border-[#1899D6] bg-[#1CB0F6] hover:bg-[#4FC3F9] active:translate-y-[2px] active:border-b-2 shadow-sm cursor-pointer"
           )}
         >
           {unavailable ? (
             <VolumeX className="h-10 w-10" />
           ) : (
             <Volume2
-              className={cn("h-10 w-10", isPlayingUrl(audioUrl) && "animate-pulse")}
+              className={cn("h-10 w-10", isPlaying && "animate-pulse")}
             />
           )}
         </button>
         {unavailable ? (
-          <span className="text-sm font-bold text-[#AFAFAF]">Audio unavailable</span>
+          <span className="text-sm font-bold text-[#AFAFAF] dark:text-[#8495A0]">Audio unavailable</span>
         ) : (
-          <span className="text-sm font-bold text-[#777777]">
-            Tap the speaker, then choose {isKurdishAudio ? "the Kurdish text" : "what you hear"}
+          <span className="text-sm font-bold text-[#777777] dark:text-[#8495A0] text-center">
+            {isEnglishAudio ? (
+              <>
+                <span dir="rtl" className="font-kurdish font-bold kurdish-word text-[#4B4B4B] dark:text-white">
+                  گوێ بگرە، پاشان ئەوەی دەیبیستیت هەڵبژێرە
+                </span>
+                <span className="block text-xs text-[#AFAFAF] dark:text-[#8495A0]">
+                  (Listen and tap what you hear)
+                </span>
+              </>
+            ) : isKurdishAudio ? (
+              "Tap the speaker, then choose the Kurdish text"
+            ) : (
+              "Tap the speaker, then choose what you hear"
+            )}
           </span>
         )}
       </div>
@@ -70,6 +119,7 @@ export function AudioMatchView({
           const isCorrectRow =
             answered && option.trim().toLowerCase() === correctAnswer.toLowerCase();
           const isWrongPick = answered && isSelected && !isCorrectRow;
+          const isOptionKurdish = /[\u0600-\u06FF]/.test(option);
 
           return (
             <button
@@ -78,40 +128,42 @@ export function AudioMatchView({
               disabled={answered}
               onClick={() => onSelect(option)}
               className={cn(
-                "flex items-center gap-3 rounded-2xl border-2 border-b-4 px-4 py-3 text-left font-bold transition-colors",
+                "flex items-center gap-3 rounded-2xl border-2 border-b-4 px-4 py-3 font-bold transition-colors",
                 !answered && isSelected
-                  ? "border-[#84D8FF] bg-[#DDF4FF] text-[#1899D6]"
+                  ? "border-[#84D8FF] bg-[#DDF4FF] text-[#1899D6] dark:border-[#3BC0F8] dark:bg-[#202F36] dark:text-[#3BC0F8]"
                   : !answered
-                    ? "border-[#E5E5E5] bg-white text-[#4B4B4B] hover:bg-[#F7F7F7]"
+                    ? "border-[#E5E5E5] bg-white text-[#4B4B4B] hover:bg-[#F7F7F7] dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#DCE6EC] dark:hover:bg-[#202F36]"
                     : isCorrectRow
-                      ? "border-[#A5ED6E] bg-[#D7FFB8] text-[#58A700]"
+                      ? "border-[#A5ED6E] bg-[#D7FFB8] text-[#58A700] dark:border-[#58CC02] dark:bg-[#1B351B] dark:text-[#58CC02]"
                       : isWrongPick
-                        ? "border-[#FFB2B2] bg-[#FFDFE0] text-[#EA2B2B]"
-                        : "border-[#E5E5E5] bg-white text-[#AFAFAF]"
+                        ? "border-[#FFB2B2] bg-[#FFDFE0] text-[#EA2B2B] dark:border-[#EA2B2B] dark:bg-[#3A181D] dark:text-[#FF6666]"
+                        : "border-[#E5E5E5] bg-white text-[#AFAFAF] dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#52656D]"
               )}
             >
               <span
                 className={cn(
                   "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 border-b-4 text-xs font-extrabold",
                   !answered && isSelected
-                    ? "border-[#84D8FF] bg-white text-[#1899D6]"
+                    ? "border-[#84D8FF] bg-white text-[#1899D6] dark:border-[#3BC0F8] dark:bg-[#131F24] dark:text-[#3BC0F8]"
                     : !answered
-                      ? "border-[#E5E5E5] bg-white text-[#AFAFAF]"
+                      ? "border-[#E5E5E5] bg-white text-[#AFAFAF] dark:border-[#37464F] dark:bg-[#202F36] dark:text-[#8495A0]"
                       : isCorrectRow
-                        ? "border-[#A5ED6E] bg-white text-[#58A700]"
+                        ? "border-[#A5ED6E] bg-white text-[#58A700] dark:border-[#58CC02] dark:bg-[#131F24] dark:text-[#58CC02]"
                         : isWrongPick
-                          ? "border-[#FFB2B2] bg-white text-[#EA2B2B]"
-                          : "border-[#E5E5E5] bg-white text-[#AFAFAF]"
+                          ? "border-[#FFB2B2] bg-white text-[#EA2B2B] dark:border-[#EA2B2B] dark:bg-[#131F24] dark:text-[#FF6666]"
+                          : "border-[#E5E5E5] bg-white text-[#AFAFAF] dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#52656D]"
                 )}
               >
                 {LABELS[index] ?? index + 1}
               </span>
               <span
-                dir={isKurdishAudio ? "rtl" : "ltr"}
-                lang={isKurdishAudio ? "ku" : "en"}
+                dir={isOptionKurdish ? "rtl" : "ltr"}
+                lang={isOptionKurdish ? "ku" : "en"}
                 className={cn(
                   "flex-1",
-                  isKurdishAudio && "font-kurdish text-2xl kurdish-word"
+                  isOptionKurdish
+                    ? "font-kurdish text-2xl kurdish-word text-right"
+                    : "font-sans text-lg font-bold text-left"
                 )}
               >
                 {option}

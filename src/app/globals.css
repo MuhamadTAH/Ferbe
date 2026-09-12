@@ -1,28 +1,46 @@
 @import "tailwindcss";
 
-:root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #059669;
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #f8fafc;
-  --accent-foreground: #0f172a;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #cbd5e1;
-  --ring: #059669;
-  --radius: 0.85rem;
+@custom-variant dark (&:where(.dark, .dark *));
 
-  /* Duolingo-style palette used by the learning experience */
+:root {
+  --background: #ffffff;
+  --foreground: #4b4b4b;
+  --card: #ffffff;
+  --card-foreground: #4b4b4b;
+  --popover: #ffffff;
+  --popover-foreground: #4b4b4b;
+  --primary: #58cc02;
+  --primary-foreground: #ffffff;
+  --secondary: #f7f7f7;
+  --secondary-foreground: #4b4b4b;
+  --muted: #f7f7f7;
+  --muted-foreground: #777777;
+  --accent: #f7f7f7;
+  --accent-foreground: #4b4b4b;
+  --destructive: #ff4b4b;
+  --destructive-foreground: #ffffff;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #58cc02;
+  --radius: 1rem;
+
+  /* Duolingo light theme tokens */
+  --duo-canvas: #ffffff;
+  --duo-surface: #ffffff;
+  --duo-surface-elevated: #f7f7f7;
+  --duo-border: #e5e5e5;
+  --duo-border-dark: #afafaf;
+  --duo-text-primary: #3c3c3c;
+  --duo-text-secondary: #777777;
+  --duo-text-muted: #afafaf;
+  --duo-node-inactive: #e5e5e5;
+  --duo-node-inactive-border: #c7c7c7;
+  --duo-node-inactive-text: #afafaf;
+  --duo-nav-active-bg: #ddf4ff;
+  --duo-nav-active-border: #1cb0f6;
+  --duo-nav-active-text: #1899d6;
+
+  /* Shared Duolingo palette */
   --duo-green: #58cc02;
   --duo-green-dark: #58a700;
   --duo-blue: #1cb0f6;
@@ -37,28 +55,42 @@
   --duo-swan: #e5e5e5;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #090d16;
-    --foreground: #f8fafc;
-    --card: #0f172a;
-    --card-foreground: #f8fafc;
-    --popover: #0f172a;
-    --popover-foreground: #f8fafc;
-    --primary: #10b981;
-    --primary-foreground: #ffffff;
-    --secondary: #1e293b;
-    --secondary-foreground: #f8fafc;
-    --muted: #1e293b;
-    --muted-foreground: #94a3b8;
-    --accent: #1e293b;
-    --accent-foreground: #f8fafc;
-    --destructive: #7f1d1d;
-    --destructive-foreground: #f8fafc;
-    --border: #334155;
-    --input: #334155;
-    --ring: #10b981;
-  }
+.dark {
+  --background: #131f24;
+  --foreground: #ffffff;
+  --card: #131f24;
+  --card-foreground: #ffffff;
+  --popover: #131f24;
+  --popover-foreground: #ffffff;
+  --primary: #58cc02;
+  --primary-foreground: #ffffff;
+  --secondary: #202f36;
+  --secondary-foreground: #ffffff;
+  --muted: #202f36;
+  --muted-foreground: #8495a0;
+  --accent: #202f36;
+  --accent-foreground: #ffffff;
+  --destructive: #ff4b4b;
+  --destructive-foreground: #ffffff;
+  --border: #37464f;
+  --input: #37464f;
+  --ring: #58cc02;
+
+  /* Duolingo dark theme tokens (exact match to live Duolingo dark mode) */
+  --duo-canvas: #131f24;
+  --duo-surface: #131f24;
+  --duo-surface-elevated: #202f36;
+  --duo-border: #37464f;
+  --duo-border-dark: #202f36;
+  --duo-text-primary: #ffffff;
+  --duo-text-secondary: #8495a0;
+  --duo-text-muted: #52656d;
+  --duo-node-inactive: #37464f;
+  --duo-node-inactive-border: #2b383f;
+  --duo-node-inactive-text: #52656d;
+  --duo-nav-active-bg: #202f36;
+  --duo-nav-active-border: #3bc0f8;
+  --duo-nav-active-text: #3bc0f8;
 }
 
 @theme inline {
@@ -90,6 +122,7 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Explicit rule: Kurdish text cursive ligatures must not be separated by tracking/letter-spacing */
@@ -109,4 +142,14 @@ body {
 }
 .animate-shake {
   animation: shake 0.4s ease-in-out;
+}
+
+/* Duolingo Tactile 3D Button Utility */
+.duo-btn-tactile {
+  transition: transform 0.1s ease, border-bottom-width 0.1s ease, box-shadow 0.1s ease;
+}
+.duo-btn-tactile:active {
+  transform: translateY(4px);
+  border-bottom-width: 0 !important;
+  margin-top: 4px;
 }
