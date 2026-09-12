@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { PushButton } from "@/components/duo/PushButton";
 import { QuestChest } from "@/components/duo/QuestChest";
+import { SquirrelMascot } from "@/components/duo/SquirrelMascot";
 
 export interface ScorecardItem {
   id: string;
@@ -124,11 +125,14 @@ export function LessonComplete({
       {/* SLIDE 0: SUMMARY STATS */}
       {slide === "summary" && (
         <>
-          <div className="relative flex h-32 w-32 items-center justify-center">
-            <div className="absolute inset-0 rounded-full bg-[#FFC800]/20 animate-ping" />
-            <div className="flex h-28 w-28 items-center justify-center rounded-full bg-[#FFC800] shadow-lg">
-              <Star className="h-14 w-14 fill-white text-white drop-shadow-sm" />
-            </div>
+          <div className="relative flex items-center justify-center -mb-2">
+            <SquirrelMascot
+              mood="celebrating"
+              accessory="golden_acorn"
+              size={144}
+              animate
+              title="Smorik Celebrating Kurdish Lesson Completion"
+            />
           </div>
 
           <div>

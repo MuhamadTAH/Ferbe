@@ -19,6 +19,7 @@ import {
 import { useActiveCourse } from "@/hooks/useActiveCourse";
 import { PushButton } from "@/components/duo/PushButton";
 import { QuestChest } from "@/components/duo/QuestChest";
+import { SquirrelMotivationCard } from "@/components/duo/SquirrelMotivationCard";
 import {
   StatusFlair,
   STATUS_FLAIRS,
@@ -607,6 +608,9 @@ export function RightSidebar({
 
       {/* Optional Custom Card (e.g. Friends Card on Profile) */}
       {customCard}
+
+      {/* Smorik Daily Motivation Card */}
+      <SquirrelMotivationCard />
 
       {/* 2. Daily Quests Card */}
       <div className="rounded-3xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] p-5 shadow-sm">

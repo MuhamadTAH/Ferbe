@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, X, Flag, CheckCircle2 } from "lucide-react";
 import { PushButton } from "@/components/duo/PushButton";
+import { SquirrelMascot } from "@/components/duo/SquirrelMascot";
 import { cn } from "@/lib/utils";
 
 interface FeedbackBannerProps {
@@ -58,18 +59,27 @@ export function FeedbackBanner({
         role="status"
       >
         <div className="mx-auto flex max-w-2xl items-center gap-4 px-4 py-4 sm:px-6">
-          <span
-            className={cn(
-              "flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white shadow-xs dark:bg-[#131F24]",
-              correct ? "text-[#58A700] dark:text-[#58CC02]" : "text-[#EA2B2B] dark:text-[#FF5252]"
-            )}
-          >
-            {correct ? (
-              <Check className="h-7 w-7 stroke-[3]" />
-            ) : (
-              <X className="h-7 w-7 stroke-[3]" />
-            )}
-          </span>
+          <div className="relative shrink-0 flex items-center">
+            <SquirrelMascot
+              mood={correct ? "celebrating" : "thinking"}
+              accessory={correct ? "golden_acorn" : "none"}
+              size={54}
+              animate
+              title={correct ? "Smorik cheering you on!" : "Smorik encouraging you"}
+            />
+            <span
+              className={cn(
+                "absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-xs dark:bg-[#131F24]",
+                correct ? "text-[#58A700] dark:text-[#58CC02]" : "text-[#EA2B2B] dark:text-[#FF5252]"
+              )}
+            >
+              {correct ? (
+                <Check className="h-4 w-4 stroke-[3]" />
+              ) : (
+                <X className="h-4 w-4 stroke-[3]" />
+              )}
+            </span>
+          </div>
 
           <div className="min-w-0 flex-1">
             <p

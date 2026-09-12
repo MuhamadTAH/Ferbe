@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Sparkles,
   BookOpen,
   Dumbbell,
   Trophy,
@@ -24,6 +23,7 @@ import {
 } from "lucide-react";
 import { SignedIn, SignedOut, UserButton, useClerk } from "@clerk/nextjs";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
+import { SquirrelAvatar } from "@/components/duo/SquirrelAvatar";
 
 const NAV_ITEMS = [
   {
@@ -194,9 +194,13 @@ export function SidebarNav() {
             href="/learn"
             className="mb-8 flex items-center gap-3 px-3 py-2 text-2xl font-extrabold text-[#58CC02] transition-opacity hover:opacity-90"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#58CC02] text-white shadow-sm shadow-[#58CC02]/30">
-              <Sparkles className="h-6 w-6" />
-            </span>
+            <SquirrelAvatar
+              size={40}
+              mood="happy"
+              variant="green"
+              shape="rounded"
+              alt="Smorik mascot"
+            />
             <span className="tracking-tight">Fêrbe</span>
             <span
               dir="rtl"

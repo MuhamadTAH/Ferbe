@@ -20,6 +20,7 @@ import { RightSidebar } from "@/components/learn/RightSidebar";
 import { LessonPopover } from "@/components/learn/LessonPopover";
 import { UnitGuidebookModal } from "@/components/learn/UnitGuidebookModal";
 import { TreasureChestNode } from "@/components/learn/TreasureChestNode";
+import { SquirrelMascot } from "@/components/duo/SquirrelMascot";
 import { useActiveCourse } from "@/hooks/useActiveCourse";
 
 interface LessonView {
@@ -181,8 +182,14 @@ function PathPage() {
                             </span>
                             <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-white dark:border-t-[#131F24]" />
                           </div>
-                          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-[#58CC02]/30 bg-gradient-to-br from-[#E8FAD4] to-[#BFF582] dark:from-[#1E3B20] dark:to-[#2A522C] text-3xl shadow-sm transform hover:scale-105 transition-transform cursor-pointer">
-                            🦉
+                          <div className="flex items-center justify-center cursor-pointer">
+                            <SquirrelMascot
+                              mood="happy"
+                              size={68}
+                              animate
+                              interactive
+                              title="Smorik cheering you on the path!"
+                            />
                           </div>
                         </div>
                       )}

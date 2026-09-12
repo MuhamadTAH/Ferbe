@@ -47,11 +47,19 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                var theme = localStorage.getItem('ferbe_theme');
-                if (theme === 'light') {
+                var urlParams = new URLSearchParams(window.location.search);
+                var themeParam = urlParams.get('theme');
+                if (themeParam === 'light') {
                   document.documentElement.classList.remove('dark');
-                } else {
+                } else if (themeParam === 'dark') {
                   document.documentElement.classList.add('dark');
+                } else {
+                  var theme = localStorage.getItem('ferbe_theme');
+                  if (theme === 'light') {
+                    document.documentElement.classList.remove('dark');
+                  } else {
+                    document.documentElement.classList.add('dark');
+                  }
                 }
               } catch (e) {
                 document.documentElement.classList.add('dark');

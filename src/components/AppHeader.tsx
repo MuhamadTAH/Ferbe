@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Dumbbell, Sparkles, User, Flame, Heart } from "lucide-react";
+import { BookOpen, Dumbbell, User, Flame, Heart } from "lucide-react";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SquirrelAvatar } from "@/components/duo/SquirrelAvatar";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
@@ -85,9 +86,13 @@ export function AppHeader() {
           href="/learn"
           className="flex items-center gap-2.5 text-xl font-extrabold text-[#58CC02] transition-opacity hover:opacity-90"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#58CC02] text-white shadow-sm shadow-[#58CC02]/30">
-            <Sparkles className="h-5 w-5" />
-          </span>
+          <SquirrelAvatar
+            size={36}
+            mood="happy"
+            variant="green"
+            shape="rounded"
+            alt="Smorik mascot"
+          />
           <span className="tracking-tight">Fêrbe</span>
           <span
             dir="rtl"
