@@ -38,9 +38,10 @@ export function JumpLessonNode({
   };
 
   return (
-    <div className="relative my-8 flex flex-col items-center select-none">
+    <div className="relative my-3 flex flex-col items-center select-none">
       {/* Companion Mascot Standing on the Left Side of the Path (Duolingo Style) */}
-      <div className="absolute -left-28 -top-3 hidden sm:flex flex-col items-center select-none animate-in fade-in duration-300">
+      <div className="absolute -left-36 -top-3 hidden sm:flex flex-col items-center select-none animate-in fade-in duration-300">
+
         <div className="relative mb-1 rounded-2xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] px-2.5 py-1 text-[11px] font-extrabold text-[#4B4B4B] dark:text-white shadow-xs">
           <span className="font-kurdish text-xs font-bold text-[#CE82FF] kurdish-word">
             ئامادەی؟

@@ -118,9 +118,16 @@ function PathPage() {
           const lessonsPart1 = lessons.slice(0, midIndex);
           const lessonsPart2 = lessons.slice(midIndex);
 
+          // A unit is unlocked if it is the first unit, or all lessons in the previous unit are completed
+          const isUnitUnlocked =
+            unitIdx === 0 ||
+            curriculum.units[unitIdx - 1].lessons.every((l) => l.isCompleted);
+
           // Chest is unlocked when all lessons preceding it are completed
           const isChestUnlocked =
-            lessonsPart1.length > 0 && lessonsPart1.every((l) => l.isCompleted);
+            isUnitUnlocked &&
+            lessonsPart1.length > 0 &&
+            lessonsPart1.every((l) => l.isCompleted);
 
           return (
             <section
@@ -128,51 +135,91 @@ function PathPage() {
               id={`unit-section-${unit.order}`}
               className="mb-14"
             >
-              {/* Unit Header Banner with Guidebook Button */}
-              <div className="flex items-center justify-between rounded-3xl bg-[#58CC02] px-6 py-5 text-white shadow-[0_4px_0_#46A302]">
-                <div>
+              {/* Unit Header: Active Green Banner for Unlocked Unit, Clean Duolingo Divider for Locked Unit */}
+              {isUnitUnlocked ? (
+                <div className="flex items-center justify-between rounded-3xl bg-[#58CC02] px-6 py-5 text-white shadow-[0_4px_0_#46A302]">
+                  <div>
+                    <Link
+                      href="/sections"
+                      className="group inline-flex items-center gap-1 transition-opacity hover:opacity-90 cursor-pointer"
+                    >
+                      <span className="text-xs font-extrabold uppercase tracking-wider text-white/80 group-hover:text-white">
+                        Section 1, Unit {unit.order}
+                      </span>
+                      <ChevronRight className="h-3.5 w-3.5 text-white/80 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
+                    </Link>
+                    <h2 className="text-xl font-extrabold">{unit.title}</h2>
+                    <p className="mt-0.5 text-xs text-white/90">
+                      {currentCourse.slug === "english-from-kurdish"
+                        ? "فێربوونی وشە و ڕێزمانی سەرەکی زمانی ئینگلیزی"
+                        : "Master essential Kurdish Sorani vocabulary & greetings"}
+                    </p>
+                  </div>
                   <Link
-                    href="/sections"
-                    className="group inline-flex items-center gap-1 transition-opacity hover:opacity-90 cursor-pointer"
+                    href={`/guidebook/${unit.order}`}
+                    className="flex items-center gap-2 rounded-2xl border-b-4 border-[#3D8F02] bg-[#46A302] px-3.5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-[#4FB703] active:translate-y-[2px] active:border-b-2 shadow-sm cursor-pointer"
                   >
-                    <span className="text-xs font-extrabold uppercase tracking-wider text-white/80 group-hover:text-white">
-                      Section 1, Unit {unit.order}
-                    </span>
-                    <ChevronRight className="h-3.5 w-3.5 text-white/80 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
+                    <BookOpen className="h-4 w-4" />
+                    <span className="hidden sm:inline">Guidebook</span>
                   </Link>
-                  <h2 className="text-xl font-extrabold">{unit.title}</h2>
-                  <p className="mt-0.5 text-xs text-white/90">
-                    {currentCourse.slug === "english-from-kurdish"
-                      ? "فێربوونی وشە و ڕێزمانی سەرەکی زمانی ئینگلیزی"
-                      : "Master essential Kurdish Sorani vocabulary & greetings"}
-                  </p>
                 </div>
-                <Link
-                  href={`/guidebook/${unit.order}`}
-                  className="flex items-center gap-2 rounded-2xl border-b-4 border-[#3D8F02] bg-[#46A302] px-3.5 py-2.5 text-xs font-extrabold uppercase tracking-wider text-white transition-all hover:bg-[#4FB703] active:translate-y-[2px] active:border-b-2 shadow-sm cursor-pointer"
-                >
-                  <BookOpen className="h-4 w-4" />
-                  <span className="hidden sm:inline">Guidebook</span>
-                </Link>
-              </div>
+              ) : (
+                /* Clean Duolingo Section Title at the TOP of the locked section */
+                <header className="my-8 flex items-center justify-center gap-4 w-full select-none">
+                  <div className="h-[2px] flex-1 bg-[#E5E5E5] dark:bg-[#37464F]" />
+                  <div className="flex flex-col items-center">
+                    <span className="text-[11px] font-black uppercase tracking-wider text-[#AFAFAF] dark:text-[#52656D]">
+                      Unit {unit.order}
+                    </span>
+                    <h2 className="text-base sm:text-lg font-extrabold text-[#777777] dark:text-[#8495A0] px-3 whitespace-nowrap">
+                      {unit.title}
+                    </h2>
+                  </div>
+                  <div className="h-[2px] flex-1 bg-[#E5E5E5] dark:bg-[#37464F]" />
+                </header>
+              )}
 
               {/* Serpentine Learning Path Nodes */}
-              <ol className="mt-12 flex flex-col items-center gap-6">
-                {/* 1. Lessons Before Chest (Star Nodes) */}
-                {lessonsPart1.map((lesson, i) => {
-                  const previous = i > 0 ? lessonsPart1[i - 1] : null;
-                  const unlocked =
-                    unitIdx === 0 && i === 0
-                      ? true
-                      : unitIdx > 0 && i === 0
-                      ? curriculum.units[unitIdx - 1].lessons.every(
-                          (l) => l.isCompleted
+              <ol className="mt-8 flex flex-col items-center gap-6">
+                {/* 1. First Node: If unit is locked, render the JUMP HERE checkpoint as Node 1 */}
+                {!isUnitUnlocked ? (
+                  <li style={{ marginLeft: 0 }} className="relative flex flex-col items-center">
+                    <JumpLessonNode
+                      currentUnitOrder={curriculum.units[unitIdx - 1]?.order ?? 1}
+                      nextUnitOrder={unit.order}
+                      nextUnitTitle={unit.title}
+                    />
+                  </li>
+                ) : (
+                  /* If unlocked, render Lesson 1 normally */
+                  lessonsPart1[0] && (
+                    <PathLessonNode
+                      key={lessonsPart1[0]._id}
+                      lesson={lessonsPart1[0]}
+                      nodeType="star"
+                      unlocked={true}
+                      isDone={lessonsPart1[0].isCompleted}
+                      isCurrent={lessonsPart1[0]._id === currentActiveLessonId}
+                      isPopoverOpen={activeLessonId === lessonsPart1[0]._id}
+                      offset={0}
+                      onNodeClick={() =>
+                        setActiveLessonId(
+                          activeLessonId === lessonsPart1[0]._id ? null : lessonsPart1[0]._id
                         )
-                      : (previous?.isCompleted ?? false);
+                      }
+                      onClosePopover={() => setActiveLessonId(null)}
+                    />
+                  )
+                )}
+
+                {/* 2. Remaining lessons before chest (e.g. Lesson 2) */}
+                {lessonsPart1.slice(1).map((lesson, idx) => {
+                  const previous = lessonsPart1[idx];
+                  const unlocked = isUnitUnlocked && (previous?.isCompleted ?? false);
                   const isDone = lesson.isCompleted;
                   const isCurrent = lesson._id === currentActiveLessonId;
                   const isPopoverOpen = activeLessonId === lesson._id;
-                  const offset = i === 0 ? 0 : -45;
+                  const offset = -45;
 
                   return (
                     <PathLessonNode
@@ -192,7 +239,7 @@ function PathPage() {
                   );
                 })}
 
-                {/* 2. Mid-Unit Milestone Treasure Chest (Free-standing 2D Chest on Path) */}
+                {/* 3. Mid-Unit Milestone Treasure Chest (Free-standing 2D Chest on Path) */}
                 <li
                   style={{ marginLeft: -55 }}
                   className="relative flex flex-col items-center"
@@ -204,7 +251,7 @@ function PathPage() {
                   />
                 </li>
 
-                {/* 3. Lessons After Chest (Audio Practice, Star, and Final Trophy Challenge) */}
+                {/* 4. Lessons After Chest (Audio Practice, Star, and Final Trophy Challenge) */}
                 {lessonsPart2.map((lesson, j) => {
                   const isFirstAfterChest = j === 0;
                   const isLastInUnit = j === lessonsPart2.length - 1;
@@ -248,31 +295,11 @@ function PathPage() {
                   );
                 })}
               </ol>
-
-              {/* 4. Unit Divider & Jump Lesson (Between Units) */}
-              {unitIdx < curriculum.units.length - 1 && (
-                <div className="w-full my-8">
-                  {/* Clean Duolingo Unit Divider */}
-                  <div className="my-10 flex items-center justify-center gap-4 w-full select-none">
-                    <div className="h-[2px] flex-1 bg-[#E5E5E5] dark:bg-[#37464F]" />
-                    <span className="text-xs font-black uppercase tracking-wider text-[#777777] dark:text-[#8495A0]">
-                      {curriculum.units[unitIdx + 1].title}
-                    </span>
-                    <div className="h-[2px] flex-1 bg-[#E5E5E5] dark:bg-[#37464F]" />
-                  </div>
-
-                  {/* JUMP HERE? Fast-Forward Node */}
-                  <JumpLessonNode
-                    currentUnitOrder={unit.order}
-                    nextUnitOrder={curriculum.units[unitIdx + 1].order}
-                    nextUnitTitle={curriculum.units[unitIdx + 1].title}
-                  />
-                </div>
-              )}
             </section>
           );
         })}
       </main>
+
 
       {/* Right Column: Leaderboards, Quests & Profile Sync (Desktop Sticky) */}
       <RightSidebar
