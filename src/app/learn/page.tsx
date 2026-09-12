@@ -4,23 +4,18 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useQuery, useMutation } from "convex/react";
 import {
-  Check,
-  Star,
-  Lock,
   BookOpen,
   ChevronRight,
-  Flame,
-  Zap,
   ArrowUp,
 } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
 import { ConfigRequired, ErrorBoundary } from "@/components/states/ScreenState";
 import { RightSidebar } from "@/components/learn/RightSidebar";
-import { LessonPopover } from "@/components/learn/LessonPopover";
-import { UnitGuidebookModal } from "@/components/learn/UnitGuidebookModal";
 import { TreasureChestNode } from "@/components/learn/TreasureChestNode";
-import { SquirrelMascot } from "@/components/duo/SquirrelMascot";
+import { UnitGuidebookModal } from "@/components/learn/UnitGuidebookModal";
+import { PathLessonNode, LessonNodeType } from "@/components/learn/PathLessonNode";
+import { JumpLessonNode } from "@/components/learn/JumpLessonNode";
 import { useActiveCourse } from "@/hooks/useActiveCourse";
 
 interface LessonView {
@@ -106,15 +101,33 @@ function PathPage() {
     0
   );
 
-  return (
+    // Identify the current active lesson across the whole curriculum
+    const currentActiveLessonId =
+      curriculum.units
+        .flatMap((u) => u.lessons)
+        .find((l) => !l.isCompleted)?._id ?? null;
+
+    return (
     <div className="mx-auto flex max-w-5xl justify-center gap-10 px-4 py-8">
       {/* Main Path Column */}
       <main className="w-full max-w-xl">
-        {curriculum.units.map((unit) => {
-          const isUnitCompleted = unit.lessons.every((l) => l.isCompleted);
+        {curriculum.units.map((unit, unitIdx) => {
+          const lessons = unit.lessons;
+          // Split lessons into early lessons, mid-unit chest, and later lessons
+          const midIndex = Math.min(2, Math.max(1, Math.floor(lessons.length / 2)));
+          const lessonsPart1 = lessons.slice(0, midIndex);
+          const lessonsPart2 = lessons.slice(midIndex);
+
+          // Chest is unlocked when all lessons preceding it are completed
+          const isChestUnlocked =
+            lessonsPart1.length > 0 && lessonsPart1.every((l) => l.isCompleted);
 
           return (
-            <section key={unit._id} className="mb-16">
+            <section
+              key={unit._id}
+              id={`unit-section-${unit.order}`}
+              className="mb-14"
+            >
               {/* Unit Header Banner with Guidebook Button */}
               <div className="flex items-center justify-between rounded-3xl bg-[#58CC02] px-6 py-5 text-white shadow-[0_4px_0_#46A302]">
                 <div>
@@ -143,112 +156,119 @@ function PathPage() {
                 </Link>
               </div>
 
-              {/* Zigzag Learning Path Nodes */}
+              {/* Serpentine Learning Path Nodes */}
               <ol className="mt-12 flex flex-col items-center gap-6">
-                {unit.lessons.map((lesson, i) => {
-                  const previous = i > 0 ? unit.lessons[i - 1] : null;
-                  const unlocked = i === 0 || (previous?.isCompleted ?? false);
-                  const offset = ZIGZAG[i % ZIGZAG.length];
+                {/* 1. Lessons Before Chest (Star Nodes) */}
+                {lessonsPart1.map((lesson, i) => {
+                  const previous = i > 0 ? lessonsPart1[i - 1] : null;
+                  const unlocked =
+                    unitIdx === 0 && i === 0
+                      ? true
+                      : unitIdx > 0 && i === 0
+                      ? curriculum.units[unitIdx - 1].lessons.every(
+                          (l) => l.isCompleted
+                        )
+                      : (previous?.isCompleted ?? false);
                   const isDone = lesson.isCompleted;
+                  const isCurrent = lesson._id === currentActiveLessonId;
                   const isPopoverOpen = activeLessonId === lesson._id;
+                  const offset = i === 0 ? 0 : -45;
 
                   return (
-                    <li
+                    <PathLessonNode
                       key={lesson._id}
-                      style={{ marginLeft: offset }}
-                      className="relative flex flex-col items-center"
-                    >
-                      {/* Animated 'START' badge on current uncompleted active lesson */}
-                      {unlocked && !isDone && !isPopoverOpen ? (
-                        <button
-                          type="button"
-                          onClick={() => setActiveLessonId(lesson._id)}
-                          className="absolute -top-9 z-10 whitespace-nowrap rounded-xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-[#58CC02] shadow-sm animate-bounce"
-                        >
-                          Start
-                          <span className="absolute left-1/2 top-full -translate-x-1/2 border-8 border-transparent border-t-white dark:border-t-[#131F24]" />
-                        </button>
-                      ) : null}
+                      lesson={lesson}
+                      nodeType="star"
+                      unlocked={unlocked}
+                      isDone={isDone}
+                      isCurrent={isCurrent}
+                      isPopoverOpen={isPopoverOpen}
+                      offset={offset}
+                      onNodeClick={() =>
+                        setActiveLessonId(isPopoverOpen ? null : lesson._id)
+                      }
+                      onClosePopover={() => setActiveLessonId(null)}
+                    />
+                  );
+                })}
 
-                      {/* Mascot Character on Path Side (Duolingo Path Character) */}
-                      {i === 1 && (
-                        <div className="absolute -right-28 -top-2 hidden sm:flex flex-col items-center select-none animate-in fade-in duration-300">
-                          <div className="relative mb-1 rounded-2xl border-2 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#131F24] px-2.5 py-1 text-[11px] font-extrabold text-[#4B4B4B] dark:text-white shadow-xs">
-                            <span className="font-kurdish text-xs font-bold text-[#58CC02] kurdish-word">
-                              هەر بژی!
-                            </span>
-                            <span className="ml-1 text-[10px] text-[#AFAFAF] dark:text-[#8495A0]">
-                              (Keep going!)
-                            </span>
-                            <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-white dark:border-t-[#131F24]" />
-                          </div>
-                          <div className="flex items-center justify-center cursor-pointer">
-                            <SquirrelMascot
-                              mood="happy"
-                              size={68}
-                              animate
-                              interactive
-                              title="Smorik cheering you on the path!"
-                            />
-                          </div>
-                        </div>
-                      )}
+                {/* 2. Mid-Unit Milestone Treasure Chest (Free-standing 2D Chest on Path) */}
+                <li
+                  style={{ marginLeft: -55 }}
+                  className="relative flex flex-col items-center"
+                >
+                  <TreasureChestNode
+                    unitOrder={unit.order}
+                    isUnlocked={isChestUnlocked}
+                    showMascot={true}
+                  />
+                </li>
 
-                      {/* 3D Round Node Button */}
-                      {unlocked ? (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setActiveLessonId(
-                              isPopoverOpen ? null : lesson._id
-                            )
-                          }
-                          aria-label={lesson.title}
-                          className={`flex h-[72px] w-[72px] items-center justify-center rounded-full border-b-[6px] transition-all active:translate-y-[2px] active:border-b-2 ${
-                            isDone
-                              ? "border-[#46A302] bg-[#58CC02] text-white hover:bg-[#61E002]"
-                              : "border-[#46A302] bg-[#58CC02] text-white shadow-lg shadow-[#58CC02]/30 hover:bg-[#61E002]"
-                          }`}
-                        >
-                          {isDone ? (
-                            <Check className="h-9 w-9 stroke-[3]" />
-                          ) : (
-                            <span className="text-xl font-extrabold">
-                              {lesson.order}
-                            </span>
-                          )}
-                        </button>
-                      ) : (
-                        <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full border-b-[6px] border-[#C7C7C7] dark:border-[#2B383F] bg-[#E5E5E5] dark:bg-[#37464F] text-[#AFAFAF] dark:text-[#52656D]">
-                          <Lock className="h-7 w-7" />
-                        </span>
-                      )}
+                {/* 3. Lessons After Chest (Audio Practice, Star, and Final Trophy Challenge) */}
+                {lessonsPart2.map((lesson, j) => {
+                  const isFirstAfterChest = j === 0;
+                  const isLastInUnit = j === lessonsPart2.length - 1;
+                  const nodeType: LessonNodeType = isLastInUnit
+                    ? "trophy"
+                    : isFirstAfterChest
+                    ? "audio"
+                    : "star";
 
-                      {/* Interactive Lesson Speech-Bubble Popover */}
-                      {isPopoverOpen && unlocked && (
-                        <LessonPopover
-                          lessonId={lesson._id}
-                          title={lesson.title}
-                          order={lesson.order}
-                          xpReward={lesson.xpReward}
-                          isCompleted={isDone}
-                          onClose={() => setActiveLessonId(null)}
-                        />
-                      )}
+                  const previous = isFirstAfterChest
+                    ? lessonsPart1[lessonsPart1.length - 1]
+                    : lessonsPart2[j - 1];
+                  const unlocked =
+                    isChestUnlocked && (previous?.isCompleted ?? false);
+                  const isDone = lesson.isCompleted;
+                  const isCurrent = lesson._id === currentActiveLessonId;
+                  const isPopoverOpen = activeLessonId === lesson._id;
 
-                      <p className="mt-2 text-center text-xs font-bold text-[#777777] dark:text-[#8495A0]">
-                        {lesson.title}
-                      </p>
-                    </li>
+                  // Serpentine Offsets: audio (-30), intermediate star (+25), final trophy (0)
+                  const offset = isLastInUnit
+                    ? 0
+                    : isFirstAfterChest
+                    ? -30
+                    : 25;
+
+                  return (
+                    <PathLessonNode
+                      key={lesson._id}
+                      lesson={lesson}
+                      nodeType={nodeType}
+                      unlocked={unlocked}
+                      isDone={isDone}
+                      isCurrent={isCurrent}
+                      isPopoverOpen={isPopoverOpen}
+                      offset={offset}
+                      onNodeClick={() =>
+                        setActiveLessonId(isPopoverOpen ? null : lesson._id)
+                      }
+                      onClosePopover={() => setActiveLessonId(null)}
+                    />
                   );
                 })}
               </ol>
 
-              {/* End of Unit Milestone Treasure Chest */}
-              <TreasureChestNode
-                unitOrder={unit.order}
-                isUnlocked={isUnitCompleted}
-              />
+              {/* 4. Unit Divider & Jump Lesson (Between Units) */}
+              {unitIdx < curriculum.units.length - 1 && (
+                <div className="w-full my-8">
+                  {/* Clean Duolingo Unit Divider */}
+                  <div className="my-10 flex items-center justify-center gap-4 w-full select-none">
+                    <div className="h-[2px] flex-1 bg-[#E5E5E5] dark:bg-[#37464F]" />
+                    <span className="text-xs font-black uppercase tracking-wider text-[#777777] dark:text-[#8495A0]">
+                      {curriculum.units[unitIdx + 1].title}
+                    </span>
+                    <div className="h-[2px] flex-1 bg-[#E5E5E5] dark:bg-[#37464F]" />
+                  </div>
+
+                  {/* JUMP HERE? Fast-Forward Node */}
+                  <JumpLessonNode
+                    currentUnitOrder={unit.order}
+                    nextUnitOrder={curriculum.units[unitIdx + 1].order}
+                    nextUnitTitle={curriculum.units[unitIdx + 1].title}
+                  />
+                </div>
+              )}
             </section>
           );
         })}

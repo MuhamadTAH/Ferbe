@@ -9,6 +9,8 @@ export interface QuestChestProps {
   animated?: boolean;
   state?: "idle" | "shaking" | "opening" | "open" | "closed";
   glow?: boolean;
+  variant?: "wood" | "slate";
+  locked?: boolean;
 }
 
 export function QuestChest({
@@ -18,6 +20,8 @@ export function QuestChest({
   animated = false,
   state,
   glow = false,
+  variant = "wood",
+  locked = false,
 }: QuestChestProps) {
   // Determine effective visual state
   const effectiveState =
@@ -26,6 +30,7 @@ export function QuestChest({
   const isChestOpen = effectiveState === "open" || effectiveState === "opening";
   const isShaking = effectiveState === "shaking";
   const isIdle = effectiveState === "idle";
+  const isSlate = variant === "slate" || locked;
 
   return (
     <div
@@ -35,7 +40,7 @@ export function QuestChest({
       style={{ width: size, height: size }}
     >
       {/* Ambient Outer Glow */}
-      {(glow || isChestOpen || isShaking) && (
+      {(glow || isChestOpen || isShaking) && !isSlate && (
         <div
           className={`absolute inset-0 -m-1.5 rounded-full blur-md pointer-events-none transition-opacity duration-300 ${
             isChestOpen
@@ -56,17 +61,17 @@ export function QuestChest({
         className="w-full h-full drop-shadow-md overflow-visible transition-transform duration-300"
       >
         <defs>
-          {/* Wood Textures */}
+          {/* Wood / Slate Textures */}
           <linearGradient id="chestWoodLid" x1="50" y1="18" x2="50" y2="48" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#C86D3B" />
-            <stop offset="35%" stopColor="#A65B2E" />
-            <stop offset="100%" stopColor="#7A3B18" />
+            <stop offset="0%" stopColor={isSlate ? "#4B5E68" : "#C86D3B"} />
+            <stop offset="35%" stopColor={isSlate ? "#37464F" : "#A65B2E"} />
+            <stop offset="100%" stopColor={isSlate ? "#2B383F" : "#7A3B18"} />
           </linearGradient>
 
           <linearGradient id="chestWoodBase" x1="50" y1="46" x2="50" y2="86" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#964C23" />
-            <stop offset="60%" stopColor="#7E3D19" />
-            <stop offset="100%" stopColor="#5E2A0E" />
+            <stop offset="0%" stopColor={isSlate ? "#37464F" : "#964C23"} />
+            <stop offset="60%" stopColor={isSlate ? "#2B383F" : "#7E3D19"} />
+            <stop offset="100%" stopColor={isSlate ? "#202F36" : "#5E2A0E"} />
           </linearGradient>
 
           <linearGradient id="chestWoodInterior" x1="50" y1="20" x2="50" y2="52" gradientUnits="userSpaceOnUse">
@@ -74,18 +79,18 @@ export function QuestChest({
             <stop offset="100%" stopColor="#2D1103" />
           </linearGradient>
 
-          {/* Gold Brass Metallic Gradients */}
+          {/* Gold / Steel Metallic Gradients */}
           <linearGradient id="chestGoldLight" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#FFF280" />
-            <stop offset="25%" stopColor="#FFD900" />
-            <stop offset="70%" stopColor="#FFC800" />
-            <stop offset="100%" stopColor="#D99B00" />
+            <stop offset="0%" stopColor={isSlate ? "#677B86" : "#FFF280"} />
+            <stop offset="25%" stopColor={isSlate ? "#52656D" : "#FFD900"} />
+            <stop offset="70%" stopColor={isSlate ? "#43535B" : "#FFC800"} />
+            <stop offset="100%" stopColor={isSlate ? "#37464F" : "#D99B00"} />
           </linearGradient>
 
           <linearGradient id="chestGoldDark" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#FFD900" />
-            <stop offset="50%" stopColor="#E5A500" />
-            <stop offset="100%" stopColor="#B37D00" />
+            <stop offset="0%" stopColor={isSlate ? "#52656D" : "#FFD900"} />
+            <stop offset="50%" stopColor={isSlate ? "#43535B" : "#E5A500"} />
+            <stop offset="100%" stopColor={isSlate ? "#2B383F" : "#B37D00"} />
           </linearGradient>
 
           {/* Treasure Interior Glow */}
