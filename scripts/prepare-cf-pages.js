@@ -34,9 +34,44 @@ fs.writeFileSync(
 );
 console.log(">>> Generated .open-next/assets/_routes.json");
 
+// 1.5. Safely shim Next.js require-hook.js inside .open-next
+function patchRequireHooks(dir) {
+  if (!fs.existsSync(dir)) return;
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      patchRequireHooks(fullPath);
+    } else if (entry.isFile() && entry.name === "require-hook.js") {
+      const shimCode = `"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.addHookAliases = function() {};
+exports.defaultOverrides = {};
+exports.hookPropertyMap = new Map();
+`;
+      fs.writeFileSync(fullPath, shimCode, "utf8");
+      console.log(">>> Patched require-hook.js at:", path.relative(process.cwd(), fullPath));
+    }
+  }
+}
+patchRequireHooks(path.join(process.cwd(), ".open-next"));
+
 // 2. Generate resilient _worker.js wrapper
 function generateWorkerCode(workerImportPath) {
-  return `import openNextWorker from "${workerImportPath}";
+  return `import nodeModule from "node:module";
+try {
+  if (nodeModule && !nodeModule.prototype) {
+    nodeModule.prototype = {};
+  }
+  if (nodeModule && nodeModule.prototype && !nodeModule.prototype.require) {
+    nodeModule.prototype.require = function() {};
+  }
+  if (nodeModule && !nodeModule._resolveFilename) {
+    nodeModule._resolveFilename = function() { return ""; };
+  }
+} catch (_) {}
+
+import openNextWorker from "${workerImportPath}";
 export * from "${workerImportPath}";
 
 const STATIC_EXT_REGEX = /\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|mp3|txt)$/i;
@@ -81,6 +116,7 @@ export default {
           {
             status: "ok",
             cf_pages: env?.CF_PAGES || null,
+            cf_commit: env?.CF_PAGES_COMMIT_SHA || null,
             clerk_publishable_key: masked(
               env?.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
             ),
