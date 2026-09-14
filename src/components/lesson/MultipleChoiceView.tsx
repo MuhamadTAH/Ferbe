@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, X } from "lucide-react";
+import { Check, X, Volume2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Exercise } from "@/lib/sessionMachine";
 
@@ -27,21 +27,61 @@ export function MultipleChoiceView({
 }: MultipleChoiceViewProps) {
   const answered = lastCorrect !== null;
   const correctAnswer = (exercise.solutionData.correct ?? "").trim();
+  const icon = exercise.solutionData?.icon as string | undefined;
+  const instruction = exercise.solutionData?.instruction as string | undefined;
+  const isSpeaking = Boolean(exercise.solutionData?.isSpeaking || exercise.solutionData?.type === "speak");
+  const spokenText = ((exercise.solutionData?.spokenText as string | undefined) ?? correctAnswer).trim();
+
+  const handlePlayModel = () => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(spokenText);
+    utterance.lang = "en-US";
+    utterance.rate = 0.85;
+    window.speechSynthesis.speak(utterance);
+  };
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col items-center justify-center py-6 text-center">
+    <div className="flex flex-col gap-4">
+      {instruction && (
+        <div className="px-1 text-center">
+          <p className="text-xs font-black uppercase tracking-wider text-[#AFAFAF] dark:text-[#8495A0]">
+            {instruction}
+          </p>
+        </div>
+      )}
+
+      <div className="flex flex-col items-center justify-center py-4 text-center">
+        {icon && (
+          <div className="mb-3 flex h-24 w-24 items-center justify-center rounded-3xl border-2 border-black/10 bg-[#F7F7F7] text-5xl shadow-sm dark:border-white/10 dark:bg-[#202F36]">
+            {icon}
+          </div>
+        )}
+
         <div
           dir={kurdishPrompt ? "rtl" : "ltr"}
           lang={kurdishPrompt ? "ku" : "en"}
           className={
             kurdishPrompt
-              ? "font-kurdish text-5xl sm:text-6xl font-bold leading-normal text-[#4B4B4B] dark:text-white kurdish-word select-none"
+              ? "font-kurdish text-4xl sm:text-5xl font-bold leading-normal text-[#4B4B4B] dark:text-white kurdish-word select-none"
               : "text-3xl sm:text-4xl font-extrabold text-[#4B4B4B] dark:text-white select-none"
           }
         >
           {exercise.promptText}
         </div>
+
+        {isSpeaking && (
+          <div className="mt-4 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={handlePlayModel}
+              className="inline-flex items-center gap-2 rounded-2xl border-2 border-b-4 border-[#1899D6] bg-[#1CB0F6] px-4 py-2 font-extrabold text-white transition-transform hover:bg-[#4FC3F9] active:translate-y-[2px]"
+            >
+              <Volume2 className="h-4 w-4" />
+              <span>Listen / دووبارەکردنەوە</span>
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-3">

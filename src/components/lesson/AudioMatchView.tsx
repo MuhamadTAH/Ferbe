@@ -29,6 +29,9 @@ export function AudioMatchView({
   const audioUrl = (exercise.solutionData.audioUrl as string | undefined) ?? null;
   const answered = lastCorrect !== null;
   const correctAnswer = ((exercise.solutionData.correct as string) ?? "").trim();
+  const spokenText = ((exercise.solutionData?.spokenText as string | undefined) ?? correctAnswer).trim();
+  const instruction = exercise.solutionData?.instruction as string | undefined;
+  const icon = exercise.solutionData?.icon as string | undefined;
   const isKurdishAudio = exercise.solutionData.audioLang === "kurdish";
   const isEnglishAudio =
     exercise.solutionData.audioLang === "english" ||
@@ -38,7 +41,7 @@ export function AudioMatchView({
   const hasSpeechSynth = typeof window !== "undefined" && "speechSynthesis" in window;
   const unavailable = audioUrl
     ? isAudioUnavailable(audioUrl)
-    : !hasSpeechSynth || !correctAnswer;
+    : !hasSpeechSynth || !spokenText;
 
   const isPlaying = isPlayingUrl(audioUrl) || speaking;
 
@@ -54,9 +57,9 @@ export function AudioMatchView({
   const handlePlay = () => {
     if (audioUrl && !isAudioUnavailable(audioUrl)) {
       play(audioUrl);
-    } else if (hasSpeechSynth && correctAnswer) {
+    } else if (hasSpeechSynth && spokenText) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(correctAnswer);
+      const utterance = new SpeechSynthesisUtterance(spokenText);
       utterance.lang = "en-US";
       utterance.rate = 0.85;
       utterance.onstart = () => setSpeaking(true);
@@ -68,7 +71,20 @@ export function AudioMatchView({
 
   return (
     <div className="flex flex-col gap-6">
+      {instruction && (
+        <div className="px-1 text-center">
+          <p className="text-xs font-black uppercase tracking-wider text-[#AFAFAF] dark:text-[#8495A0]">
+            {instruction}
+          </p>
+        </div>
+      )}
+
       <div className="flex flex-col items-center gap-3 py-2">
+        {icon && (
+          <div className="mb-2 flex h-20 w-20 items-center justify-center rounded-3xl border-2 border-black/10 bg-[#F7F7F7] text-4xl shadow-sm dark:border-white/10 dark:bg-[#202F36]">
+            {icon}
+          </div>
+        )}
         <button
           type="button"
           disabled={unavailable}

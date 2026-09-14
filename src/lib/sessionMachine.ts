@@ -11,6 +11,13 @@ export interface ExerciseSolutionData {
   tokens?: string[];
   audioUrl?: string;
   audioLang?: "kurdish" | "english";
+  spokenText?: string;
+  instruction?: string;
+  icon?: string;
+  isSpeaking?: boolean;
+  type?: string;
+  timerSeconds?: number;
+  [key: string]: unknown;
 }
 
 export interface Exercise {

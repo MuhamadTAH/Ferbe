@@ -35,11 +35,21 @@ export function WordBankView({
     /[\u0600-\u06FF]/.test(tile.token)
   );
 
+  const instruction = (exercise.solutionData?.instruction as string | undefined) ?? (
+    isKurdishPrompt ? "ڕستەکە وەربگێڕە (Translate this sentence)" : "Translate this sentence"
+  );
+  const icon = exercise.solutionData?.icon as string | undefined;
+
   return (
     <div className="flex flex-col gap-8">
-      <div className="text-center">
-        <p className="text-xs font-extrabold uppercase tracking-wider text-[#AFAFAF] dark:text-[#8495A0]">
-          {isKurdishPrompt ? "ڕستەکە وەربگێڕە (Translate this sentence)" : "Translate this sentence"}
+      <div className="flex flex-col items-center text-center">
+        {icon && (
+          <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-3xl border-2 border-black/10 bg-[#F7F7F7] text-4xl shadow-sm dark:border-white/10 dark:bg-[#202F36]">
+            {icon}
+          </div>
+        )}
+        <p className="text-xs font-black uppercase tracking-wider text-[#AFAFAF] dark:text-[#8495A0]">
+          {instruction}
         </p>
         <p
           dir={isKurdishPrompt ? "rtl" : "ltr"}
