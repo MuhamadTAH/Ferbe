@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Check, Volume2, VolumeX, X } from "lucide-react";
+import { Check, Volume2, VolumeX, X, Timer } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Exercise } from "@/lib/sessionMachine";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
@@ -29,6 +29,33 @@ export function AudioMatchView({
   const audioUrl = (exercise.solutionData.audioUrl as string | undefined) ?? null;
   const answered = lastCorrect !== null;
   const correctAnswer = ((exercise.solutionData.correct as string) ?? "").trim();
+  const spokenText = ((exercise.solutionData.spokenText as string | undefined) ?? correctAnswer).trim();
+  const instruction = exercise.solutionData.instruction as string | undefined;
+  const icon = exercise.solutionData.icon as string | undefined;
+  const timerSeconds = exercise.solutionData.timerSeconds as number | undefined;
+
+  const [prevExerciseId, setPrevExerciseId] = useState(exercise._id);
+  const [timeLeft, setTimeLeft] = useState<number | null>(timerSeconds ?? null);
+
+  if (prevExerciseId !== exercise._id) {
+    setPrevExerciseId(exercise._id);
+    setTimeLeft(timerSeconds ?? null);
+  }
+
+  useEffect(() => {
+    if (!timerSeconds || answered) return;
+    const interval = window.setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev === null || prev <= 1) {
+          window.clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => window.clearInterval(interval);
+  }, [exercise._id, timerSeconds, answered]);
+
   const isKurdishAudio = exercise.solutionData.audioLang === "kurdish";
   const isEnglishAudio =
     exercise.solutionData.audioLang === "english" ||
@@ -38,7 +65,7 @@ export function AudioMatchView({
   const hasSpeechSynth = typeof window !== "undefined" && "speechSynthesis" in window;
   const unavailable = audioUrl
     ? isAudioUnavailable(audioUrl)
-    : !hasSpeechSynth || !correctAnswer;
+    : !hasSpeechSynth || !spokenText;
 
   const isPlaying = isPlayingUrl(audioUrl) || speaking;
 
@@ -54,9 +81,9 @@ export function AudioMatchView({
   const handlePlay = () => {
     if (audioUrl && !isAudioUnavailable(audioUrl)) {
       play(audioUrl);
-    } else if (hasSpeechSynth && correctAnswer) {
+    } else if (hasSpeechSynth && spokenText) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(correctAnswer);
+      const utterance = new SpeechSynthesisUtterance(spokenText);
       utterance.lang = "en-US";
       utterance.rate = 0.85;
       utterance.onstart = () => setSpeaking(true);
@@ -68,7 +95,27 @@ export function AudioMatchView({
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Header banner: Instruction and Timer */}
+      <div className="flex items-center justify-between gap-2 px-1">
+        {instruction ? (
+          <p className="text-xs font-black uppercase tracking-wider text-[#AFAFAF] dark:text-[#8495A0]">
+            {instruction}
+          </p>
+        ) : <div />}
+        {timeLeft !== null && (
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-[#FF9600]/30 bg-[#FFF4E5] px-3 py-1 text-xs font-black text-[#FF9600]">
+            <Timer className="h-3.5 w-3.5 animate-pulse" />
+            <span>{timeLeft}s</span>
+          </div>
+        )}
+      </div>
+
       <div className="flex flex-col items-center gap-3 py-2">
+        {icon && (
+          <div className="mb-2 flex h-20 w-20 items-center justify-center rounded-3xl border-2 border-black/10 bg-[#F7F7F7] text-4xl shadow-sm dark:border-white/10 dark:bg-[#202F36]">
+            {icon}
+          </div>
+        )}
         <button
           type="button"
           disabled={unavailable}
