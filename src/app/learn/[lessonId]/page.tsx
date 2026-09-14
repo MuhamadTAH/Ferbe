@@ -112,6 +112,30 @@ function SessionInner({ lessonId }: { lessonId: string }) {
     );
   }
 
+  if (session.exercises.length === 0) {
+    return (
+      <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-4 py-24 text-center">
+        <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-[#FFF4E5] text-4xl shadow-inner">
+          🚧
+        </div>
+        <h1 className="text-2xl font-black text-[#4B4B4B] dark:text-white">
+          {session.lesson.title}
+        </h1>
+        <p className="mt-2 text-sm text-[#777777] dark:text-[#AFAFAF]">
+          Exercises for this lesson are being prepared.
+          <br />
+          ڕاهێنانەکانی ئەم وانەیە لە قۆناغی ئامادەکردندان.
+        </p>
+        <Link
+          href="/learn"
+          className="mt-6 inline-flex items-center justify-center rounded-2xl bg-[#58CC02] px-6 py-3 font-extrabold text-white shadow-[0_4px_0_#46A302] transition-all hover:bg-[#4FB703] active:translate-y-[2px]"
+        >
+          Back to Learning Path / گەڕانەوە
+        </Link>
+      </div>
+    );
+  }
+
   if (state.phase === "SESSION_COMPLETE") {
     const accuracy =
       state.total > 0 ? Math.round((100 * state.firstTryCorrect) / state.total) : 0;

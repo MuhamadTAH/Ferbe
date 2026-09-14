@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
@@ -12,6 +12,7 @@
     "build:worker": "opennextjs-cloudflare build",
     "deploy:cf": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "seed": "tsx scripts/seed-words.ts",
+    "seed:english": "tsx scripts/seed-english-course.ts",
     "generate:audio": "tsx scripts/generate-kurdish-audio.ts"
   },
   "dependencies": {

@@ -62,7 +62,7 @@ const COURSES: CourseItem[] = [
     badge: "New Course",
     badgeColor: "bg-[#DDF4FF] text-[#1CB0F6] border-[#1CB0F6]/40",
     description:
-      "Learn English from Kurdish Sorani! 3 comprehensive units, 12 lessons, 96 interactive exercises with Kurdish translations, audio matching, and grammar foundations.",
+      "Learn English from Kurdish Sorani! Level 0 foundational curriculum with 10 units and 57 lessons covering phonics, letter blending, sound traps, and speech frames.",
     script: "English Latin script · Kurdish Sorani instructions",
     status: "active",
     href: "/learn?course=english-from-kurdish",

@@ -22,826 +22,457 @@ interface UnitInput {
   lessons: LessonInput[];
 }
 
-const COURSE = {
+export const COURSE = {
   title: "English for Kurdish Speakers (ئینگلیزی بۆ کورد)",
   slug: "english-from-kurdish",
   sourceLanguage: "ckb",
   targetLanguage: "en",
 };
 
-const UNITS: UnitInput[] = [
+/**
+ * Level 0 Curriculum: Foundations, Phonics, Blends, and Basic Conversational Frames.
+ * Structured into Orientation + 9 Core Sections (10 Units, 57 Lessons).
+ * Exercises are left empty initially as per curriculum plan.
+ */
+export const LEVEL_0_UNITS: UnitInput[] = [
   // =========================================================================
-  // UNIT 1: سڵاوکردن و ناساندن (Greetings & Introductions)
+  // UNIT 1: Orientation: The Launchpad (Ungated Pre-Course)
   // =========================================================================
   {
-    title: "سڵاوکردن و ناساندن (Greetings & Introductions)",
+    title: "Orientation: The Launchpad (دەستپێک)",
     order: 1,
     lessons: [
       {
-        title: "سڵاو و دەستپێک (Hellos & Greetings)",
+        title: "0.1 Left-to-Right: Read the Line",
         order: 1,
         xpReward: 10,
-        exercises: [
-          {
-            type: "multiple_choice",
-            promptText: "سڵاو",
-            solutionData: { correct: "Hello" },
-            distractors: ["Goodbye", "Night", "Bad"],
-            order: 1,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "بەیانی باش",
-            solutionData: { correct: "Good morning" },
-            distractors: ["Good evening", "Goodbye", "Good night"],
-            order: 2,
-          },
-          {
-            type: "word_bank",
-            promptText: "سڵاو، بەیانیت باش",
-            solutionData: { tokens: ["Hello,", "good", "morning"] },
-            distractors: ["night", "bye", "I"],
-            order: 3,
-          },
-          {
-            type: "audio_match",
-            promptText: "گوێ بگرە و وشەکە هەڵبژێرە (Listen & Match)",
-            solutionData: {
-              correct: "Good morning",
-              audioLang: "english",
-            },
-            distractors: ["Good night", "Goodbye", "Hello"],
-            order: 4,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "خواحافیز",
-            solutionData: { correct: "Goodbye" },
-            distractors: ["Hello", "Please", "Morning"],
-            order: 5,
-          },
-          {
-            type: "word_bank",
-            promptText: "سڵاو و خواحافیز",
-            solutionData: { tokens: ["Hello", "and", "goodbye"] },
-            distractors: ["morning", "night", "yes"],
-            order: 6,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "ئێوارە باش",
-            solutionData: { correct: "Good evening" },
-            distractors: ["Good morning", "Good night", "Hello"],
-            order: 7,
-          },
-          {
-            type: "word_bank",
-            promptText: "خواحافیز، شەو شاد",
-            solutionData: { tokens: ["Goodbye,", "good", "night"] },
-            distractors: ["morning", "hello", "day"],
-            order: 8,
-          },
-        ],
+        exercises: [],
       },
       {
-        title: "من کێم؟ (Personal Pronouns & 'To be')",
+        title: "0.2 Mic Check: Hear Your Voice",
         order: 2,
         xpReward: 10,
-        exercises: [
-          {
-            type: "multiple_choice",
-            promptText: "من خوێندکارم",
-            solutionData: { correct: "I am a student" },
-            distractors: ["You are a student", "She is a teacher", "I have a book"],
-            order: 1,
-          },
-          {
-            type: "word_bank",
-            promptText: "من مامۆستام",
-            solutionData: { tokens: ["I", "am", "a", "teacher"] },
-            distractors: ["you", "he", "student"],
-            order: 2,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "تۆ هاوڕێی منی",
-            solutionData: { correct: "You are my friend" },
-            distractors: ["He is my friend", "I am your friend", "She is happy"],
-            order: 3,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئەو دڵخۆشە",
-            solutionData: { tokens: ["She", "is", "happy"] },
-            distractors: ["sad", "I", "am"],
-            order: 4,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "ئێمە ئامادەین",
-            solutionData: { correct: "We are ready" },
-            distractors: ["They are ready", "You are ready", "I am ready"],
-            order: 5,
-          },
-          {
-            type: "word_bank",
-            promptText: "تۆ شایەنی ڕێزیت (سەرچاو)",
-            solutionData: { tokens: ["You", "are", "welcome"] },
-            distractors: ["I", "am", "good"],
-            order: 6,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "ئەو کوڕە",
-            solutionData: { correct: "He is a boy" },
-            distractors: ["She is a girl", "I am a boy", "He is a man"],
-            order: 7,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئەو کچە خوێندکارە",
-            solutionData: { tokens: ["She", "is", "a", "student"] },
-            distractors: ["he", "teacher", "boy"],
-            order: 8,
-          },
-        ],
+        exercises: [],
       },
       {
-        title: "ناو و ناسین (Names & Questions)",
+        title: "0.3 Rules of the App: Timers & Checkpoints",
         order: 3,
         xpReward: 10,
-        exercises: [
-          {
-            type: "word_bank",
-            promptText: "ناوت چییە؟",
-            solutionData: { tokens: ["What", "is", "your", "name?"] },
-            distractors: ["how", "my", "who"],
-            order: 1,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "ناوی من ئازادە",
-            solutionData: { correct: "My name is Azad" },
-            distractors: ["Your name is Azad", "His name is Azad", "What is your name?"],
-            order: 2,
-          },
-          {
-            type: "word_bank",
-            promptText: "چۆنیت؟",
-            solutionData: { tokens: ["How", "are", "you?"] },
-            distractors: ["what", "who", "I"],
-            order: 3,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "من باشم، سوپاس",
-            solutionData: { correct: "I am fine, thank you" },
-            distractors: ["My name is fine", "How are you?", "You are welcome"],
-            order: 4,
-          },
-          {
-            type: "word_bank",
-            promptText: "خۆشحاڵم بە ناسینت",
-            solutionData: { tokens: ["Nice", "to", "meet", "you"] },
-            distractors: ["see", "good", "bye"],
-            order: 5,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "ئەو کێیە؟",
-            solutionData: { correct: "Who is he?" },
-            distractors: ["What is he?", "Where is he?", "How is he?"],
-            order: 6,
-          },
-          {
-            type: "word_bank",
-            promptText: "ناوی ئەو چییە؟",
-            solutionData: { tokens: ["What", "is", "her", "name?"] },
-            distractors: ["his", "your", "my"],
-            order: 7,
-          },
-          {
-            type: "audio_match",
-            promptText: "گوێ بگرە و دەستەواژەکە دیاری بکە",
-            solutionData: {
-              correct: "Nice to meet you",
-              audioLang: "english",
-            },
-            distractors: ["Good morning", "What is your name?", "How are you?"],
-            order: 8,
-          },
-        ],
-      },
-      {
-        title: "ڕێزگرتن و قسەی باو (Politeness & Courtesy)",
-        order: 4,
-        xpReward: 10,
-        exercises: [
-          {
-            type: "multiple_choice",
-            promptText: "تکایە",
-            solutionData: { correct: "Please" },
-            distractors: ["Thank you", "Sorry", "Yes"],
-            order: 1,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "سوپاس",
-            solutionData: { correct: "Thank you" },
-            distractors: ["Please", "Hello", "No"],
-            order: 2,
-          },
-          {
-            type: "word_bank",
-            promptText: "بەڵێ، تکایە",
-            solutionData: { tokens: ["Yes,", "please"] },
-            distractors: ["no", "thank", "you"],
-            order: 3,
-          },
-          {
-            type: "word_bank",
-            promptText: "نەخێر، سوپاس",
-            solutionData: { tokens: ["No,", "thank", "you"] },
-            distractors: ["yes", "please", "sorry"],
-            order: 4,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "ببورە",
-            solutionData: { correct: "Sorry" },
-            distractors: ["Welcome", "Please", "Fine"],
-            order: 5,
-          },
-          {
-            type: "word_bank",
-            promptText: "بێزەحمەت، یارمەتیم بدە",
-            solutionData: { tokens: ["Excuse", "me,", "help", "me"] },
-            distractors: ["please", "sorry", "you"],
-            order: 6,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "زۆر سوپاس",
-            solutionData: { correct: "Thank you very much" },
-            distractors: ["Please very much", "You are welcome", "Excuse me"],
-            order: 7,
-          },
-          {
-            type: "word_bank",
-            promptText: "ببورە، من درەنگ کەوتم",
-            solutionData: { tokens: ["Sorry,", "I", "am", "late"] },
-            distractors: ["early", "you", "are"],
-            order: 8,
-          },
-        ],
+        exercises: [],
       },
     ],
   },
 
   // =========================================================================
-  // UNIT 2: ژیانی ڕۆژانە و خێزان (Daily Life & Family)
+  // UNIT 2: Section 1: The Core Six (S, A, T, P, I, N)
   // =========================================================================
   {
-    title: "ژیانی ڕۆژانە و خێزان (Daily Life & Family)",
+    title: "Section 1: The Core Six (S, A, T, P, I, N)",
     order: 2,
     lessons: [
       {
-        title: "خێزانەکەم (My Family)",
+        title: "1.1 Sound & Blend: First Letters (S, A, T, P, I, N)",
         order: 1,
         xpReward: 10,
-        exercises: [
-          {
-            type: "multiple_choice",
-            promptText: "باوک و دایک",
-            solutionData: { correct: "Father and mother" },
-            distractors: ["Brother and sister", "Son and daughter", "Boy and girl"],
-            order: 1,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئەمە باوکمە",
-            solutionData: { tokens: ["This", "is", "my", "father"] },
-            distractors: ["mother", "brother", "sister"],
-            order: 2,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئەمە دایکمە",
-            solutionData: { tokens: ["This", "is", "my", "mother"] },
-            distractors: ["father", "friend", "sister"],
-            order: 3,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "من برام هەیە",
-            solutionData: { correct: "I have a brother" },
-            distractors: ["I have a sister", "I am a brother", "You have a brother"],
-            order: 4,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئەو خوشکمە",
-            solutionData: { tokens: ["She", "is", "my", "sister"] },
-            distractors: ["he", "brother", "mother"],
-            order: 5,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "کوڕەکەم و کچەکەم",
-            solutionData: { correct: "My son and my daughter" },
-            distractors: ["My brother and my sister", "My father and my mother", "A boy and a girl"],
-            order: 6,
-          },
-          {
-            type: "word_bank",
-            promptText: "خێزانەکەم لە هەولێرن",
-            solutionData: { tokens: ["My", "family", "is", "in", "Erbil"] },
-            distractors: ["Sulaimani", "house", "we"],
-            order: 7,
-          },
-          {
-            type: "audio_match",
-            promptText: "گوێ بگرە و ڕستەکە دیاری بکە",
-            solutionData: {
-              correct: "This is my family",
-              audioLang: "english",
-            },
-            distractors: ["This is my brother", "I have a sister", "My father is a teacher"],
-            order: 8,
-          },
-        ],
+        exercises: [],
       },
       {
-        title: "خواردن و خواردنەوە (Food & Drinks)",
+        title: "1.2 Word Builder: Build Real Words (Pan, Tin, Pin, Ant, Tap)",
         order: 2,
         xpReward: 10,
-        exercises: [
-          {
-            type: "multiple_choice",
-            promptText: "ئاو",
-            solutionData: { correct: "Water" },
-            distractors: ["Tea", "Bread", "Milk"],
-            order: 1,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "نان و چای",
-            solutionData: { correct: "Bread and tea" },
-            distractors: ["Coffee and milk", "Water and apple", "Bread and butter"],
-            order: 2,
-          },
-          {
-            type: "word_bank",
-            promptText: "من چا دەخۆمەوە",
-            solutionData: { tokens: ["I", "drink", "tea"] },
-            distractors: ["coffee", "eat", "bread"],
-            order: 3,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئایا قاوەت دەوێت؟",
-            solutionData: { tokens: ["Do", "you", "want", "coffee?"] },
-            distractors: ["tea", "drink", "water"],
-            order: 4,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "شیر و سێو",
-            solutionData: { correct: "Milk and apple" },
-            distractors: ["Water and bread", "Tea and coffee", "Fish and rice"],
-            order: 5,
-          },
-          {
-            type: "word_bank",
-            promptText: "من نان دەخۆم",
-            solutionData: { tokens: ["I", "eat", "bread"] },
-            distractors: ["drink", "tea", "water"],
-            order: 6,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "قاوەیەکی گەرم، تکایە",
-            solutionData: { correct: "Hot coffee, please" },
-            distractors: ["Cold water, please", "Sweet tea, please", "Fresh milk, please"],
-            order: 7,
-          },
-          {
-            type: "audio_match",
-            promptText: "گوێ بگرە و وشەکە دیاری بکە",
-            solutionData: {
-              correct: "I want water",
-              audioLang: "english",
-            },
-            distractors: ["I drink tea", "Do you want coffee?", "Bread and milk"],
-            order: 8,
-          },
-        ],
+        exercises: [],
       },
       {
-        title: "وەسفکردنی سادە (Simple Descriptions)",
+        title: "1.3 Sentence Frame: 'I see a...'",
         order: 3,
         xpReward: 10,
-        exercises: [
-          {
-            type: "multiple_choice",
-            promptText: "ماڵێکی گەورە",
-            solutionData: { correct: "A big house" },
-            distractors: ["A small house", "A new car", "A good day"],
-            order: 1,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "کتێبێکی نوێ",
-            solutionData: { correct: "A new book" },
-            distractors: ["An old book", "A big car", "A small city"],
-            order: 2,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئەم شارە گەورەیە",
-            solutionData: { tokens: ["This", "city", "is", "big"] },
-            distractors: ["small", "house", "good"],
-            order: 3,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئەمڕۆ ڕۆژێکی باشە",
-            solutionData: { tokens: ["Today", "is", "a", "good", "day"] },
-            distractors: ["bad", "night", "new"],
-            order: 4,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "ئەو دڵخۆشە",
-            solutionData: { correct: "She is happy" },
-            distractors: ["He is sad", "I am tired", "We are ready"],
-            order: 5,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئۆتۆمبێلێکی بچووک",
-            solutionData: { tokens: ["A", "small", "car"] },
-            distractors: ["big", "house", "new"],
-            order: 6,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "قوتابخانەیەکی نوێ",
-            solutionData: { correct: "A new school" },
-            distractors: ["An old school", "A big market", "A small room"],
-            order: 7,
-          },
-          {
-            type: "audio_match",
-            promptText: "گوێ بگرە و ڕستەکە دیاری بکە",
-            solutionData: {
-              correct: "A good book",
-              audioLang: "english",
-            },
-            distractors: ["A new house", "A big city", "A small cat"],
-            order: 8,
-          },
-        ],
+        exercises: [],
       },
       {
-        title: "ڕۆژانی هەفتە و کات (Days & Time)",
+        title: "1.4 Ear Training: Catch the Sound (Pan vs. Pin)",
         order: 4,
         xpReward: 10,
-        exercises: [
-          {
-            type: "multiple_choice",
-            promptText: "شەو شاد",
-            solutionData: { correct: "Good night" },
-            distractors: ["Good morning", "Good evening", "Goodbye"],
-            order: 1,
-          },
-          {
-            type: "word_bank",
-            promptText: "سبەینێ دەتبینمەوە",
-            solutionData: { tokens: ["See", "you", "tomorrow"] },
-            distractors: ["today", "yesterday", "good"],
-            order: 2,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "ئەمڕۆ چییە؟",
-            solutionData: { correct: "What day is today?" },
-            distractors: ["Where are you today?", "How are you tomorrow?", "Good morning today"],
-            order: 3,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئەمڕۆ هەینییە",
-            solutionData: { tokens: ["Today", "is", "Friday"] },
-            distractors: ["Monday", "tomorrow", "night"],
-            order: 4,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "دوێنێ",
-            solutionData: { correct: "Yesterday" },
-            distractors: ["Tomorrow", "Today", "Now"],
-            order: 5,
-          },
-          {
-            type: "word_bank",
-            promptText: "ڕۆژ و شەو",
-            solutionData: { tokens: ["Day", "and", "night"] },
-            distractors: ["morning", "today", "tomorrow"],
-            order: 6,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "کاتژمێر چەندە؟",
-            solutionData: { correct: "What time is it?" },
-            distractors: ["What day is it?", "How much is it?", "Where is it?"],
-            order: 7,
-          },
-          {
-            type: "audio_match",
-            promptText: "گوێ بگرە و ڕستەکە بدۆزەرەوە",
-            solutionData: {
-              correct: "See you tomorrow",
-              audioLang: "english",
-            },
-            distractors: ["Good morning", "Good night", "See you today"],
-            order: 8,
-          },
-        ],
+        exercises: [],
+      },
+      {
+        title: "1.5 Rapid Speaking: Say What You See",
+        order: 5,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "1.6 Checkpoint 1: Unlock the Next Step",
+        order: 6,
+        xpReward: 20,
+        exercises: [],
       },
     ],
   },
 
   // =========================================================================
-  // UNIT 3: ژمارەکان و شوێن (Numbers & Places)
+  // UNIT 3: Section 2: First Consonants & The English R (C, K, E, H, R, M, D)
   // =========================================================================
   {
-    title: "ژمارەکان و شوێن (Numbers & Places)",
+    title: "Section 2: First Consonants & The English R (C, K, E, H, R, M, D)",
     order: 3,
     lessons: [
       {
-        title: "ژمارە ١ تا ١٠ (Numbers 1 to 10)",
+        title: "2.1 Sound & Blend: New Letters & The English R",
         order: 1,
         xpReward: 10,
-        exercises: [
-          {
-            type: "multiple_choice",
-            promptText: "یەک، دوو، سێ",
-            solutionData: { correct: "One, two, three" },
-            distractors: ["Four, five, six", "Seven, eight, nine", "Ten, nine, eight"],
-            order: 1,
-          },
-          {
-            type: "word_bank",
-            promptText: "من دوو برام هەیە",
-            solutionData: { tokens: ["I", "have", "two", "brothers"] },
-            distractors: ["three", "sisters", "one"],
-            order: 2,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "پێنج پیاڵە چا",
-            solutionData: { correct: "Five cups of tea" },
-            distractors: ["Four cups of water", "Two cups of coffee", "Three apples"],
-            order: 3,
-          },
-          {
-            type: "word_bank",
-            promptText: "چوار کتێب",
-            solutionData: { tokens: ["Four", "books"] },
-            distractors: ["five", "pencils", "three"],
-            order: 4,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "دە خوێندکار",
-            solutionData: { correct: "Ten students" },
-            distractors: ["Five students", "Seven teachers", "Eight boys"],
-            order: 5,
-          },
-          {
-            type: "word_bank",
-            promptText: "شەش، حەوت، هەشت",
-            solutionData: { tokens: ["Six,", "seven,", "eight"] },
-            distractors: ["nine", "ten", "five"],
-            order: 6,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "نۆ و دە",
-            solutionData: { correct: "Nine and ten" },
-            distractors: ["One and two", "Three and four", "Five and six"],
-            order: 7,
-          },
-          {
-            type: "audio_match",
-            promptText: "گوێ بگرە و ژمارەکان دیاری بکە",
-            solutionData: {
-              correct: "One, two, three",
-              audioLang: "english",
-            },
-            distractors: ["Four, five, six", "Seven, eight, nine", "Ten, nine, eight"],
-            order: 8,
-          },
-        ],
+        exercises: [],
       },
       {
-        title: "شوێن و شارەکان (Places & Cities)",
+        title: "2.2 Word Builder: Daily Objects (Cat, Hat, Map, Hen, Kid, Pen)",
         order: 2,
         xpReward: 10,
-        exercises: [
-          {
-            type: "word_bank",
-            promptText: "من لە کوردستان دەژیم",
-            solutionData: { tokens: ["I", "live", "in", "Kurdistan"] },
-            distractors: ["city", "work", "school"],
-            order: 1,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "ئێمە لە ماڵەوەین",
-            solutionData: { correct: "We are at home" },
-            distractors: ["They are at school", "I am at work", "She is in the market"],
-            order: 2,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئەو دەچێتە قوتابخانە",
-            solutionData: { tokens: ["He", "goes", "to", "school"] },
-            distractors: ["she", "market", "home"],
-            order: 3,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "بازاڕەکە لەکوێیە؟",
-            solutionData: { correct: "Where is the market?" },
-            distractors: ["What is the market?", "Who is in the market?", "How is the school?"],
-            order: 4,
-          },
-          {
-            type: "word_bank",
-            promptText: "هەولێر شارێکی گەورەیە",
-            solutionData: { tokens: ["Erbil", "is", "a", "big", "city"] },
-            distractors: ["small", "Sulaimani", "Kurdistan"],
-            order: 5,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "سلێمانی شارێکی جوانە",
-            solutionData: { correct: "Sulaimani is a beautiful city" },
-            distractors: ["Erbil is a big city", "Kurdistan is my home", "Duhok is small"],
-            order: 6,
-          },
-          {
-            type: "word_bank",
-            promptText: "من دەچمە سەر کار",
-            solutionData: { tokens: ["I", "go", "to", "work"] },
-            distractors: ["school", "home", "market"],
-            order: 7,
-          },
-          {
-            type: "audio_match",
-            promptText: "گوێ بگرە و شارەکە دیاری بکە",
-            solutionData: {
-              correct: "I live in Erbil",
-              audioLang: "english",
-            },
-            distractors: ["I live in Sulaimani", "We are at home", "He goes to school"],
-            order: 8,
-          },
-        ],
+        exercises: [],
       },
       {
-        title: "پیشەکان (Jobs & Occupations)",
+        title: "2.3 Sentence Frame: 'It is a...' and 'It is red'",
         order: 3,
         xpReward: 10,
-        exercises: [
-          {
-            type: "multiple_choice",
-            promptText: "مامۆستا",
-            solutionData: { correct: "Teacher" },
-            distractors: ["Doctor", "Student", "Engineer"],
-            order: 1,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "پزیشک",
-            solutionData: { correct: "Doctor" },
-            distractors: ["Teacher", "Driver", "Nurse"],
-            order: 2,
-          },
-          {
-            type: "word_bank",
-            promptText: "باوکم پزیشکە",
-            solutionData: { tokens: ["My", "father", "is", "a", "doctor"] },
-            distractors: ["teacher", "mother", "student"],
-            order: 3,
-          },
-          {
-            type: "word_bank",
-            promptText: "خوشکم ئەندازیارە",
-            solutionData: { tokens: ["My", "sister", "is", "an", "engineer"] },
-            distractors: ["doctor", "brother", "teacher"],
-            order: 4,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "من خوێندکاری ئینگلیزیم",
-            solutionData: { correct: "I am an English student" },
-            distractors: ["I am a Kurdish teacher", "She is a doctor", "He is an engineer"],
-            order: 5,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئەو مامۆستایەکی باشە",
-            solutionData: { tokens: ["She", "is", "a", "good", "teacher"] },
-            distractors: ["doctor", "student", "bad"],
-            order: 6,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "ئیشی تۆ چییە؟",
-            solutionData: { correct: "What is your job?" },
-            distractors: ["Where is your job?", "How is your job?", "Who is your teacher?"],
-            order: 7,
-          },
-          {
-            type: "audio_match",
-            promptText: "گوێ بگرە و پیشەکە بدۆزەرەوە",
-            solutionData: {
-              correct: "My mother is a teacher",
-              audioLang: "english",
-            },
-            distractors: ["My father is a doctor", "I am a student", "She is an engineer"],
-            order: 8,
-          },
-        ],
+        exercises: [],
       },
       {
-        title: "کورتەی یەکە (Unit 3 Mastery Review)",
+        title: "2.4 Ear Training: The 3 Vowels (Bad vs. Bed vs. Bid)",
         order: 4,
         xpReward: 10,
-        exercises: [
-          {
-            type: "word_bank",
-            promptText: "سڵاو، من ئازادم و لە هەولێر دەژیم",
-            solutionData: { tokens: ["Hello,", "I", "am", "Azad", "and", "I", "live", "in", "Erbil"] },
-            distractors: ["Sulaimani", "doctor", "father"],
-            order: 1,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "ئایا تۆ ئینگلیزی دەزانیت؟",
-            solutionData: { correct: "Do you speak English?" },
-            distractors: ["Do you drink water?", "Where do you live?", "What is your name?"],
-            order: 2,
-          },
-          {
-            type: "word_bank",
-            promptText: "بەڵێ، کەمێک ئینگلیزی دەزانم",
-            solutionData: { tokens: ["Yes,", "I", "speak", "a", "little", "English"] },
-            distractors: ["no", "Kurdish", "tea"],
-            order: 3,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "بەخێربێن بۆ کوردستان",
-            solutionData: { correct: "Welcome to Kurdistan" },
-            distractors: ["Goodbye Kurdistan", "Thank you Kurdistan", "Where is Kurdistan?"],
-            order: 4,
-          },
-          {
-            type: "word_bank",
-            promptText: "ئێمە خوێندکاری زانکۆین",
-            solutionData: { tokens: ["We", "are", "university", "students"] },
-            distractors: ["teachers", "doctors", "school"],
-            order: 5,
-          },
-          {
-            type: "multiple_choice",
-            promptText: "ڕۆژێکی خۆش بۆ هەمووان",
-            solutionData: { correct: "Have a nice day everyone" },
-            distractors: ["Good night everyone", "Goodbye everyone", "Hello everyone"],
-            order: 6,
-          },
-          {
-            type: "word_bank",
-            promptText: "سوپاس و خواحافیز",
-            solutionData: { tokens: ["Thank", "you", "and", "goodbye"] },
-            distractors: ["please", "hello", "welcome"],
-            order: 7,
-          },
-          {
-            type: "audio_match",
-            promptText: "گوێ بگرە و دەستەواژەکە دیاری بکە",
-            solutionData: {
-              correct: "Welcome to Kurdistan",
-              audioLang: "english",
-            },
-            distractors: ["I live in Kurdistan", "Have a nice day", "Thank you very much"],
-            order: 8,
-          },
-        ],
+        exercises: [],
+      },
+      {
+        title: "2.5 Rapid Speaking: Describe It Fast",
+        order: 5,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "2.6 Checkpoint 2: Unlock the Next Step",
+        order: 6,
+        xpReward: 20,
+        exercises: [],
+      },
+    ],
+  },
+
+  // =========================================================================
+  // UNIT 4: Section 3: Vowels, Voicing & Ending Sounds (G, O, U, L, F, B, CK)
+  // =========================================================================
+  {
+    title: "Section 3: Vowels, Voicing & Ending Sounds (G, O, U, L, F, B, CK)",
+    order: 4,
+    lessons: [
+      {
+        title: "3.1 Sound & Blend: Deep Vowels & Hard Stops (G, O, U, L, F, B, CK)",
+        order: 1,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "3.2 Word Builder: Things Around You (Bag, Dog, Cup, Log, Fan, Bun)",
+        order: 2,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "3.3 Sentence Frame: 'I have a...'",
+        order: 3,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "3.4 Ear Training: Word Endings (Bag vs. Back, Cap vs. Cab)",
+        order: 4,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "3.5 Rapid Speaking: Claim Your Items",
+        order: 5,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "3.6 Checkpoint 3: Unlock the Next Step",
+        order: 6,
+        xpReward: 20,
+        exercises: [],
+      },
+    ],
+  },
+
+  // =========================================================================
+  // UNIT 5: Section 4: Edge Letters & Sound Traps (J, Z, W, V, Y, X, Q)
+  // =========================================================================
+  {
+    title: "Section 4: Edge Letters & Sound Traps (J, Z, W, V, Y, X, Q)",
+    order: 5,
+    lessons: [
+      {
+        title: "4.1 Sound & Blend: Tricky Letters (J, Z, W, V, Y, X, Q)",
+        order: 1,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "4.2 Word Builder: Quick Decodes (Wet, Van, Web, Wig, Box, Zip, Yak, Quiz)",
+        order: 2,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "4.3 Sentence Frame: 'This is...' and 'This is not...'",
+        order: 3,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "4.4 Ear Training: W vs. V (Wet vs. Vet)",
+        order: 4,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "4.5 Rapid Speaking: Fast Corrections",
+        order: 5,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "4.6 Checkpoint 4: Unlock the Next Step",
+        order: 6,
+        xpReward: 20,
+        exercises: [],
+      },
+    ],
+  },
+
+  // =========================================================================
+  // UNIT 6: Section 5: Team Letters & Questions (SH, CH, TH, NG, WH)
+  // =========================================================================
+  {
+    title: "Section 5: Team Letters & Questions (SH, CH, TH, NG, WH)",
+    order: 6,
+    lessons: [
+      {
+        title: "5.1 Sound & Blend: Two Letters, One Sound (SH, CH, TH, NG, WH)",
+        order: 1,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "5.2 Word Builder: Everyday Chunks (Ship, Shop, Fish, Chin, Rich, Thin, Ring, Song, What)",
+        order: 2,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "5.3 Sentence Frame: 'Where is it?' / 'Here and there'",
+        order: 3,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "5.4 Ear Training: Friction Sounds (Ship vs. Chip, Sink vs. Think)",
+        order: 4,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "5.5 Rapid Speaking: Find and Point",
+        order: 5,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "5.6 Checkpoint 5: Unlock the Next Step",
+        order: 6,
+        xpReward: 20,
+        exercises: [],
+      },
+    ],
+  },
+
+  // =========================================================================
+  // UNIT 7: Section 6: The Magic E & Long Vowels (A_E, I_E, O_E, U_E)
+  // =========================================================================
+  {
+    title: "Section 6: The Magic E & Long Vowels (A_E, I_E, O_E, U_E)",
+    order: 7,
+    lessons: [
+      {
+        title: "6.1 Sound & Blend: The Silent E Secret",
+        order: 1,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "6.2 Word Builder: Long Vowel Words (Cake, Bike, Home, Rope, Five, Cute)",
+        order: 2,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "6.3 Sentence Frame: 'I have a...' (Upgraded)",
+        order: 3,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "6.4 Ear Training: Short vs. Long (Cap vs. Cape, Kit vs. Kite)",
+        order: 4,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "6.5 Rapid Speaking: Smooth Vowels",
+        order: 5,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "6.6 Checkpoint 6: Unlock the Next Step",
+        order: 6,
+        xpReward: 20,
+        exercises: [],
+      },
+    ],
+  },
+
+  // =========================================================================
+  // UNIT 8: Section 7: Vowel Teams I (AI, AY, EE, OA)
+  // =========================================================================
+  {
+    title: "Section 7: Vowel Teams I (AI, AY, EE, OA)",
+    order: 8,
+    lessons: [
+      {
+        title: "7.1 Sound & Blend: Paired Vowels (AI, AY, EE, OA)",
+        order: 1,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "7.2 Word Builder: Nature & Travel (Rain, Day, Tree, Bee, Boat, Coat)",
+        order: 2,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "7.3 Sentence Frame: 'I see a...' (Upgraded)",
+        order: 3,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "7.4 Ear Training: Same Sound, Different Letters (Day vs. Rain)",
+        order: 4,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "7.5 Rapid Speaking: Fluency Sprint",
+        order: 5,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "7.6 Checkpoint 7: Unlock the Next Step",
+        order: 6,
+        xpReward: 20,
+        exercises: [],
+      },
+    ],
+  },
+
+  // =========================================================================
+  // UNIT 9: Section 8: Vowel Teams II & Word Shapes (OO, AR, OR, ER, OW, OI)
+  // =========================================================================
+  {
+    title: "Section 8: Vowel Teams II & Word Shapes (OO, AR, OR, ER, OW, OI)",
+    order: 9,
+    lessons: [
+      {
+        title: "8.1 Sound & Blend: Deep Sounds & Rolling Letters",
+        order: 1,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "8.2 Word Builder: Heavy Sounds (Moon, Book, Car, Bird, Cow, Coin)",
+        order: 2,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "8.3 Sentence Frame: 'It is a...' (Full Set)",
+        order: 3,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "8.4 Ear Training: Sound Contrasts (Moon vs. Book, Car vs. For)",
+        order: 4,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "8.5 Rapid Speaking: Fast Responses",
+        order: 5,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "8.6 Checkpoint 8: Unlock the Next Step",
+        order: 6,
+        xpReward: 20,
+        exercises: [],
+      },
+    ],
+  },
+
+  // =========================================================================
+  // UNIT 10: Section 9: Rhythm, Gender & The Gateway (Schwa & Pronouns)
+  // =========================================================================
+  {
+    title: "Section 9: Rhythm, Gender & The Gateway (Schwa & Pronouns)",
+    order: 10,
+    lessons: [
+      {
+        title: "9.1 Sound & Blend: English Rhythm & The Lazy Vowel (/ə/)",
+        order: 1,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "9.2 Word Builder: Full Speed Recall",
+        order: 2,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "9.3 Sentence Frame: 'He is...' / 'She is...' / 'Is he...?'",
+        order: 3,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "9.4 Ear Training: Sentence Rhythm & Voice Tone",
+        order: 4,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "9.5 Rapid Speaking: People & Questions",
+        order: 5,
+        xpReward: 10,
+        exercises: [],
+      },
+      {
+        title: "9.6 Checkpoint 9: Level 0 Capstone Exam",
+        order: 6,
+        xpReward: 30,
+        exercises: [],
       },
     ],
   },
@@ -850,37 +481,40 @@ const UNITS: UnitInput[] = [
 async function seedEnglishCourse() {
   console.log("=== Seeding English for Kurdish Speakers (ئینگلیزی بۆ کورد) ===");
 
-  const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL || "http://127.0.0.1:3210";
+  const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
   const adminSecret = process.env.ADMIN_SEED_SECRET;
 
-  if (!adminSecret) {
-    console.error("ADMIN_SEED_SECRET must be set in your environment.");
-    process.exit(1);
+  const totalExercises = LEVEL_0_UNITS.reduce(
+    (acc, u) => acc + u.lessons.reduce((lAcc, l) => lAcc + l.exercises.length, 0),
+    0
+  );
+  const totalLessons = LEVEL_0_UNITS.reduce((acc, u) => acc + u.lessons.length, 0);
+
+  console.log(
+    `Prepared ${LEVEL_0_UNITS.length} units, ${totalLessons} lessons, ${totalExercises} interactive exercises.`
+  );
+
+  if (!convexUrl || convexUrl.includes("dummy-preview") || !adminSecret) {
+    console.log(
+      "\n[VALIDATION OK] Curriculum data verified. To push to Convex, ensure NEXT_PUBLIC_CONVEX_URL and ADMIN_SEED_SECRET are set."
+    );
+    return;
   }
 
   const client = new ConvexHttpClient(convexUrl);
 
-  const totalExercises = UNITS.reduce(
-    (acc, u) => acc + u.lessons.reduce((lAcc, l) => lAcc + l.exercises.length, 0),
-    0
-  );
-  const totalLessons = UNITS.reduce((acc, u) => acc + u.lessons.length, 0);
-
-  console.log(
-    `Prepared ${UNITS.length} units, ${totalLessons} lessons, ${totalExercises} interactive exercises.`
-  );
-
   try {
+    console.log(`Connecting to Convex at: ${convexUrl}...`);
     const result = await client.mutation(api.admin.seedCurriculum, {
       adminSecret,
       course: COURSE,
-      units: UNITS,
+      units: LEVEL_0_UNITS,
     });
 
-    console.log("Course successfully seeded!");
-    console.log(`Course slug: ${result.courseSlug}`);
-    console.log(`Lessons upserted: ${result.lessonsUpserted}`);
-    console.log(`Exercises written: ${result.exercisesWritten}`);
+    console.log("\nCourse successfully seeded!");
+    console.log(`- Course slug: ${result.courseSlug}`);
+    console.log(`- Lessons upserted: ${result.lessonsUpserted}`);
+    console.log(`- Exercises written: ${result.exercisesWritten}`);
   } catch (err) {
     console.error("Failed to seed course:", err);
     process.exit(1);

@@ -10,12 +10,11 @@ const clerkAuth = clerkMiddleware(
       await auth.protect();
     }
   },
-  () => ({
+  {
     publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-    secretKey: process.env.CLERK_SECRET_KEY,
     signInUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || "/sign-in",
     signUpUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL || "/sign-up",
-  })
+  }
 );
 
 export default async function middleware(req: NextRequest, event: NextFetchEvent) {

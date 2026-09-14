@@ -50,7 +50,7 @@ export function useLessonSession(lessonId: string) {
   const completedRef = useRef(false);
 
   useEffect(() => {
-    if (!session || startedRef.current) return;
+    if (!session || startedRef.current || session.exercises.length === 0) return;
     startedRef.current = true;
     startLesson({ lessonId: typedLessonId })
       .then((hearts) => {
@@ -63,7 +63,7 @@ export function useLessonSession(lessonId: string) {
   }, [session, startLesson, typedLessonId]);
 
   useEffect(() => {
-    if (state.phase !== "SESSION_COMPLETE" || completedRef.current) return;
+    if (state.phase !== "SESSION_COMPLETE" || completedRef.current || state.total === 0) return;
     completedRef.current = true;
     completeLesson({
       lessonId: typedLessonId,
