@@ -46,26 +46,23 @@ function AuthUserSync() {
 }
 
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
-  const value = useMemo<AppConfig>(
-    () => ({ hasConvex: Boolean(convexUrl), hasClerk: Boolean(clerkPublishableKey) }),
-    []
-  );
+  const hasConvexConfig = Boolean(convexUrl);
+  const hasClerkConfig = Boolean(clerkPublishableKey);
 
   const convex = useMemo(() => {
     return convexUrl ? new ConvexReactClient(convexUrl) : null;
   }, []);
 
-  // No Convex URL configured: mount nothing so pages can show a clear
-  // configuration state instead of silently failing (no dummy URLs baked in).
-  if (!convexUrl || !convex) {
-    return (
-      <AppConfigContext.Provider value={value}>
-        {children}
-      </AppConfigContext.Provider>
-    );
-  }
+  const value = useMemo<AppConfig>(
+    () => ({
+      hasConvex: Boolean(hasConvexConfig && convex),
+      hasClerk: hasClerkConfig,
+    }),
+    [hasConvexConfig, hasClerkConfig, convex]
+  );
 
-  if (clerkPublishableKey) {
+  // Case 1: Both Convex and Clerk are configured
+  if (convex && hasClerkConfig && clerkPublishableKey) {
     return (
       <AppConfigContext.Provider value={value}>
         <ClerkProvider publishableKey={clerkPublishableKey}>
@@ -78,12 +75,32 @@ export function ConvexClientProvider({ children }: { children: ReactNode }) {
     );
   }
 
-  // Convex configured without Clerk (local dev): data queries work but all
-  // mutations will correctly fail as UNAUTHENTICATED.
+  // Case 2: Only Clerk is configured
+  if (hasClerkConfig && clerkPublishableKey) {
+    return (
+      <AppConfigContext.Provider value={value}>
+        <ClerkProvider publishableKey={clerkPublishableKey}>
+          {children}
+        </ClerkProvider>
+      </AppConfigContext.Provider>
+    );
+  }
+
+  // Case 3: Only Convex is configured
+  if (convex) {
+    return (
+      <AppConfigContext.Provider value={value}>
+        <ConvexProvider client={convex}>{children}</ConvexProvider>
+      </AppConfigContext.Provider>
+    );
+  }
+
+  // Case 4: Neither configured (unconfigured fallback)
   return (
     <AppConfigContext.Provider value={value}>
-      <ConvexProvider client={convex}>{children}</ConvexProvider>
+      {children}
     </AppConfigContext.Provider>
   );
 }
+
 

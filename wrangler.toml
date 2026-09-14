@@ -2,3 +2,12 @@ name = "ferbe"
 pages_build_output_dir = ".open-next/assets"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
+
+[vars]
+NEXT_PUBLIC_CONVEX_URL = "https://qualified-egret-206.convex.cloud"
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_c3BsZW5kaWQtbWFybW9zZXQtNDU3Mi5jbGVyay5hY2NvdW50cy5kZXYk"
+NEXT_PUBLIC_CLERK_SIGN_IN_URL = "/sign-in"
+NEXT_PUBLIC_CLERK_SIGN_UP_URL = "/sign-up"
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL = "/learn"
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL = "/learn"
+
