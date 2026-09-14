@@ -41,6 +41,19 @@ export * from "${workerImportPath}";
 
 const STATIC_EXT_REGEX = /\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|mp3|txt)$/i;
 
+const capturedLogs = [];
+const origError = console.error;
+console.error = (...args) => {
+  try {
+    capturedLogs.push({
+      time: new Date().toISOString(),
+      msg: args.map((a) => (typeof a === "object" && a !== null ? (a.stack || a.message || JSON.stringify(a)) : String(a))).join(" ")
+    });
+    if (capturedLogs.length > 50) capturedLogs.shift();
+  } catch (_) {}
+  origError(...args);
+};
+
 export default {
   async fetch(request, env, ctx) {
     if (env && typeof env === "object") {
@@ -52,6 +65,13 @@ export default {
     }
 
     const url = new URL(request.url);
+
+    // Diagnostics: dump last captured server error logs
+    if (url.pathname === "/_cf_errors") {
+      return new Response(JSON.stringify(capturedLogs, null, 2), {
+        headers: { "content-type": "application/json" }
+      });
+    }
 
     // Health and configuration diagnostics
     if (url.pathname === "/_cf_health") {
@@ -70,6 +90,7 @@ export default {
             convex_url:
               env?.NEXT_PUBLIC_CONVEX_URL || process.env.NEXT_PUBLIC_CONVEX_URL || null,
             has_assets_binding: Boolean(env?.ASSETS),
+            available_keys: Object.keys(env || {}),
             timestamp: new Date().toISOString(),
           },
           null,
@@ -98,11 +119,30 @@ export default {
     }
 
     try {
-      return await openNextWorker.fetch(request, env, ctx);
+      const response = await openNextWorker.fetch(request, env, ctx);
+      if (response.status === 500) {
+        const lastErr = capturedLogs.slice(-3).map((l) => l.msg).join("\n---\n");
+        if (url.searchParams.has("debug") || request.headers.get("x-debug") === "1") {
+          return new Response("500 Server Error Debug Logs:\n" + (lastErr || "No console.error captured"), {
+            status: 500,
+            headers: { "content-type": "text/plain; charset=utf-8" },
+          });
+        }
+        const newHeaders = new Headers(response.headers);
+        if (lastErr) {
+          newHeaders.set("x-cf-last-error", encodeURIComponent(lastErr.slice(0, 500)));
+        }
+        return new Response(response.body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: newHeaders,
+        });
+      }
+      return response;
     } catch (err) {
       console.error("[_worker.js] Fatal uncaught error on", url.pathname, err);
       return new Response(
-        "Worker Execution Error on " + url.pathname + ":\\n" + (err?.message || err) + "\\n" + (err?.stack || ""),
+        "Worker Execution Error on " + url.pathname + ":\n" + (err?.message || err) + "\n" + (err?.stack || ""),
         {
           status: 500,
           headers: { "content-type": "text/plain; charset=utf-8" },
