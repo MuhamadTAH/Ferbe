@@ -2,7 +2,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"main": ".open-next/worker.js",
 	"name": "ferbe",
-	"compatibility_date": "2025-01-01",
+	"compatibility_date": "2026-09-08",
 	"compatibility_flags": ["nodejs_compat"],
 	"assets": {
 		"directory": ".open-next/assets",
