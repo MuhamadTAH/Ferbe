@@ -121,9 +121,9 @@ export default {
     try {
       const response = await openNextWorker.fetch(request, env, ctx);
       if (response.status === 500) {
-        const lastErr = capturedLogs.slice(-3).map((l) => l.msg).join("\n---\n");
+        const lastErr = capturedLogs.slice(-3).map((l) => l.msg).join("\\n---\\n");
         if (url.searchParams.has("debug") || request.headers.get("x-debug") === "1") {
-          return new Response("500 Server Error Debug Logs:\n" + (lastErr || "No console.error captured"), {
+          return new Response("500 Server Error Debug Logs:\\n" + (lastErr || "No console.error captured"), {
             status: 500,
             headers: { "content-type": "text/plain; charset=utf-8" },
           });
@@ -142,7 +142,7 @@ export default {
     } catch (err) {
       console.error("[_worker.js] Fatal uncaught error on", url.pathname, err);
       return new Response(
-        "Worker Execution Error on " + url.pathname + ":\n" + (err?.message || err) + "\n" + (err?.stack || ""),
+        "Worker Execution Error on " + url.pathname + ":\\n" + (err?.message || err) + "\\n" + (err?.stack || ""),
         {
           status: 500,
           headers: { "content-type": "text/plain; charset=utf-8" },
