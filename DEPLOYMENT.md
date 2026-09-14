@@ -70,10 +70,10 @@ This guide walks you through deploying **Fêrbe** to production with **Cloudflar
    - Go to **Compute (Workers & Pages)** -> **Create application**.
    - Select the **Pages** tab -> click **Connect to Git**.
    - Choose your GitHub repository (`ferbe`).
-3. Set Build Settings:
-   - **Framework Preset**: `Next.js`
-   - **Build command**: `npm run build`
-   - **Build output directory**: `.next`
+3. Set Build Settings in Cloudflare Pages:
+   - **Framework Preset**: `None` (or `Next.js`)
+   - **Build command**: `npm run build:cf`
+   - **Build output directory**: `.open-next/assets`
    - **Root directory**: `/`
 4. Add **Environment Variables** in Cloudflare:
 

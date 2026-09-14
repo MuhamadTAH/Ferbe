@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { ConvexHttpClient } from "convex/browser";
-import { api } from "../../../../convex/_generated/api";
+
 
 export const dynamic = "force-dynamic";
 
@@ -17,13 +16,13 @@ export async function GET() {
   }
 
   try {
-    await Promise.race([
-      new ConvexHttpClient(url).query(api.categories.list, {}),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("convex ping timeout")), 2500)
-      ),
-    ]);
-    return NextResponse.json({ status: "ok", convex: "reachable", time });
+    const res = await fetch(url, { method: "HEAD", signal: AbortSignal.timeout(2500) });
+    const isReachable = res.ok || res.status < 500;
+    return NextResponse.json({
+      status: isReachable ? "ok" : "degraded",
+      convex: isReachable ? "reachable" : "unreachable",
+      time,
+    });
   } catch {
     return NextResponse.json({ status: "degraded", convex: "unreachable", time });
   }
