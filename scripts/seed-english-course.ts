@@ -60,6 +60,12 @@ export const LEVEL_0_UNITS: UnitInput[] = [
         xpReward: 10,
         exercises: [],
       },
+      {
+        title: "0.4 Ready to Begin: Start Section 1",
+        order: 4,
+        xpReward: 10,
+        exercises: [],
+      },
     ],
   },
 
