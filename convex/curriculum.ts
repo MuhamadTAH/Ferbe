@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireUser, getUserOrNull } from "./users";
+import { requireUser, getUserOrNull, getOrCreateUser } from "./users";
 import {
   computeNextStreak,
   computeXp,
@@ -254,7 +254,7 @@ export const completeLesson = mutation({
     totalExercises: v.number(),
   },
   handler: async (ctx, args) => {
-    const user = await getUserOrNull(ctx);
+    const user = await getOrCreateUser(ctx);
     const id = ctx.db.normalizeId("lessons", args.lessonId);
     if (!id) throw new Error("Lesson not found");
     const lesson = await ctx.db.get(id);
@@ -529,3 +529,79 @@ export const setUserStatus = mutation({
     return { success: true, status: args.status };
   },
 });
+
+/**
+ * Migrates lessons completed while playing as a guest into the user's permanent
+ * Convex userProgress and userStats records upon signing in / up.
+ */
+export const syncGuestProgress = mutation({
+  args: {
+    completedLessonIds: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const user = await getOrCreateUser(ctx);
+    if (!user) return { synced: 0, xpAdded: 0 };
+
+    let syncedCount = 0;
+    let xpToAdd = 0;
+
+    for (const rawLessonId of args.completedLessonIds) {
+      const id = ctx.db.normalizeId("lessons", rawLessonId);
+      if (!id) continue;
+
+      const lesson = await ctx.db.get(id);
+      if (!lesson) continue;
+
+      const existing = await ctx.db
+        .query("userProgress")
+        .withIndex("by_user_lesson", (q) =>
+          q.eq("userId", user._id).eq("lessonId", lesson._id)
+        )
+        .first();
+
+      if (!existing) {
+        await ctx.db.insert("userProgress", {
+          userId: user._id,
+          lessonId: lesson._id,
+          isCompleted: true,
+          score: 100,
+          completedAt: Date.now(),
+        });
+        syncedCount++;
+        xpToAdd += lesson.xpReward || 10;
+      } else if (!existing.isCompleted) {
+        await ctx.db.patch(existing._id, {
+          isCompleted: true,
+          completedAt: Date.now(),
+        });
+        syncedCount++;
+        xpToAdd += lesson.xpReward || 10;
+      }
+    }
+
+    if (syncedCount > 0) {
+      const stats = await ctx.db
+        .query("userStats")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .first();
+
+      if (stats) {
+        const today = todayKey();
+        const streak = computeNextStreak(
+          stats.currentStreak,
+          stats.lastActiveDate,
+          today,
+          yesterdayKey()
+        );
+        await ctx.db.patch(stats._id, {
+          totalXp: stats.totalXp + xpToAdd,
+          currentStreak: Math.max(1, streak),
+          lastActiveDate: today,
+        });
+      }
+    }
+
+    return { synced: syncedCount, xpAdded: xpToAdd };
+  },
+});
+

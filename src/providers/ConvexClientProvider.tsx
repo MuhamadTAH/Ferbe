@@ -5,6 +5,7 @@ import { ConvexProvider, ConvexReactClient, useMutation } from "convex/react";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { api } from "../../convex/_generated/api";
+import { getGuestCompletedLessonIds, GUEST_PROGRESS_EVENT } from "@/lib/guestProgress";
 
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL as string | undefined;
 const clerkPublishableKey = process.env
@@ -25,22 +26,33 @@ export function useAppConfig(): AppConfig {
   return useContext(AppConfigContext);
 }
 
-/** Automatically provisions the user record & default stats (streak 0, xp 0, hearts 5) upon sign-in/up */
+/** Automatically provisions the user record, initializes default stats, and syncs guest progress upon sign-in/up */
 function AuthUserSync() {
   const { isSignedIn } = useAuth();
   const syncUser = useMutation(api.users.syncUser);
+  const syncGuestProgress = useMutation(api.curriculum.syncGuestProgress);
   const syncedRef = useRef(false);
 
   useEffect(() => {
     if (isSignedIn && !syncedRef.current) {
       syncedRef.current = true;
-      syncUser().catch(() => {
-        syncedRef.current = false;
-      });
+      syncUser()
+        .then(async () => {
+          const guestLessonIds = getGuestCompletedLessonIds();
+          if (guestLessonIds.length > 0) {
+            await syncGuestProgress({ completedLessonIds: guestLessonIds });
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent(GUEST_PROGRESS_EVENT));
+            }
+          }
+        })
+        .catch(() => {
+          syncedRef.current = false;
+        });
     } else if (!isSignedIn) {
       syncedRef.current = false;
     }
-  }, [isSignedIn, syncUser]);
+  }, [isSignedIn, syncUser, syncGuestProgress]);
 
   return null;
 }

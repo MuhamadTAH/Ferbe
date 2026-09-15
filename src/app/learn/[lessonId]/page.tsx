@@ -282,7 +282,7 @@ export default function LessonSessionPage() {
   }
   return (
     <ErrorBoundary>
-      <SessionInner lessonId={lessonId} />
+      <SessionInner key={lessonId} lessonId={lessonId} />
     </ErrorBoundary>
   );
 }

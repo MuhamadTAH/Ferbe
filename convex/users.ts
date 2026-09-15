@@ -26,17 +26,12 @@ export async function getUserOrNull(ctx: QueryCtx): Promise<Doc<"users"> | null>
 }
 
 /**
- * Requires an authenticated identity and get-or-creates the users row plus the
- * default userStats row (currentStreak 0, totalXp 0, hearts 5).
- *
- * SECURITY: there is intentionally NO anonymous fallback. Every user-facing
- * mutation must call this — unauthenticated calls throw.
+ * Safely gets or creates the user record if an authenticated identity is present.
+ * Returns null if the caller is unauthenticated (guest).
  */
-export async function requireUser(ctx: MutationCtx): Promise<Doc<"users">> {
+export async function getOrCreateUser(ctx: MutationCtx): Promise<Doc<"users"> | null> {
   const identity = await ctx.auth.getUserIdentity();
-  if (!identity) {
-    throw new Error("UNAUTHENTICATED: sign in to continue");
-  }
+  if (!identity) return null;
 
   let existing = await ctx.db
     .query("users")
@@ -50,7 +45,23 @@ export async function requireUser(ctx: MutationCtx): Promise<Doc<"users">> {
       .unique();
   }
 
-  if (existing) return existing;
+  if (existing) {
+    // Ensure userStats row exists
+    const stats = await ctx.db
+      .query("userStats")
+      .withIndex("by_user", (q) => q.eq("userId", existing._id))
+      .first();
+    if (!stats) {
+      await ctx.db.insert("userStats", {
+        userId: existing._id,
+        currentStreak: 0,
+        hearts: 5,
+        gems: 500,
+        totalXp: 0,
+      });
+    }
+    return existing;
+  }
 
   const userId = await ctx.db.insert("users", {
     tokenIdentifier: identity.subject,
@@ -67,9 +78,22 @@ export async function requireUser(ctx: MutationCtx): Promise<Doc<"users">> {
     totalXp: 0,
   });
 
-  const created = await ctx.db.get(userId);
-  if (!created) throw new Error("Failed to create user record");
-  return created;
+  return (await ctx.db.get(userId)) ?? null;
+}
+
+/**
+ * Requires an authenticated identity and get-or-creates the users row plus the
+ * default userStats row (currentStreak 0, totalXp 0, hearts 5).
+ *
+ * SECURITY: there is intentionally NO anonymous fallback. Every user-facing
+ * mutation must call this — unauthenticated calls throw.
+ */
+export async function requireUser(ctx: MutationCtx): Promise<Doc<"users">> {
+  const user = await getOrCreateUser(ctx);
+  if (!user) {
+    throw new Error("UNAUTHENTICATED: sign in to continue");
+  }
+  return user;
 }
 
 /**

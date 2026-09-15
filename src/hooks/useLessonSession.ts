@@ -50,6 +50,14 @@ export function useLessonSession(lessonId: string) {
   const startedRef = useRef(false);
   const completedRef = useRef(false);
 
+  // Reset lifecycle refs and results when the lesson route changes
+  useEffect(() => {
+    startedRef.current = false;
+    completedRef.current = false;
+    setResult(null);
+    setServerError(null);
+  }, [typedLessonId]);
+
   useEffect(() => {
     if (!session || startedRef.current || session.exercises.length === 0) return;
     startedRef.current = true;
