@@ -42,7 +42,24 @@ const EVENT_NAME = "ferbe_course_change";
 
 export function useActiveCourse() {
   const router = useRouter();
-  const [activeCourseSlug, setActiveCourseSlug] = useState<string>("sorani-basics");
+  const [activeCourseSlug, setActiveCourseSlug] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const urlParam = params.get("course");
+        if (urlParam && AVAILABLE_COURSES.some((c) => c.slug === urlParam)) {
+          return urlParam;
+        }
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored && AVAILABLE_COURSES.some((c) => c.slug === stored)) {
+          return stored;
+        }
+      } catch {
+        // ignore storage errors
+      }
+    }
+    return "sorani-basics";
+  });
 
   const syncCourse = useCallback(() => {
     if (typeof window === "undefined") return;

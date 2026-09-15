@@ -89,7 +89,8 @@ function SessionInner({ lessonId }: { lessonId: string }) {
     select,
   ]);
 
-  if (session === undefined || state.phase === "IDLE") {
+  // 1. Session is fetching from Convex
+  if (session === undefined) {
     return (
       <div className="py-24 text-center font-extrabold text-[#AFAFAF]">
         Loading lesson...
@@ -97,6 +98,7 @@ function SessionInner({ lessonId }: { lessonId: string }) {
     );
   }
 
+  // 2. Lesson not found in DB
   if (session === null) {
     return (
       <div className="mx-auto max-w-md px-4 py-24 text-center">
@@ -112,6 +114,7 @@ function SessionInner({ lessonId }: { lessonId: string }) {
     );
   }
 
+  // 3. Lesson exists but has no exercises yet
   if (session.exercises.length === 0) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-4 py-24 text-center">
@@ -132,6 +135,15 @@ function SessionInner({ lessonId }: { lessonId: string }) {
         >
           Back to Learning Path / گەڕانەوە
         </Link>
+      </div>
+    );
+  }
+
+  // 4. Session state machine is starting
+  if (state.phase === "IDLE") {
+    return (
+      <div className="py-24 text-center font-extrabold text-[#AFAFAF]">
+        Starting session...
       </div>
     );
   }

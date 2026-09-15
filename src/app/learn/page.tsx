@@ -118,9 +118,17 @@ function PathPage() {
           const lessonsPart1 = lessons.slice(0, midIndex);
           const lessonsPart2 = lessons.slice(midIndex);
 
-          // A unit is unlocked if it is the first unit, or all lessons in the previous unit are completed
+          // A unit is unlocked if it is the first unit, or if the preceding unit is an ungated pre-course/orientation,
+          // or all lessons in the previous unit are completed.
+          const isPrevUnitUngated =
+            unitIdx > 0 &&
+            (curriculum.units[unitIdx - 1].title.toLowerCase().includes("ungated") ||
+              curriculum.units[unitIdx - 1].title.toLowerCase().includes("orientation") ||
+              curriculum.units[unitIdx - 1].title.toLowerCase().includes("دەستپێک"));
+
           const isUnitUnlocked =
             unitIdx === 0 ||
+            isPrevUnitUngated ||
             curriculum.units[unitIdx - 1].lessons.every((l) => l.isCompleted);
 
           // Chest is unlocked when all lessons preceding it are completed

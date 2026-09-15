@@ -120,9 +120,11 @@ export const getCourseCurriculum = query({
 
 /** Lesson + ordered exercises for one session. Read-only, open to all learners. */
 export const getLessonSession = query({
-  args: { lessonId: v.id("lessons") },
+  args: { lessonId: v.string() },
   handler: async (ctx, args) => {
-    const lesson = await ctx.db.get(args.lessonId);
+    const id = ctx.db.normalizeId("lessons", args.lessonId);
+    if (!id) return null;
+    const lesson = await ctx.db.get(id);
     if (!lesson) return null;
 
     const exercises = await ctx.db
@@ -155,17 +157,22 @@ export const getLessonSession = query({
  * Owner default: hearts refill to 5 at the start of every session.
  */
 export const startLesson = mutation({
-  args: { lessonId: v.id("lessons") },
+  args: { lessonId: v.string() },
   handler: async (ctx, args) => {
-    const user = await requireUser(ctx);
-    const lesson = await ctx.db.get(args.lessonId);
+    const user = await getUserOrNull(ctx);
+    if (!user) {
+      return { hearts: 5 };
+    }
+    const id = ctx.db.normalizeId("lessons", args.lessonId);
+    if (!id) throw new Error("Lesson not found");
+    const lesson = await ctx.db.get(id);
     if (!lesson) throw new Error("Lesson not found");
 
     const stats = await ctx.db
       .query("userStats")
       .withIndex("by_user", (q) => q.eq("userId", user._id))
       .first();
-    if (!stats) throw new Error("User stats missing");
+    if (!stats) return { hearts: 5 };
 
     if (stats.hearts !== 5) {
       await ctx.db.patch(stats._id, { hearts: 5 });
@@ -179,14 +186,16 @@ export const startLesson = mutation({
  * Called by the client on each wrong answer.
  */
 export const recordAnswer = mutation({
-  args: { lessonId: v.id("lessons"), correct: v.boolean() },
+  args: { lessonId: v.string(), correct: v.boolean() },
   handler: async (ctx, args) => {
-    const user = await requireUser(ctx);
+    const user = await getUserOrNull(ctx);
+    if (!user) return { hearts: 5 };
+
     const stats = await ctx.db
       .query("userStats")
       .withIndex("by_user", (q) => q.eq("userId", user._id))
       .first();
-    if (!stats) throw new Error("User stats missing");
+    if (!stats) return { hearts: 5 };
 
     if (!args.correct) {
       const hearts = Math.max(0, stats.hearts - 1);
@@ -205,19 +214,34 @@ export const recordAnswer = mutation({
  */
 export const completeLesson = mutation({
   args: {
-    lessonId: v.id("lessons"),
+    lessonId: v.string(),
     correctFirstTry: v.number(),
     totalExercises: v.number(),
   },
   handler: async (ctx, args) => {
-    const user = await requireUser(ctx);
-    const lesson = await ctx.db.get(args.lessonId);
+    const user = await getUserOrNull(ctx);
+    const id = ctx.db.normalizeId("lessons", args.lessonId);
+    if (!id) throw new Error("Lesson not found");
+    const lesson = await ctx.db.get(id);
     if (!lesson) throw new Error("Lesson not found");
 
     const total = Math.max(0, Math.floor(args.totalExercises));
     const correctFirstTry = clamp(Math.floor(args.correctFirstTry), 0, total);
     const xpEarned = computeXp(lesson.xpReward, correctFirstTry, total);
     const pct = total > 0 ? Math.round((100 * correctFirstTry) / total) : 0;
+    const isCompleted = pct >= 80;
+
+    if (!user) {
+      return {
+        xpEarned,
+        totalXp: xpEarned,
+        gemsAwarded: 5,
+        gems: 505,
+        currentStreak: 1,
+        isCompleted,
+        score: pct,
+      };
+    }
 
     const existing = await ctx.db
       .query("userProgress")
@@ -226,23 +250,23 @@ export const completeLesson = mutation({
       )
       .first();
 
-    const isCompleted = (existing?.isCompleted ?? false) || pct >= 80;
+    const finalCompleted = (existing?.isCompleted ?? false) || isCompleted;
     const score = Math.max(existing?.score ?? 0, pct);
 
     if (existing) {
       const patch: { isCompleted: boolean; score: number; completedAt?: number } = {
-        isCompleted,
+        isCompleted: finalCompleted,
         score,
       };
-      if (isCompleted && !existing.completedAt) patch.completedAt = Date.now();
+      if (finalCompleted && !existing.completedAt) patch.completedAt = Date.now();
       await ctx.db.patch(existing._id, patch);
     } else {
       await ctx.db.insert("userProgress", {
         userId: user._id,
         lessonId: lesson._id,
-        isCompleted,
+        isCompleted: finalCompleted,
         score,
-        completedAt: isCompleted ? Date.now() : undefined,
+        completedAt: finalCompleted ? Date.now() : undefined,
       });
     }
 
@@ -250,7 +274,17 @@ export const completeLesson = mutation({
       .query("userStats")
       .withIndex("by_user", (q) => q.eq("userId", user._id))
       .first();
-    if (!stats) throw new Error("User stats missing");
+    if (!stats) {
+      return {
+        xpEarned,
+        totalXp: xpEarned,
+        gemsAwarded: 5,
+        gems: 505,
+        currentStreak: 1,
+        isCompleted: finalCompleted,
+        score,
+      };
+    }
 
     const today = todayKey();
     const streak = computeNextStreak(
@@ -276,8 +310,8 @@ export const completeLesson = mutation({
       gemsAwarded,
       gems: newGems,
       currentStreak: streak,
-      isCompleted,
-      score: pct,
+      isCompleted: finalCompleted,
+      score,
     };
   },
 });
