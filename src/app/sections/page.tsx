@@ -23,77 +23,124 @@ interface SectionDetails {
 const SECTIONS: SectionDetails[] = [
   {
     number: 1,
-    englishTitle: "Rookie",
-    kurdishTitle: "دەستپێک",
+    englishTitle: "Orientation: The Launchpad",
+    kurdishTitle: "دەستپێک و ڕێنوێنی",
     cefr: "A1",
-    unitsCount: 3,
+    unitsCount: 1,
     description:
-      "Learn basic greetings, essential vocabulary, and Kurdish alphabet sounds to kick off your Kurdish journey.",
-    samplePhrase: "سڵاو! چۆنیت؟ (Hello! How are you?)",
+      "Get familiar with reading left-to-right, microphone checks, and foundational mechanics of learning English.",
+    samplePhrase: "Hello! Hear your voice and get ready.",
     status: "current",
   },
   {
     number: 2,
-    englishTitle: "Explorer",
-    kurdishTitle: "گەڕیدە",
+    englishTitle: "The Core Six (S, A, T, P, I, N)",
+    kurdishTitle: "شەش پیتی سەرەکی",
     cefr: "A1",
-    unitsCount: 12,
+    unitsCount: 1,
     description:
-      "Form simple sentences, order food at a bazaar or café, and ask for directions around Erbil and Sulaymaniyah.",
-    samplePhrase: "دەتوانیت یارمەتیم بدەیت؟ (Can you help me?)",
+      "Master the most common letters and blend them to form your very first English words: pan, tin, pin, ant, tap.",
+    samplePhrase: "I see a pan. /tæp/",
     status: "unlocked",
   },
   {
     number: 3,
-    englishTitle: "Traveler",
-    kurdishTitle: "گەشتیار",
-    cefr: "A2",
-    unitsCount: 16,
+    englishTitle: "First Consonants & The English R (C, K, E, H, R, M, D)",
+    kurdishTitle: "پیتە بێدەنگەکان و دەنگی R",
+    cefr: "A1",
+    unitsCount: 1,
     description:
-      "Navigate public transit, describe your daily routine, and talk about family, work, and Kurdish cultural traditions.",
-    samplePhrase: "ئەمڕۆ سەردانی بازاڕی قەیسەری دەکەم. (Today I will visit the Qaysari Bazaar.)",
+      "Unlock daily objects and master the distinct English R sound: cat, hat, map, hen, kid, pen.",
+    samplePhrase: "A red hat and a pen.",
     status: "unlocked",
   },
   {
     number: 4,
-    englishTitle: "Storyteller",
-    kurdishTitle: "چیرۆکبێژ",
-    cefr: "B1",
-    unitsCount: 24,
+    englishTitle: "Vowels, Voicing & Ending Sounds (G, O, U, L, F, B, CK)",
+    kurdishTitle: "دەنگە بزوینەکان و کۆتایی وشە",
+    cefr: "A1",
+    unitsCount: 1,
     description:
-      "Share memories, understand Kurdish folktales, and discuss hobbies, feelings, news, and future plans.",
-    samplePhrase: "کاتێک مناڵ بووم، لە گوند دەژیاین. (When I was a child, we lived in the village.)",
+      "Explore deep vowels and hard stops with everyday objects: bag, dog, cup, log, fan, bun.",
+    samplePhrase: "A big cup on the log.",
     status: "unlocked",
   },
   {
     number: 5,
-    englishTitle: "Fluent Sorani",
-    kurdishTitle: "زمانزان",
-    cefr: "B2",
-    unitsCount: 30,
+    englishTitle: "Edge Letters & Sound Traps (J, Z, W, V, Y, X, Q)",
+    kurdishTitle: "پیتە هەستیارەکان و تەڵەی دەنگی",
+    cefr: "A1",
+    unitsCount: 1,
     description:
-      "Discuss abstract ideas, poetry, modern media, and express nuanced opinions with authentic native idioms.",
-    samplePhrase: "هەموو ڕۆژێک لە فێربوونی شتی نوێ دەست پێ دەکات. (Every day begins with learning something new.)",
+      "Tackle tricky sound contrasts like W vs. V: wet, van, web, wig, box, zip, yak, quiz.",
+    samplePhrase: "A wet box with a zip.",
+    status: "unlocked",
+  },
+  {
+    number: 6,
+    englishTitle: "Team Letters & Questions (SH, CH, TH, NG, WH)",
+    kurdishTitle: "پیتە لێکدراوەکان و دەستەواژەی پرسیار",
+    cefr: "A1",
+    unitsCount: 1,
+    description:
+      "Learn digraphs and common sentence starters: ship, shop, fish, chin, rich, thin, ring, song.",
+    samplePhrase: "Where is the ship? It is here.",
+    status: "unlocked",
+  },
+  {
+    number: 7,
+    englishTitle: "The Magic E & Long Vowels (A_E, I_E, O_E, U_E)",
+    kurdishTitle: "نهێنی E و بزوێنی درێژ",
+    cefr: "A2",
+    unitsCount: 1,
+    description:
+      "Decode the silent E rule that transforms short vowels into long vowels: cake, bike, home, rope, five.",
+    samplePhrase: "I have a bike at home.",
+    status: "unlocked",
+  },
+  {
+    number: 8,
+    englishTitle: "Vowel Teams I (AI, AY, EE, OA)",
+    kurdishTitle: "تیمی بزوێنەکان ١",
+    cefr: "A2",
+    unitsCount: 1,
+    description:
+      "Master paired vowels for nature and travel vocabulary: rain, day, tree, bee, boat, coat.",
+    samplePhrase: "Rain on the green tree.",
+    status: "unlocked",
+  },
+  {
+    number: 9,
+    englishTitle: "Vowel Teams II & Word Shapes (OO, AR, OR, ER, OW, OI)",
+    kurdishTitle: "تیمی بزوێنەکان ٢ و دەنگە قورسەکان",
+    cefr: "A2",
+    unitsCount: 1,
+    description:
+      "Deep sounds and rolling letters: moon, book, car, bird, cow, coin.",
+    samplePhrase: "A good book in the car.",
+    status: "unlocked",
+  },
+  {
+    number: 10,
+    englishTitle: "Rhythm, Gender & The Gateway (Schwa & Pronouns)",
+    kurdishTitle: "ڕیتمی زمان و جێناوەکان",
+    cefr: "A2",
+    unitsCount: 1,
+    description:
+      "Level 0 Capstone: English sentence cadence, the lazy vowel (/ə/), and pronoun mastery (he, she, it).",
+    samplePhrase: "Is he a teacher? Yes, he is.",
     status: "unlocked",
   },
 ];
 
 const CEFR_INFO: Record<string, { title: string; desc: string }> = {
   A1: {
-    title: "A1 • Breakthrough / Beginner",
-    desc: "Can understand and use familiar everyday Kurdish expressions and very basic phrases aimed at the satisfaction of concrete needs. Can introduce yourself and answer basic questions about personal details.",
+    title: "A1 • Beginner English (بەرایی)",
+    desc: "Can understand and speak basic English words, letter sounds, phonics blends, and essential daily expressions with Kurdish support.",
   },
   A2: {
-    title: "A2 • Waystage / Elementary",
-    desc: "Can understand sentences and frequently used expressions related to areas of most immediate relevance (e.g. basic personal and family information, shopping, local geography, employment).",
-  },
-  B1: {
-    title: "B1 • Threshold / Intermediate",
-    desc: "Can understand the main points of clear standard input on familiar matters regularly encountered in work, school, leisure, etc. Can deal with most situations likely to arise whilst travelling in the Kurdistan Region.",
-  },
-  B2: {
-    title: "B2 • Vantage / Upper Intermediate",
-    desc: "Can understand the main ideas of complex text on both concrete and abstract topics, including technical discussions in their field of specialization. Can interact with a degree of fluency with native speakers.",
+    title: "A2 • Elementary English (سەرەتایی پێشکەوتوو)",
+    desc: "Can read longer sentences, master vowel teams and the silent E, express daily routines, and ask basic questions.",
   },
 };
 
@@ -272,7 +319,7 @@ function SectionsInner() {
           <div className="rounded-3xl border-2 border-[#E5E5E5] bg-[#F7F7F7]/60 p-6 opacity-75">
             <div className="flex items-center justify-between">
               <span className="rounded-full border-2 border-[#E5E5E5] bg-white px-3 py-1 text-[11px] font-extrabold uppercase text-[#AFAFAF]">
-                6 Levels
+                10 Sections
               </span>
               <Lock className="h-4 w-4 text-[#AFAFAF]" />
             </div>
@@ -281,7 +328,7 @@ function SectionsInner() {
             </h2>
             <p className="mt-1 text-xs font-bold text-[#AFAFAF]">
               Complete all course sections to unlock daily personalized reviews
-              and maintain your Kurdish fluency indefinitely!
+              and maintain your English fluency indefinitely!
             </p>
           </div>
         </div>
