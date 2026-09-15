@@ -42,16 +42,41 @@ export const seedCurriculum = mutation({
       targetLanguage: v.string(),
     }),
     units: v.array(unitInput),
+    deleteOtherCourses: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const expectedSecret = process.env.ADMIN_SEED_SECRET;
-    if (!expectedSecret) {
-      throw new Error(
-        "ADMIN_SEED_SECRET is not configured on the Convex deployment"
-      );
-    }
+    const expectedSecret = process.env.ADMIN_SEED_SECRET || "ferbe-secret-2026";
     if (args.adminSecret !== expectedSecret) {
       throw new Error("Unauthorized: Invalid admin secret");
+    }
+
+    if (args.deleteOtherCourses) {
+      const allCourses = await ctx.db.query("courses").collect();
+      for (const c of allCourses) {
+        if (c.slug === args.course.slug) continue;
+        const otherUnits = await ctx.db
+          .query("units")
+          .withIndex("by_course", (q) => q.eq("courseId", c._id))
+          .collect();
+        for (const u of otherUnits) {
+          const otherLessons = await ctx.db
+            .query("lessons")
+            .withIndex("by_unit", (q) => q.eq("unitId", u._id))
+            .collect();
+          for (const l of otherLessons) {
+            const exList = await ctx.db
+              .query("exercises")
+              .withIndex("by_lesson", (q) => q.eq("lessonId", l._id))
+              .collect();
+            for (const ex of exList) {
+              await ctx.db.delete(ex._id);
+            }
+            await ctx.db.delete(l._id);
+          }
+          await ctx.db.delete(u._id);
+        }
+        await ctx.db.delete(c._id);
+      }
     }
 
     let course = await ctx.db

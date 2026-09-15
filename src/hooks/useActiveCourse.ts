@@ -16,16 +16,6 @@ export interface CourseMeta {
 
 export const AVAILABLE_COURSES: CourseMeta[] = [
   {
-    slug: "sorani-basics",
-    title: "Kurdish (Sorani)",
-    nativeTitle: "کوردیی سۆرانی",
-    shortLabel: "Sorani",
-    flagType: "kurdish",
-    sourceLanguage: "en",
-    targetLanguage: "ckb",
-    description: "Learn Kurdish Sorani vocabulary, alphabet, greetings, and daily phrases.",
-  },
-  {
     slug: "english-from-kurdish",
     title: "English for Kurdish Speakers",
     nativeTitle: "ئینگلیزی بۆ کورد",
@@ -58,7 +48,7 @@ export function useActiveCourse() {
         // ignore storage errors
       }
     }
-    return "sorani-basics";
+    return "english-from-kurdish";
   });
 
   const syncCourse = useCallback(() => {

@@ -65,7 +65,7 @@ export const getCourseCurriculum = query({
     const course = await ctx.db
       .query("courses")
       .withIndex("by_slug", (q) =>
-        q.eq("slug", args.courseSlug ?? "sorani-basics")
+        q.eq("slug", args.courseSlug ?? "english-from-kurdish")
       )
       .first();
     if (!course) return null;
