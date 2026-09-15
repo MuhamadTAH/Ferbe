@@ -17,6 +17,7 @@ import { UnitGuidebookModal } from "@/components/learn/UnitGuidebookModal";
 import { PathLessonNode, LessonNodeType } from "@/components/learn/PathLessonNode";
 import { JumpLessonNode } from "@/components/learn/JumpLessonNode";
 import { useActiveCourse } from "@/hooks/useActiveCourse";
+import { getGuestCompletedLessonIds, GUEST_PROGRESS_EVENT } from "@/lib/guestProgress";
 
 interface LessonView {
   _id: string;
@@ -56,7 +57,21 @@ function PathPage() {
   } | null>(null);
   const [showScrollToCurrent, setShowScrollToCurrent] = useState(false);
   const [localStatus, setLocalStatus] = useState<string | null>(null);
+  const [guestCompletedIds, setGuestCompletedIds] = useState<string[]>([]);
   const setUserStatus = useMutation(api.curriculum.setUserStatus);
+
+  useEffect(() => {
+    setGuestCompletedIds(getGuestCompletedLessonIds());
+    function handleProgressChange() {
+      setGuestCompletedIds(getGuestCompletedLessonIds());
+    }
+    window.addEventListener(GUEST_PROGRESS_EVENT, handleProgressChange);
+    window.addEventListener("storage", handleProgressChange);
+    return () => {
+      window.removeEventListener(GUEST_PROGRESS_EVENT, handleProgressChange);
+      window.removeEventListener("storage", handleProgressChange);
+    };
+  }, []);
 
   useEffect(() => {
     function handleScroll() {
@@ -70,6 +85,9 @@ function PathPage() {
     courseSlug: activeCourseSlug,
   }) as Curriculum | null | undefined;
   const stats = useQuery(api.curriculum.getMyStats, {}) as Stats | undefined;
+
+  const isLessonFinished = (l: { _id: string; isCompleted: boolean } | undefined): boolean =>
+    l ? (l.isCompleted || guestCompletedIds.includes(l._id)) : false;
 
   if (curriculum === undefined || stats === undefined) {
     return (
@@ -97,17 +115,17 @@ function PathPage() {
   }
 
   const completedLessonsCount = curriculum.units.reduce(
-    (acc, u) => acc + u.lessons.filter((l) => l.isCompleted).length,
+    (acc, u) => acc + u.lessons.filter((l) => isLessonFinished(l)).length,
     0
   );
 
-    // Identify the current active lesson across the whole curriculum
-    const currentActiveLessonId =
-      curriculum.units
-        .flatMap((u) => u.lessons)
-        .find((l) => !l.isCompleted)?._id ?? null;
+  // Identify the current active lesson across the whole curriculum
+  const currentActiveLessonId =
+    curriculum.units
+      .flatMap((u) => u.lessons)
+      .find((l) => !isLessonFinished(l))?._id ?? null;
 
-    return (
+  return (
     <div className="mx-auto flex max-w-5xl justify-center gap-10 px-4 py-8">
       {/* Main Path Column */}
       <main className="w-full max-w-xl">
@@ -129,13 +147,13 @@ function PathPage() {
           const isUnitUnlocked =
             unitIdx === 0 ||
             isPrevUnitUngated ||
-            curriculum.units[unitIdx - 1].lessons.every((l) => l.isCompleted);
+            curriculum.units[unitIdx - 1].lessons.every((l) => isLessonFinished(l));
 
           // Chest is unlocked when all lessons preceding it are completed
           const isChestUnlocked =
             isUnitUnlocked &&
             lessonsPart1.length > 0 &&
-            lessonsPart1.every((l) => l.isCompleted);
+            lessonsPart1.every((l) => isLessonFinished(l));
 
           return (
             <section
@@ -206,7 +224,7 @@ function PathPage() {
                       lesson={lessonsPart1[0]}
                       nodeType="star"
                       unlocked={true}
-                      isDone={lessonsPart1[0].isCompleted}
+                      isDone={isLessonFinished(lessonsPart1[0])}
                       isCurrent={lessonsPart1[0]._id === currentActiveLessonId}
                       isPopoverOpen={activeLessonId === lessonsPart1[0]._id}
                       offset={0}
@@ -223,8 +241,8 @@ function PathPage() {
                 {/* 2. Remaining lessons before chest (e.g. Lesson 2) */}
                 {lessonsPart1.slice(1).map((lesson, idx) => {
                   const previous = lessonsPart1[idx];
-                  const unlocked = isUnitUnlocked && (previous?.isCompleted ?? false);
-                  const isDone = lesson.isCompleted;
+                  const unlocked = isUnitUnlocked && isLessonFinished(previous);
+                  const isDone = isLessonFinished(lesson);
                   const isCurrent = lesson._id === currentActiveLessonId;
                   const isPopoverOpen = activeLessonId === lesson._id;
                   const offset = -45;
@@ -273,8 +291,8 @@ function PathPage() {
                     ? lessonsPart1[lessonsPart1.length - 1]
                     : lessonsPart2[j - 1];
                   const unlocked =
-                    isChestUnlocked && (previous?.isCompleted ?? false);
-                  const isDone = lesson.isCompleted;
+                    isChestUnlocked && isLessonFinished(previous);
+                  const isDone = isLessonFinished(lesson);
                   const isCurrent = lesson._id === currentActiveLessonId;
                   const isPopoverOpen = activeLessonId === lesson._id;
 

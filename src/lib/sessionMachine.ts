@@ -75,6 +75,7 @@ export interface SessionState {
 export interface LessonSessionData {
   lesson: { _id: string; title: string; order: number; xpReward: number };
   exercises: Exercise[];
+  nextLessonId?: string | null;
 }
 
 export const STARTING_HEARTS = 5;

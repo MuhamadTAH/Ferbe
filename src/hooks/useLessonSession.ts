@@ -13,6 +13,7 @@ import {
   STARTING_HEARTS,
   type LessonSessionData,
 } from "@/lib/sessionMachine";
+import { markGuestLessonCompleted } from "@/lib/guestProgress";
 
 export interface CompleteLessonResult {
   xpEarned: number;
@@ -65,6 +66,7 @@ export function useLessonSession(lessonId: string) {
   useEffect(() => {
     if (state.phase !== "SESSION_COMPLETE" || completedRef.current || state.total === 0) return;
     completedRef.current = true;
+    markGuestLessonCompleted(typedLessonId);
     completeLesson({
       lessonId: typedLessonId,
       correctFirstTry: state.firstTryCorrect,

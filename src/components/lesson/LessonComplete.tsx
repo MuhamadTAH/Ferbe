@@ -35,6 +35,7 @@ interface LessonCompleteProps {
   totalXp: number;
   scorecard?: ScorecardItem[];
   onRestart?: () => void;
+  nextLessonId?: string | null;
 }
 
 const DEFAULT_SCORECARD: ScorecardItem[] = [
@@ -89,6 +90,7 @@ export function LessonComplete({
   totalXp,
   scorecard = DEFAULT_SCORECARD,
   onRestart,
+  nextLessonId,
 }: LessonCompleteProps) {
   const [slide, setSlide] = useState<"summary" | "quest" | "reward">("summary");
   const [isScorecardOpen, setIsScorecardOpen] = useState(false);
@@ -337,14 +339,26 @@ export function LessonComplete({
             CONTINUE
           </PushButton>
         ) : (
-          <Link href="/learn" className="w-full">
-            <PushButton
-              variant="green"
-              className="w-full py-3.5 text-base uppercase tracking-wider"
+          <>
+            <Link
+              href={nextLessonId ? `/lesson/${nextLessonId}` : "/learn"}
+              className="w-full"
             >
-              CONTINUE
-            </PushButton>
-          </Link>
+              <PushButton
+                variant="green"
+                className="w-full py-3.5 text-base uppercase tracking-wider"
+              >
+                {nextLessonId ? "NEXT LESSON ➔" : "CONTINUE"}
+              </PushButton>
+            </Link>
+            {nextLessonId && (
+              <Link href="/learn" className="w-full text-center">
+                <span className="inline-block py-1 text-xs font-black uppercase tracking-wider text-[#AFAFAF] hover:text-[#777777] dark:hover:text-white transition-colors cursor-pointer">
+                  Back to Learning Path / گەڕانەوە
+                </span>
+              </Link>
+            )}
+          </>
         )}
 
         {/* REVIEW LESSON Button (Duolingo authentic) */}

@@ -158,6 +158,7 @@ function SessionInner({ lessonId }: { lessonId: string }) {
         accuracyPct={accuracy}
         currentStreak={result?.currentStreak ?? 0}
         totalXp={result?.totalXp ?? 0}
+        nextLessonId={session.nextLessonId}
       />
     );
   }

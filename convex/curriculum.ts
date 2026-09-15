@@ -133,6 +133,40 @@ export const getLessonSession = query({
       .collect();
     exercises.sort((a, b) => a.order - b.order);
 
+    // Determine the next chronological lesson in the unit or next unit
+    let nextLessonId: string | null = null;
+    const unitLessons = await ctx.db
+      .query("lessons")
+      .withIndex("by_unit", (q) => q.eq("unitId", lesson.unitId))
+      .collect();
+    unitLessons.sort((a, b) => a.order - b.order);
+
+    const currentIndex = unitLessons.findIndex((l) => l._id === lesson._id);
+    if (currentIndex >= 0 && currentIndex + 1 < unitLessons.length) {
+      nextLessonId = unitLessons[currentIndex + 1]._id;
+    } else {
+      // Find the first lesson of the next unit in this course
+      const currentUnit = await ctx.db.get(lesson.unitId);
+      if (currentUnit) {
+        const units = await ctx.db
+          .query("units")
+          .withIndex("by_course", (q) => q.eq("courseId", currentUnit.courseId))
+          .collect();
+        units.sort((a, b) => a.order - b.order);
+        const nextUnit = units.find((u) => u.order > currentUnit.order);
+        if (nextUnit) {
+          const nextUnitLessons = await ctx.db
+            .query("lessons")
+            .withIndex("by_unit", (q) => q.eq("unitId", nextUnit._id))
+            .collect();
+          nextUnitLessons.sort((a, b) => a.order - b.order);
+          if (nextUnitLessons[0]) {
+            nextLessonId = nextUnitLessons[0]._id;
+          }
+        }
+      }
+    }
+
     return {
       lesson: {
         _id: lesson._id,
@@ -140,6 +174,7 @@ export const getLessonSession = query({
         order: lesson.order,
         xpReward: lesson.xpReward,
       },
+      nextLessonId,
       exercises: exercises.map((e) => ({
         _id: e._id,
         type: e.type,
@@ -229,7 +264,7 @@ export const completeLesson = mutation({
     const correctFirstTry = clamp(Math.floor(args.correctFirstTry), 0, total);
     const xpEarned = computeXp(lesson.xpReward, correctFirstTry, total);
     const pct = total > 0 ? Math.round((100 * correctFirstTry) / total) : 0;
-    const isCompleted = pct >= 80;
+    const isCompleted = true; // Completing the lesson queue without hearts exhaustion is a completed lesson
 
     if (!user) {
       return {
@@ -238,7 +273,7 @@ export const completeLesson = mutation({
         gemsAwarded: 5,
         gems: 505,
         currentStreak: 1,
-        isCompleted,
+        isCompleted: true,
         score: pct,
       };
     }
@@ -250,7 +285,7 @@ export const completeLesson = mutation({
       )
       .first();
 
-    const finalCompleted = (existing?.isCompleted ?? false) || isCompleted;
+    const finalCompleted = true;
     const score = Math.max(existing?.score ?? 0, pct);
 
     if (existing) {
