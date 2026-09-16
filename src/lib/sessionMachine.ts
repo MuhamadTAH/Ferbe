@@ -158,9 +158,15 @@ export function evaluateAnswer(
 
   const correct = (solution.correct ?? "").trim();
   const selected = (state.selected ?? "").trim();
+  const isInteractiveCompletion =
+    selected === "completed" ||
+    selected === "matched" ||
+    selected === "paired" ||
+    (correct.length > 0 && selected.toLowerCase() === correct.toLowerCase());
+
   return {
-    correct: selected.length > 0 && selected.toLowerCase() === correct.toLowerCase(),
-    correctSolution: correct,
+    correct: selected.length > 0 && isInteractiveCompletion,
+    correctSolution: correct || selected,
   };
 }
 

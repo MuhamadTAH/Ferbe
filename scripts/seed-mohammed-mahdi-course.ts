@@ -45,152 +45,193 @@ export const MOHAMMED_MAHDI_UNITS: UnitInput[] = [
         order: 1,
         xpReward: 15,
         exercises: [
-          // Screen 1: Word Anchors
+          // Screen 1: Word Anchors (Greetings) - 3 stacked word cards
           {
             type: "multiple_choice",
-            promptText: "Hello / Hi / Hey (سڵاو)",
-            distractors: ["Goodbye (ماڵئاوا)", "Good night (شەو شاد)"],
+            promptText: "سڵاوکردن لە زمانی ئینگلیزیدا",
+            distractors: [],
             solutionData: {
-              correct: "Hello / Hi / Hey (سڵاو)",
+              subtype: "word_anchors",
               instruction: "پێناسەی وشە (Word Anchors)",
-              icon: "👋",
-              isSpeaking: true,
-              spokenText: "Hello, Hi, Hey",
-              transliteration: "هێڵۆو (Hello) / های (Hi) / هێی (Hey - نافەرمی)",
+              correct: "completed",
+              words: [
+                {
+                  english: "Hello",
+                  pronunciationKurdish: "هێڵۆو",
+                  meaningKurdish: "سڵاو",
+                  note: "فەرمی و باو",
+                },
+                {
+                  english: "Hi",
+                  pronunciationKurdish: "های",
+                  meaningKurdish: "سڵاو",
+                  note: "دۆستانە",
+                },
+                {
+                  english: "Hey",
+                  pronunciationKurdish: "هێی",
+                  meaningKurdish: "سڵاو",
+                  note: "نافەرمی",
+                },
+              ],
             },
             order: 1,
           },
-          // Screen 2: Acoustic Match
+          // Screen 2: Acoustic Match (Sound to Spelling) - 3 playable audio buttons & 3 English text tiles
           {
             type: "audio_match",
-            promptText: "گوێ بگرە و وشەی بیستراو دیاری بکە",
-            distractors: ["Hello", "Hey"],
+            promptText: "گوێ لە دەنگەکان بگرە و وشە هاوتاکەیان دیاری بکە",
+            distractors: [],
             solutionData: {
-              correct: "Hi",
-              spokenText: "Hi",
+              subtype: "acoustic_match",
               instruction: "ڕاهێنانی بیستن (Acoustic Match)",
-              icon: "👂",
+              correct: "matched",
+              sounds: [
+                { id: "s1", label: "Sound 1", word: "Hi" },
+                { id: "s2", label: "Sound 2", word: "Hey" },
+                { id: "s3", label: "Sound 3", word: "Hello" },
+              ],
+              words: ["Hey", "Hello", "Hi"],
             },
             order: 2,
           },
-          // Screen 3: The "How are you?" Deconstruction
+          // Screen 3: The "How are you?" Deconstruction - 4 interactive horizontal rows
           {
             type: "multiple_choice",
-            promptText: "How are you? (هەواریو؟)",
-            distractors: ["How do you do?", "Where are you?"],
+            promptText: "شیکردنەوەی پێکهاتەی ڕستە",
+            distractors: [],
             solutionData: {
-              correct: "How are you? (چۆنیت؟)",
-              instruction: "شیکردنەوەی پێکهاتەی ڕستە (Analytics Breakdown)",
-              icon: "🔍",
-              isSpeaking: true,
-              spokenText: "How are you?",
-              breakdown: [
-                { word: "How", sound: "هەو", meaning: "چۆن" },
-                { word: "are", sound: "ئاڕ", meaning: "هەیت" },
-                { word: "you", sound: "یو", meaning: "تۆ" },
+              subtype: "analytic_breakdown",
+              instruction: "شیکردنەوەی پێکهاتەی ڕستە (Analytic Breakdown)",
+              correct: "How are you?",
+              rows: [
+                { english: "How", pronunciationKurdish: "هەو", meaningKurdish: "چۆن" },
+                { english: "are", pronunciationKurdish: "ئاڕ", meaningKurdish: "هەیت" },
+                { english: "you", pronunciationKurdish: "یو", meaningKurdish: "تۆ" },
+                {
+                  english: "How are you?",
+                  pronunciationKurdish: "هەواریو؟",
+                  meaningKurdish: "چۆنیت؟",
+                  isFullPhrase: true,
+                },
               ],
             },
             order: 3,
           },
-          // Screen 4: The Echo Mic
+          // Screen 4: The Echo Mic (Spoken Practice) - auto-plays American speech, Kurdish guide
           {
             type: "multiple_choice",
-            promptText: "How are you? (هەواریو؟)",
-            distractors: ["Who are you?", "Are you okay?"],
+            promptText: "ڕاهێنانی دەنگ و وتار",
+            distractors: [],
             solutionData: {
-              correct: "How are you?",
+              subtype: "echo_mic",
               instruction: "ڕاهێنانی وتار و دەنگدانەوە (The Echo Mic)",
-              icon: "🎙️",
-              isSpeaking: true,
-              type: "speak",
+              correct: "How are you?",
               spokenText: "How are you?",
+              subTextGuide: "هەواریو؟",
             },
             order: 4,
           },
-          // Screen 5: Status Adjectives Bank
+          // Screen 5: Status Adjectives Bank - I'm [ ___ ], thank you.
           {
-            type: "word_bank",
-            promptText: "وەسفی بارودۆخ: زۆر باشم، سوپاس (I'm great, thank you)",
-            distractors: ["bad", "is", "where"],
+            type: "multiple_choice",
+            promptText: "بانکی وەسفی بارودۆخ",
+            distractors: [],
             solutionData: {
-              tokens: ["I'm", "great,", "thank", "you."],
-              instruction: "کۆکردنەوەی ڕستەی بارودۆخ (Status Adjectives)",
-              icon: "✨",
+              subtype: "status_bank",
+              instruction: "بانکی وەسفی بارودۆخ (Status Adjectives Bank)",
+              correct: "completed",
+              cards: [
+                { word: "fine", sound: "فاین", meaning: "باش" },
+                { word: "good", sound: "گود", meaning: "باش" },
+                { word: "great", sound: "گرەیت", meaning: "زۆر باش" },
+                { word: "cool", sound: "کووڵ", meaning: "نایاب" },
+              ],
             },
             order: 5,
           },
-          // Screen 6: Slot-and-Filler Check
+          // Screen 6: Slot-and-Filler Check - I'm [ ? ], thank you.
           {
             type: "multiple_choice",
-            promptText: "I'm [ ___ ], thank you.",
+            promptText: "بۆشاییەکە پڕبکەرەوە",
             distractors: ["hello", "how", "are"],
             solutionData: {
-              correct: "great",
+              subtype: "slot_filler",
               instruction: "بۆشاییەکە بە وشەی گونجاو پڕبکەرەوە (Slot-and-Filler)",
-              icon: "🧩",
-              isSpeaking: true,
-              spokenText: "I'm great, thank you.",
+              correct: "great",
+              options: ["great", "hello", "how", "are"],
             },
             order: 6,
           },
-          // Screen 7: Conversational Response Pairing
+          // Screen 7: Conversational Response Pairing - Social Logic Match
           {
             type: "multiple_choice",
-            promptText: "وەڵامی دروست چییە بۆ: 'How are you?'",
-            distractors: ["Hello Ahmad", "Good morning"],
+            promptText: "پەیامەکە بە وەڵامە سروشتییەکەی ببەستەوە",
+            distractors: [],
             solutionData: {
-              correct: "I'm good, thank you",
-              instruction: "جووتبەندکردنی وەڵامە کۆمەڵایەتییەکان (Response Pairing)",
-              icon: "🤝",
-              isSpeaking: true,
-              spokenText: "I'm good, thank you",
+              subtype: "response_pairing",
+              instruction: "جووتبەندکردنی گفتوگۆ (Social Logic Match)",
+              correct: "paired",
+              pairs: [
+                { prompt: "Hi Sara", response: "Hello Ahmad" },
+                { prompt: "How are you?", response: "I'm good, thank you" },
+              ],
             },
             order: 7,
           },
-          // Screen 8: The Bounce-Back Anchor
+          // Screen 8: The Bounce-Back Anchor ("What about you?")
           {
             type: "multiple_choice",
-            promptText: "What about you? (وەرەباوتیو؟ / ئەی تۆ؟)",
-            distractors: ["Say goodbye (ماڵئاوایی کردن)", "Give an order (فەرمان دان)"],
+            promptText: "گەڕاندنەوەی پرسیارەکە",
+            distractors: ["Say goodbye (ماڵئاوایی کردن)"],
             solutionData: {
-              correct: "Ask the question back (پرسیارەکە بە هەمان شێوە بپرسەوە)",
+              subtype: "bounce_back_anchor",
               instruction: "گەڕاندنەوەی پرسیارەکە (The Bounce-Back Anchor)",
-              icon: "🔄",
-              isSpeaking: true,
-              spokenText: "What about you?",
+              phrase: "What about you?",
+              pronunciation: "وەرەباوتیو؟",
+              meaning: "ئەی تۆ؟ / تۆ چۆنیت؟",
+              correct: "Ask the question back (پرسیارەکە بە هەمان شێوە بپرسەوە)",
+              options: [
+                "Ask the question back (پرسیارەکە بە هەمان شێوە بپرسەوە)",
+                "Say goodbye (ماڵئاوایی کردن)",
+              ],
             },
             order: 8,
           },
-          // Screen 9: Interactive Chat Dialogue
+          // Screen 9: Interactive Chat Dialogue - Messenger bubbles, auto-plays incoming question only
           {
             type: "multiple_choice",
-            promptText: "📩 Hey Ahmad, how are you?",
+            promptText: "دیالۆگ و چاتی زیندوو",
             distractors: [
               "I'm fine, thank you. Hi Sara.",
               "Hello, me too.",
             ],
             solutionData: {
-              correct: "I'm cool, thank you. What about you?",
+              subtype: "chat_dialogue",
               instruction: "دیالۆگ و چاتی زیندوو (Interactive Chat Dialogue)",
-              icon: "💬",
-              isSpeaking: true,
-              spokenText: "I'm cool, thank you. What about you?",
+              incomingMessage: "Hey Ahmad, how are you?",
+              correct: "I'm cool, thank you. What about you?",
+              options: [
+                "I'm cool, thank you. What about you?",
+                "I'm fine, thank you. Hi Sara.",
+                "Hello, me too.",
+              ],
             },
             order: 9,
           },
-          // Screen 10: Capstone Spoken Handshake
+          // Screen 10: Capstone Spoken Handshake - Avatar waves, prompt banner on own line, 4s circular timer
           {
             type: "multiple_choice",
-            promptText: "وەڵام بدەرەوە و پرسیارەکە بگەڕێنەوە: 'Hey, how are you?'",
-            distractors: ["Goodbye", "Nice to meet you"],
+            promptText: "تاقیکردنەوەی کۆتایی دەنگ",
+            distractors: [],
             solutionData: {
-              correct: "I'm good, thank you. What about you?",
+              subtype: "capstone_spoken",
               instruction: "تاقیکردنەوەی کۆتایی دەنگ (Capstone Spoken Handshake)",
-              icon: "⏱️",
-              isSpeaking: true,
-              type: "speak",
-              timerSeconds: 4,
+              correct: "I'm good, thank you. What about you?",
               spokenText: "I'm good, thank you. What about you?",
+              subTextGuide: "ئایم گود، سانک یو. وەرەباوتیو؟",
+              visualScaffold: "I'm [good / cool], thank you. What about you?",
+              timerSeconds: 4,
             },
             order: 10,
           },

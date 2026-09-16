@@ -13,6 +13,15 @@ import { PushButton } from "@/components/duo/PushButton";
 import { MultipleChoiceView } from "@/components/lesson/MultipleChoiceView";
 import { AudioMatchView } from "@/components/lesson/AudioMatchView";
 import { WordBankView } from "@/components/lesson/WordBankView";
+import { WordAnchorsView } from "@/components/lesson/WordAnchorsView";
+import { AcousticMatchView } from "@/components/lesson/AcousticMatchView";
+import { AnalyticBreakdownView } from "@/components/lesson/AnalyticBreakdownView";
+import { EchoMicView } from "@/components/lesson/EchoMicView";
+import { StatusBankView } from "@/components/lesson/StatusBankView";
+import { SlotFillerView } from "@/components/lesson/SlotFillerView";
+import { ResponsePairingView } from "@/components/lesson/ResponsePairingView";
+import { BounceBackAnchorView } from "@/components/lesson/BounceBackAnchorView";
+import { ChatDialogueView } from "@/components/lesson/ChatDialogueView";
 import { FeedbackBanner } from "@/components/lesson/FeedbackBanner";
 import { FailureModal } from "@/components/lesson/FailureModal";
 import { LessonComplete } from "@/components/lesson/LessonComplete";
@@ -191,25 +200,125 @@ function SessionInner({ lessonId }: { lessonId: string }) {
 
       {/* Exercise area */}
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-44 pt-2">
-        {exercise ? (
-          exercise.type === "multiple_choice" ? (
-            <MultipleChoiceView
-              exercise={exercise}
-              options={state.optionList}
-              selected={state.selected}
-              lastCorrect={state.lastCorrect}
-              onSelect={select}
-              kurdishPrompt={/[\u0600-\u06FF]/.test(exercise.promptText)}
-            />
-          ) : exercise.type === "audio_match" ? (
-            <AudioMatchView
-              exercise={exercise}
-              options={state.optionList}
-              selected={state.selected}
-              lastCorrect={state.lastCorrect}
-              onSelect={select}
-            />
-          ) : (
+        {exercise ? (() => {
+          const subtype = exercise.solutionData?.subtype as string | undefined;
+          if (subtype === "word_anchors") {
+            return (
+              <WordAnchorsView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "acoustic_match") {
+            return (
+              <AcousticMatchView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "analytic_breakdown") {
+            return (
+              <AnalyticBreakdownView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "echo_mic" || subtype === "capstone_spoken") {
+            return (
+              <EchoMicView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "status_bank") {
+            return (
+              <StatusBankView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "slot_filler") {
+            return (
+              <SlotFillerView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+                lastCorrect={state.lastCorrect}
+              />
+            );
+          }
+          if (subtype === "response_pairing") {
+            return (
+              <ResponsePairingView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "bounce_back_anchor") {
+            return (
+              <BounceBackAnchorView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+                lastCorrect={state.lastCorrect}
+              />
+            );
+          }
+          if (subtype === "chat_dialogue") {
+            return (
+              <ChatDialogueView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+                lastCorrect={state.lastCorrect}
+              />
+            );
+          }
+          if (exercise.type === "multiple_choice") {
+            return (
+              <MultipleChoiceView
+                exercise={exercise}
+                options={state.optionList}
+                selected={state.selected}
+                lastCorrect={state.lastCorrect}
+                onSelect={select}
+                kurdishPrompt={/[\u0600-\u06FF]/.test(exercise.promptText)}
+              />
+            );
+          }
+          if (exercise.type === "audio_match") {
+            return (
+              <AudioMatchView
+                exercise={exercise}
+                options={state.optionList}
+                selected={state.selected}
+                lastCorrect={state.lastCorrect}
+                onSelect={select}
+              />
+            );
+          }
+          return (
             <WordBankView
               exercise={exercise}
               bankTiles={state.bankTiles}
@@ -218,8 +327,8 @@ function SessionInner({ lessonId }: { lessonId: string }) {
               onUnbuild={unbuildToken}
               lastCorrect={state.lastCorrect}
             />
-          )
-        ) : null}
+          );
+        })() : null}
       </main>
 
       {/* Check footer (hidden while the feedback banner is up) */}
