@@ -5,6 +5,7 @@ import { Sparkles, Volume2, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Exercise } from "@/lib/sessionMachine";
 import { playAmericanSpeech } from "@/lib/americanVoice";
+import { KurdishGlossBadges } from "@/components/lesson/KurdishGlossBadges";
 
 interface StatusCard {
   word: string;
@@ -120,15 +121,11 @@ export function StatusBankView({ exercise, onSelect, selected }: StatusBankViewP
                 </span>
               </div>
 
-              {/* Kurdish Pronunciation & Meaning on separate lines */}
-              <div className="flex flex-col items-end text-right">
-                <span className="font-kurdish text-sm font-extrabold text-[#1899D6] dark:text-[#3BC0F8]">
-                  {card.sound}
-                </span>
-                <span className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#AFAFAF]">
-                  ({card.meaning})
-                </span>
-              </div>
+              {/* Aligned Kurdish Pronunciation & Meaning Badges */}
+              <KurdishGlossBadges
+                pronunciation={card.sound}
+                meaning={card.meaning}
+              />
 
               {isTapped && (
                 <div className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#58CC02] text-white shadow-sm">

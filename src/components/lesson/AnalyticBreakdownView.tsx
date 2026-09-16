@@ -5,6 +5,7 @@ import { Volume2, CheckCircle2, SplitSquareVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Exercise } from "@/lib/sessionMachine";
 import { playAmericanSpeech } from "@/lib/americanVoice";
+import { KurdishGlossBadges } from "@/components/lesson/KurdishGlossBadges";
 
 interface BreakdownRow {
   english: string;
@@ -135,15 +136,11 @@ export function AnalyticBreakdownView({ exercise, onSelect, selected }: Analytic
                 </div>
               </div>
 
-              {/* Middle & Right: Kurdish Transliteration & Meaning on their own badges */}
-              <div className="flex items-center gap-3">
-                <span className="rounded-lg bg-[#EBF6FF] dark:bg-[#1C3342] px-2.5 py-1 font-kurdish text-sm font-extrabold text-[#1899D6] dark:text-[#3BC0F8]">
-                  {row.pronunciationKurdish}
-                </span>
-                <span className="rounded-lg bg-[#F5F5F5] dark:bg-[#202F36] px-2.5 py-1 font-kurdish text-sm font-bold text-[#4B4B4B] dark:text-[#DCE6EC]">
-                  ({row.meaningKurdish})
-                </span>
-              </div>
+              {/* Middle & Right: Aligned Kurdish Transliteration & Meaning Badges */}
+              <KurdishGlossBadges
+                pronunciation={row.pronunciationKurdish}
+                meaning={row.meaningKurdish}
+              />
 
               {isRow4 && playedRow4 && (
                 <div className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#58CC02] text-white shadow-sm">

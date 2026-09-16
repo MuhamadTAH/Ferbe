@@ -5,6 +5,7 @@ import { RotateCcw, Volume2, CheckCircle2, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Exercise } from "@/lib/sessionMachine";
 import { playAmericanSpeech } from "@/lib/americanVoice";
+import { KurdishGlossBadges } from "@/components/lesson/KurdishGlossBadges";
 
 interface BounceBackAnchorViewProps {
   exercise: Exercise;
@@ -75,21 +76,12 @@ export function BounceBackAnchorView({
           </button>
         </div>
 
-        {/* Pronunciation helper on separate Kurdish line */}
-        <div dir="rtl" className="flex items-center gap-2 mt-1">
-          <span className="text-xs font-bold text-[#AFAFAF] dark:text-[#8495A0]">خوێندنەوە:</span>
-          <span className="rounded-lg bg-[#FAF5FF] dark:bg-[#2D1B4E] px-3 py-1 font-kurdish text-base font-extrabold text-[#9333EA] dark:text-[#C084FC]">
-            {pronunciationHelper}
-          </span>
-        </div>
-
-        {/* Meaning helper on separate Kurdish line */}
-        <div dir="rtl" className="flex items-center gap-2">
-          <span className="text-xs font-bold text-[#AFAFAF] dark:text-[#8495A0]">واتا:</span>
-          <span className="font-kurdish text-sm font-bold text-[#777777] dark:text-[#DCE6EC]">
-            ({meaningKurdish})
-          </span>
-        </div>
+        {/* Aligned Kurdish Pronunciation & Meaning Badges */}
+        <KurdishGlossBadges
+          pronunciation={pronunciationHelper}
+          meaning={meaningKurdish}
+          className="mt-2"
+        />
       </div>
 
       {/* Functional Role Options */}

@@ -5,6 +5,7 @@ import { Volume2, CheckCircle2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Exercise } from "@/lib/sessionMachine";
 import { playAmericanSpeech } from "@/lib/americanVoice";
+import { KurdishGlossBadges } from "@/components/lesson/KurdishGlossBadges";
 
 interface WordItem {
   english: string;
@@ -128,24 +129,11 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
                 </div>
               </div>
 
-              {/* Right Column: Kurdish Transliteration & Meaning Badges on Separate Lines */}
-              <div className="flex flex-col items-end gap-1 text-right">
-                {/* How to read in Kurdish */}
-                <div className="flex items-center gap-1.5">
-                  <span className="rounded-lg bg-[#EBF6FF] dark:bg-[#1C3342] px-2.5 py-0.5 font-kurdish text-sm font-extrabold text-[#1899D6] dark:text-[#3BC0F8]">
-                    {w.pronunciationKurdish}
-                  </span>
-                  <span className="text-[10px] font-bold text-[#AFAFAF] dark:text-[#8495A0]">خوێندنەوە:</span>
-                </div>
-
-                {/* Kurdish Meaning */}
-                <div className="flex items-center gap-1.5">
-                  <span className="rounded-lg bg-[#F5F5F5] dark:bg-[#202F36] px-2.5 py-0.5 font-kurdish text-sm font-bold text-[#4B4B4B] dark:text-[#DCE6EC]">
-                    ({w.meaningKurdish})
-                  </span>
-                  <span className="text-[10px] font-bold text-[#AFAFAF] dark:text-[#8495A0]">واتا:</span>
-                </div>
-              </div>
+              {/* Right Column: Aligned Kurdish Pronunciation & Meaning Badges */}
+              <KurdishGlossBadges
+                pronunciation={w.pronunciationKurdish}
+                meaning={w.meaningKurdish}
+              />
 
               {/* Heard Checkmark Badge */}
               {isHeard && (

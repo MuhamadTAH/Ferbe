@@ -210,9 +210,9 @@ export const MOHAMMED_MAHDI_UNITS: UnitInput[] = [
               subtype: "chat_dialogue",
               instruction: "دیالۆگ و چاتی زیندوو (Interactive Chat Dialogue)",
               incomingMessage: "Hey Ahmad, how are you?",
-              correct: "I'm cool, thank you. What about you?",
+              correct: "I'm good, thank you. How are you?",
               options: [
-                "I'm cool, thank you. What about you?",
+                "I'm good, thank you. How are you?",
                 "I'm fine, thank you. Hi Sara.",
                 "Hello, me too.",
               ],

@@ -24,10 +24,10 @@ export function ChatDialogueView({
 
   const solution = exercise.solutionData ?? {};
   const incomingMessage = (solution.incomingMessage as string) || "Hey Ahmad, how are you?";
-  const correctAnswer = ((solution.correct as string) || "I'm cool, thank you. What about you?").trim();
+  const correctAnswer = ((solution.correct as string) || "I'm good, thank you. How are you?").trim();
 
   const options: string[] = (solution.options as string[] | undefined) ?? [
-    "I'm cool, thank you. What about you?",
+    "I'm good, thank you. How are you?",
     "I'm fine, thank you. Hi Sara.",
     "Hello, me too.",
   ];
