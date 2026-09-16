@@ -298,6 +298,7 @@ function SessionInner({ lessonId }: { lessonId: string }) {
           if (exercise.type === "multiple_choice") {
             return (
               <MultipleChoiceView
+                key={exercise._id}
                 exercise={exercise}
                 options={state.optionList}
                 selected={state.selected}
@@ -310,6 +311,7 @@ function SessionInner({ lessonId }: { lessonId: string }) {
           if (exercise.type === "audio_match") {
             return (
               <AudioMatchView
+                key={exercise._id}
                 exercise={exercise}
                 options={state.optionList}
                 selected={state.selected}
@@ -320,6 +322,7 @@ function SessionInner({ lessonId }: { lessonId: string }) {
           }
           return (
             <WordBankView
+              key={exercise._id}
               exercise={exercise}
               bankTiles={state.bankTiles}
               built={state.built}

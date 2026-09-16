@@ -22,6 +22,10 @@ export function ChatDialogueView({
   const [chosenAnswer, setChosenAnswer] = useState<string | null>(selected);
   const [isPlayingIncoming, setIsPlayingIncoming] = useState(false);
 
+  useEffect(() => {
+    setChosenAnswer(selected);
+  }, [selected]);
+
   const solution = exercise.solutionData ?? {};
   const incomingMessage = (solution.incomingMessage as string) || "Hey Ahmad, how are you?";
   const correctAnswer = ((solution.correct as string) || "I'm good, thank you. How are you?").trim();
@@ -33,6 +37,7 @@ export function ChatDialogueView({
   ];
 
   const instruction = (solution.instruction as string) || "دیالۆگ و چاتی زیندوو (Interactive Chat Dialogue)";
+  const answered = lastCorrect !== null;
 
   // Auto-play ONLY the incoming question on mount!
   useEffect(() => {
@@ -49,15 +54,14 @@ export function ChatDialogueView({
   };
 
   const handlePickOption = (option: string) => {
+    if (answered) return;
     setChosenAnswer(option);
     onSelect(option);
 
-    // If correct, play audio of the selected response so learner hears it in dialogue
-    if (option.trim().toLowerCase() === correctAnswer.toLowerCase()) {
-      setTimeout(() => {
-        playAmericanSpeech(option, 0.88);
-      }, 200);
-    }
+    // Play pronunciation of selected response so learner hears it in dialogue
+    setTimeout(() => {
+      playAmericanSpeech(option, 0.88);
+    }, 150);
   };
 
   const isAnsweredCorrect =
@@ -113,22 +117,26 @@ export function ChatDialogueView({
             <div
               className={cn(
                 "relative rounded-2xl rounded-tr-none p-4 shadow-sm transition-all border",
-                chosenAnswer
-                  ? isAnsweredCorrect
-                    ? "border-[#58CC02] bg-[#E8FAD4] dark:border-[#58CC02] dark:bg-[#1E3B20]"
-                    : "border-[#EA2B2B] bg-[#FFDFE0] dark:border-[#EA2B2B] dark:bg-[#3A181D]"
-                  : "border-dashed border-[#AFAFAF] bg-white dark:border-[#37464F] dark:bg-[#1A262C]"
+                !answered && chosenAnswer
+                  ? "border-[#84D8FF] bg-[#DDF4FF] dark:border-[#3BC0F8] dark:bg-[#202F36]"
+                  : answered
+                    ? lastCorrect
+                      ? "border-[#58CC02] bg-[#E8FAD4] dark:border-[#58CC02] dark:bg-[#1E3B20]"
+                      : "border-[#EA2B2B] bg-[#FFDFE0] dark:border-[#EA2B2B] dark:bg-[#3A181D]"
+                    : "border-dashed border-[#AFAFAF] bg-white dark:border-[#37464F] dark:bg-[#1A262C]"
               )}
             >
               <p
                 dir="ltr"
                 className={cn(
                   "text-lg font-black",
-                  chosenAnswer
-                    ? isAnsweredCorrect
-                      ? "text-[#58A700] dark:text-[#58CC02]"
-                      : "text-[#EA2B2B]"
-                    : "text-[#AFAFAF] italic"
+                  !answered && chosenAnswer
+                    ? "text-[#1899D6] dark:text-[#3BC0F8]"
+                    : answered
+                      ? lastCorrect
+                        ? "text-[#58A700] dark:text-[#58CC02]"
+                        : "text-[#EA2B2B]"
+                      : "text-[#AFAFAF] italic"
                 )}
               >
                 {chosenAnswer ? chosenAnswer : "وەڵامەکەت لێرە دەردەکەوێت..."}
@@ -152,28 +160,41 @@ export function ChatDialogueView({
         {options.map((option, idx) => {
           const isSelected = chosenAnswer === option;
           const isCorrect = option.trim().toLowerCase() === correctAnswer.toLowerCase();
+          const isCorrectRow = answered && isCorrect;
+          const isWrongPick = answered && isSelected && !isCorrect;
           const letter = ["A", "B", "C"][idx] || `${idx + 1}`;
 
           return (
             <button
               key={option}
               type="button"
+              disabled={answered}
               onClick={() => handlePickOption(option)}
               className={cn(
                 "flex items-center gap-3.5 rounded-2xl border-2 border-b-4 p-4 font-black transition-all text-left select-none cursor-pointer",
-                isSelected
-                  ? isCorrect
-                    ? "border-[#58CC02] bg-[#E8FAD4] text-[#58A700] dark:border-[#58CC02] dark:bg-[#1E3B20] dark:text-[#58CC02]"
-                    : "border-[#EA2B2B] bg-[#FFDFE0] text-[#EA2B2B] dark:border-[#EA2B2B] dark:bg-[#3A181D]"
-                  : "border-[#E5E5E5] bg-white text-[#4B4B4B] hover:border-[#1CB0F6] hover:bg-[#F7F7F7] dark:border-[#37464F] dark:bg-[#131F24] dark:text-white"
+                !answered && isSelected
+                  ? "border-[#84D8FF] bg-[#DDF4FF] text-[#1899D6] dark:border-[#3BC0F8] dark:bg-[#202F36] dark:text-[#3BC0F8]"
+                  : !answered
+                    ? "border-[#E5E5E5] bg-white text-[#4B4B4B] hover:border-[#1CB0F6] hover:bg-[#F7F7F7] dark:border-[#37464F] dark:bg-[#131F24] dark:text-white"
+                    : isCorrectRow
+                      ? "border-[#58CC02] bg-[#E8FAD4] text-[#58A700] dark:border-[#58CC02] dark:bg-[#1E3B20] dark:text-[#58CC02]"
+                      : isWrongPick
+                        ? "border-[#EA2B2B] bg-[#FFDFE0] text-[#EA2B2B] dark:border-[#EA2B2B] dark:bg-[#3A181D]"
+                        : "border-[#E5E5E5] bg-white text-[#AFAFAF] dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#52656D]"
               )}
             >
               <span
                 className={cn(
                   "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border-2 border-b-2 text-xs font-black",
-                  isSelected
-                    ? "border-current bg-white dark:bg-[#131F24]"
-                    : "border-[#E5E5E5] bg-[#F7F7F7] text-[#777777] dark:border-[#37464F] dark:bg-[#202F36] dark:text-white"
+                  !answered && isSelected
+                    ? "border-[#1CB0F6] bg-white text-[#1CB0F6] dark:bg-[#131F24] dark:text-[#3BC0F8]"
+                    : !answered
+                      ? "border-[#E5E5E5] bg-[#F7F7F7] text-[#777777] dark:border-[#37464F] dark:bg-[#202F36] dark:text-white"
+                      : isCorrectRow
+                        ? "border-[#58CC02] bg-white text-[#58CC02] dark:bg-[#131F24] dark:text-[#58CC02]"
+                        : isWrongPick
+                          ? "border-[#EA2B2B] bg-white text-[#EA2B2B] dark:bg-[#131F24] dark:text-[#EA2B2B]"
+                          : "border-[#E5E5E5] bg-[#F7F7F7] text-[#AFAFAF] dark:border-[#37464F] dark:bg-[#202F36] dark:text-[#52656D]"
                 )}
               >
                 {letter}
@@ -183,7 +204,7 @@ export function ChatDialogueView({
                 {option}
               </span>
 
-              {isSelected && isCorrect && <CheckCircle2 className="h-5 w-5 stroke-[2.5] text-[#58CC02]" />}
+              {isCorrectRow && <CheckCircle2 className="h-5 w-5 stroke-[2.5] text-[#58CC02]" />}
             </button>
           );
         })}

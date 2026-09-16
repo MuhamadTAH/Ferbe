@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { CheckCircle2, Volume2, Puzzle } from "lucide-react";
+import { useEffect } from "react";
+import { Puzzle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Exercise } from "@/lib/sessionMachine";
 import { playAmericanSpeech } from "@/lib/americanVoice";
@@ -19,7 +19,6 @@ export function SlotFillerView({
   selected,
   lastCorrect,
 }: SlotFillerViewProps) {
-  const [shakingOption, setShakingOption] = useState<string | null>(null);
 
   const solution = exercise.solutionData ?? {};
   const correctAnswer = ((solution.correct as string) || "great").trim();
@@ -29,19 +28,18 @@ export function SlotFillerView({
 
   const instruction = (solution.instruction as string) || "بۆشاییەکە پڕبکەرەوە (Slot-and-Filler)";
 
-  const handleChoose = (opt: string) => {
-    onSelect(opt);
+  const answered = lastCorrect !== null;
 
-    if (opt.trim().toLowerCase() === correctAnswer.toLowerCase()) {
-      // Auto-play complete sentence
-      playAmericanSpeech("I'm great, thank you.", 0.88);
-    } else {
-      setShakingOption(opt);
-      setTimeout(() => setShakingOption(null), 600);
-    }
+  const handleChoose = (opt: string) => {
+    if (answered) return;
+    onSelect(opt);
   };
 
-  const isFilled = selected !== null && selected.trim().toLowerCase() === correctAnswer.toLowerCase();
+  useEffect(() => {
+    if (answered && lastCorrect) {
+      playAmericanSpeech("I'm great, thank you.", 0.88);
+    }
+  }, [answered, lastCorrect]);
 
   return (
     <div className="flex flex-col items-center gap-6 text-center">
@@ -63,12 +61,16 @@ export function SlotFillerView({
           <span
             className={cn(
               "inline-flex min-w-24 items-center justify-center rounded-2xl border-2 border-b-4 px-3 py-1.5 text-xl font-black transition-all",
-              isFilled
-                ? "border-[#58CC02] bg-[#58CC02] text-white shadow-md animate-in zoom-in-95"
-                : "border-dashed border-[#1899D6] bg-white text-[#1899D6] dark:border-[#3BC0F8] dark:bg-[#131F24]"
+              answered
+                ? lastCorrect
+                  ? "border-[#58CC02] bg-[#58CC02] text-white shadow-md animate-in zoom-in-95"
+                  : "border-[#EA2B2B] bg-[#FFDFE0] text-[#EA2B2B] dark:border-[#EA2B2B] dark:bg-[#3A181D]"
+                : selected
+                  ? "border-[#1CB0F6] bg-white text-[#1899D6] dark:border-[#3BC0F8] dark:bg-[#131F24] dark:text-[#3BC0F8]"
+                  : "border-dashed border-[#1899D6] bg-white text-[#1899D6] dark:border-[#3BC0F8] dark:bg-[#131F24]"
             )}
           >
-            {isFilled ? selected : "?"}
+            {selected ? selected : "?"}
           </span>
           <span>, thank you.</span>
         </div>
@@ -79,20 +81,26 @@ export function SlotFillerView({
         {options.map((opt) => {
           const isSelected = selected === opt;
           const isCorrect = opt.trim().toLowerCase() === correctAnswer.toLowerCase();
-          const isShaking = shakingOption === opt;
+          const isCorrectRow = answered && isCorrect;
+          const isWrongPick = answered && isSelected && !isCorrect;
 
           return (
             <button
               key={opt}
               type="button"
+              disabled={answered}
               onClick={() => handleChoose(opt)}
               className={cn(
                 "flex items-center justify-center rounded-2xl border-2 border-b-4 p-4 font-black text-xl transition-all select-none cursor-pointer",
-                isShaking && "animate-shake border-[#EA2B2B] bg-[#FFDFE0] text-[#EA2B2B] dark:bg-[#3A181D]",
-                isSelected && isCorrect
-                  ? "border-[#58CC02] bg-[#E8FAD4] text-[#58A700] dark:border-[#58CC02] dark:bg-[#1E3B20] dark:text-[#58CC02]"
-                  : !isShaking &&
-                      "border-[#E5E5E5] bg-white text-[#4B4B4B] hover:border-[#1CB0F6] hover:bg-[#F7F7F7] dark:border-[#37464F] dark:bg-[#131F24] dark:text-white"
+                !answered && isSelected
+                  ? "border-[#84D8FF] bg-[#DDF4FF] text-[#1899D6] dark:border-[#3BC0F8] dark:bg-[#202F36] dark:text-[#3BC0F8]"
+                  : !answered
+                    ? "border-[#E5E5E5] bg-white text-[#4B4B4B] hover:border-[#1CB0F6] hover:bg-[#F7F7F7] dark:border-[#37464F] dark:bg-[#131F24] dark:text-white"
+                    : isCorrectRow
+                      ? "border-[#A5ED6E] bg-[#D7FFB8] text-[#58A700] dark:border-[#58CC02] dark:bg-[#1E3B20] dark:text-[#58CC02]"
+                      : isWrongPick
+                        ? "border-[#FFB2B2] bg-[#FFDFE0] text-[#EA2B2B] dark:border-[#EA2B2B] dark:bg-[#3A181D] dark:text-[#FF6666]"
+                        : "border-[#E5E5E5] bg-white text-[#AFAFAF] dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#52656D]"
               )}
             >
               <span dir="ltr">{opt}</span>

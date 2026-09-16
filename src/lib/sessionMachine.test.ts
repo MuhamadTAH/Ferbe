@@ -49,21 +49,28 @@ describe("lesson session machine", () => {
     expect(s.firstTryCorrect).toBe(1);
     expect(s.answeredCount).toBe(1);
     expect(s.hearts).toBe(5);
+    // Keeps current exercise on screen during FEEDBACK_SUCCESS
+    expect(currentExercise(s)?._id).toBe("e1");
+    // Advances to next exercise when user clicks CONTINUE
+    s = sessionReducer(s, { type: "CONTINUE" });
     expect(s.queue).toHaveLength(2);
+    expect(currentExercise(s)?._id).toBe("e2");
   });
 
-  it("re-queues a wrong answer and deducts a heart", () => {
+  it("re-queues a wrong answer and deducts a heart upon CONTINUE", () => {
     let s = started();
     s = sessionReducer(s, { type: "SELECT", value: "Water" });
     s = sessionReducer(s, { type: "SUBMIT" });
     s = sessionReducer(s, { type: "EVALUATE" });
     expect(s.phase).toBe("FEEDBACK_ERROR");
     expect(s.hearts).toBe(4);
-    expect(s.queue).toHaveLength(3); // re-queued at the end
+    // Remains on e1 during feedback error so user sees their mistake
+    expect(currentExercise(s)?._id).toBe("e1");
     expect(s.correctSolution).toBe("Hello");
-    // Current exercise is now the second one
+    // Once user clicks CONTINUE, queue advances and e1 is pushed to the end
+    s = sessionReducer(s, { type: "CONTINUE" });
     expect(currentExercise(s)?._id).toBe("e2");
-    // e1 is at the end of the queue
+    expect(s.queue).toHaveLength(3);
     expect(s.queue[s.queue.length - 1]._id).toBe("e1");
   });
 

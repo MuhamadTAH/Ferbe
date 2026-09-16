@@ -14,6 +14,13 @@ import {
   type LessonSessionData,
 } from "@/lib/sessionMachine";
 import { markGuestLessonCompleted } from "@/lib/guestProgress";
+import {
+  playOptionSelectSound,
+  playCheckClickSound,
+  playCorrectSound,
+  playIncorrectSound,
+  playLessonCompleteSound,
+} from "@/lib/lessonAudio";
 
 export interface CompleteLessonResult {
   xpEarned: number;
@@ -74,6 +81,7 @@ export function useLessonSession(lessonId: string) {
   useEffect(() => {
     if (state.phase !== "SESSION_COMPLETE" || completedRef.current || state.total === 0) return;
     completedRef.current = true;
+    playLessonCompleteSound();
     markGuestLessonCompleted(typedLessonId);
     completeLesson({
       lessonId: typedLessonId,
@@ -88,31 +96,43 @@ export function useLessonSession(lessonId: string) {
       });
   }, [state.phase, state.firstTryCorrect, state.total, typedLessonId, completeLesson]);
 
-  const select = useCallback((value: string) => dispatch({ type: "SELECT", value }), []);
-  const buildToken = useCallback(
-    (id: string) => dispatch({ type: "BUILD_TOKEN", id }),
-    []
-  );
-  const unbuildToken = useCallback(
-    (id: string) => dispatch({ type: "UNBUILD_TOKEN", id }),
-    []
-  );
+  const select = useCallback((value: string) => {
+    playOptionSelectSound();
+    dispatch({ type: "SELECT", value });
+  }, []);
+
+  const buildToken = useCallback((id: string) => {
+    playOptionSelectSound();
+    dispatch({ type: "BUILD_TOKEN", id });
+  }, []);
+
+  const unbuildToken = useCallback((id: string) => {
+    playOptionSelectSound();
+    dispatch({ type: "UNBUILD_TOKEN", id });
+  }, []);
 
   const submit = useCallback(() => {
     if (state.phase !== "ACTIVE_QUESTION") return;
     const exercise = currentExercise(state);
     if (!exercise) return;
     const evaluation = evaluateAnswer(exercise, state);
+    playCheckClickSound();
     dispatch({ type: "SUBMIT" });
     window.setTimeout(() => {
       dispatch({ type: "EVALUATE" });
-      if (!evaluation.correct) {
+      if (evaluation.correct) {
+        playCorrectSound();
+      } else {
+        playIncorrectSound();
         recordAnswer({ lessonId: typedLessonId, correct: false }).catch(() => {});
       }
     }, 350);
   }, [state, typedLessonId, recordAnswer]);
 
-  const continueSession = useCallback(() => dispatch({ type: "CONTINUE" }), []);
+  const continueSession = useCallback(() => {
+    playCheckClickSound();
+    dispatch({ type: "CONTINUE" });
+  }, []);
 
   const restart = useCallback(() => {
     completedRef.current = false;

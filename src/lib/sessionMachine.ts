@@ -179,7 +179,8 @@ export function evaluateAnswer(
 export function progressPercent(state: SessionState): number {
   if (state.total <= 0) return 0;
   if (state.phase === "SESSION_COMPLETE") return 100;
-  const completed = Math.max(0, state.total - state.queue.length);
+  const correctOffset = state.phase === "FEEDBACK_SUCCESS" ? 1 : 0;
+  const completed = Math.max(0, state.total - state.queue.length + correctOffset);
   return Math.min(100, Math.max(0, Math.round((completed / state.total) * 100)));
 }
 
@@ -271,17 +272,14 @@ export function sessionReducer(
       const answeredCount = state.answeredCount + 1;
       const lastCorrect = state.pending.correct;
       const correctSolution = state.pending.correctSolution;
-      const queue = [...state.queue];
 
       if (lastCorrect) {
         // First-try correct answers earn XP credit; repeats do not.
         const firstTryCorrect =
           attemptNumber === 1 ? state.firstTryCorrect + 1 : state.firstTryCorrect;
-        queue.splice(state.index, 1);
         return {
           ...state,
           phase: "FEEDBACK_SUCCESS",
-          queue,
           attempts,
           answeredCount,
           firstTryCorrect,
@@ -291,14 +289,11 @@ export function sessionReducer(
         };
       }
 
-      // Wrong answer: the exercise re-joins the end of the queue (error queue).
-      const [removed] = queue.splice(state.index, 1);
-      queue.push(removed);
+      // Wrong answer: deduct heart; exercise will be re-queued to the end on CONTINUE.
       const hearts = Math.max(0, state.hearts - 1);
       return {
         ...state,
         phase: hearts <= 0 ? "HEARTS_EXHAUSTED" : "FEEDBACK_ERROR",
-        queue,
         attempts,
         answeredCount,
         hearts,
@@ -312,15 +307,30 @@ export function sessionReducer(
       if (state.phase !== "FEEDBACK_SUCCESS" && state.phase !== "FEEDBACK_ERROR") {
         return state;
       }
-      if (state.queue.length === 0) {
-        return { ...state, phase: "SESSION_COMPLETE" };
+      const queue = [...state.queue];
+      if (state.lastCorrect) {
+        // Remove successfully completed exercise from the queue
+        queue.splice(state.index, 1);
+      } else {
+        // Re-queue wrong answer to the end of the queue for spaced repetition
+        const [removed] = queue.splice(state.index, 1);
+        queue.push(removed);
       }
-      const exercise = currentExercise(state);
-      if (!exercise) return { ...state, phase: "SESSION_COMPLETE" };
-      const prep = prepareFor(exercise);
+
+      if (queue.length === 0) {
+        return { ...state, phase: "SESSION_COMPLETE", queue };
+      }
+
+      const nextExercise = queue[state.index] ?? null;
+      if (!nextExercise) {
+        return { ...state, phase: "SESSION_COMPLETE", queue };
+      }
+
+      const prep = prepareFor(nextExercise);
       return {
         ...state,
         phase: "ACTIVE_QUESTION",
+        queue,
         selected: null,
         built: [],
         lastCorrect: null,
