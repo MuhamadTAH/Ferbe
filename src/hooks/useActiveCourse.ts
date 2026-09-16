@@ -25,6 +25,16 @@ export const AVAILABLE_COURSES: CourseMeta[] = [
     targetLanguage: "en",
     description: "Learn English vocabulary, grammar, and sentences with Kurdish instructions.",
   },
+  {
+    slug: "mohammed-mahdi-english",
+    title: "Mohammed Mahdi English Course",
+    nativeTitle: "ئینگلیزی لەگەڵ محەمەد مەهدی",
+    shortLabel: "MM English",
+    flagType: "uk",
+    sourceLanguage: "ckb",
+    targetLanguage: "en",
+    description: "Master conversational English from Kurdish with Mohammed Mahdi. 5 levels of interactive dialogues, acoustic matching, and speech production.",
+  },
 ];
 
 const STORAGE_KEY = "ferbe_active_course";

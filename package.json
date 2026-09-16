@@ -13,6 +13,7 @@
     "deploy:cf": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "seed": "tsx scripts/seed-words.ts",
     "seed:english": "tsx scripts/seed-english-course.ts",
+    "seed:mahdi": "tsx scripts/seed-mohammed-mahdi-course.ts",
     "generate:audio": "tsx scripts/generate-kurdish-audio.ts"
   },
   "dependencies": {

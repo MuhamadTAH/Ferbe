@@ -43,13 +43,28 @@ const COURSES: CourseItem[] = [
     nativeName: "ئینگلیزی بۆ کورد",
     category: "kurdish",
     learners: "54.2K learners",
-    badge: "Current Course",
+    badge: "Foundations",
     badgeColor: "bg-[#E8FAD4] dark:bg-[#1E3B20] text-[#58CC02] border-[#58CC02]/40",
     description:
       "Learn English from Kurdish Sorani! Level 0 foundational curriculum with 10 units and 58 lessons covering phonics, letter blending, sound traps, and speech frames.",
     script: "English Latin script · Kurdish Sorani instructions",
     status: "active",
     href: "/learn?course=english-from-kurdish",
+    flag: "uk",
+  },
+  {
+    id: "mohammed-mahdi-english",
+    name: "Mohammed Mahdi English Course",
+    nativeName: "ئینگلیزی لەگەڵ محەمەد مەهدی",
+    category: "kurdish",
+    learners: "18.4K learners",
+    badge: "Conversational Ping-Pong",
+    badgeColor: "bg-[#DDF4FF] dark:bg-[#1C3B4E] text-[#1CB0F6] border-[#1CB0F6]/40",
+    description:
+      "Full 5-Level conversational mastery designed with Mohammed Mahdi. 7 lessons in Level 1 featuring live speech ping-pong, acoustic ear training, and dialogue simulations.",
+    script: "Interactive Speech & Audio · Kurdish Sorani",
+    status: "active",
+    href: "/learn?course=mohammed-mahdi-english",
     flag: "uk",
   },
 ];
@@ -141,7 +156,7 @@ function CoursesInner() {
           {/* Active Status Badge */}
           <div className="mt-5 flex items-center gap-2">
             <span className="rounded-xl border-2 border-[#58CC02] bg-[#E8FAD4] dark:bg-[#1E3B20] px-3.5 py-1.5 text-xs font-extrabold text-[#58CC02]">
-              Active Course (1)
+              Active Courses ({COURSES.length})
             </span>
           </div>
         </div>
