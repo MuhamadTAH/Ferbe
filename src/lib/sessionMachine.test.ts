@@ -192,5 +192,54 @@ describe("lesson session machine", () => {
     expect(s.phase).toBe("SESSION_COMPLETE");
     expect(progressPercent(s)).toBe(100);
   });
+
+  describe("spoken exercises evaluation in sessionMachine", () => {
+    const spokenExercise: Exercise = {
+      _id: "sp1",
+      type: "multiple_choice",
+      promptText: "ڕاهێنانی دەنگ و وتار",
+      solutionData: {
+        subtype: "capstone_spoken",
+        correct: "I'm good, thank you. What about you?",
+        spokenText: "I'm good, thank you. What about you?",
+        visualScaffold: "I'm [good / cool], thank you. What about you?",
+      },
+      distractors: [],
+      order: 1,
+    };
+
+    it("rejects wrong spoken input like 'Hello, thank you.'", () => {
+      let s = sessionReducer(initialSessionState, {
+        type: "START",
+        queue: [spokenExercise],
+        hearts: 5,
+      });
+
+      s = sessionReducer(s, { type: "SELECT", value: "Hello, thank you." });
+      s = sessionReducer(s, { type: "SUBMIT" });
+      s = sessionReducer(s, { type: "EVALUATE" });
+
+      expect(s.phase).toBe("FEEDBACK_ERROR");
+      expect(s.lastCorrect).toBe(false);
+      expect(s.hearts).toBe(4);
+    });
+
+    it("accepts correct spoken input with or without punctuation", () => {
+      let s = sessionReducer(initialSessionState, {
+        type: "START",
+        queue: [spokenExercise],
+        hearts: 5,
+      });
+
+      s = sessionReducer(s, { type: "SELECT", value: "im good thank you what about you" });
+      s = sessionReducer(s, { type: "SUBMIT" });
+      s = sessionReducer(s, { type: "EVALUATE" });
+
+      expect(s.phase).toBe("FEEDBACK_SUCCESS");
+      expect(s.lastCorrect).toBe(true);
+      expect(s.hearts).toBe(5);
+    });
+  });
 });
+
 

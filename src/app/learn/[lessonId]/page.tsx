@@ -239,6 +239,7 @@ function SessionInner({ lessonId }: { lessonId: string }) {
                 exercise={exercise}
                 onSelect={select}
                 selected={state.selected}
+                lastCorrect={state.lastCorrect}
               />
             );
           }

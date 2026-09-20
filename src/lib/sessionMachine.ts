@@ -1,4 +1,5 @@
 import { hashString, seededShuffle } from "./seededShuffle";
+import { evaluateSpokenAnswer } from "./speechEvaluation";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -158,6 +159,18 @@ export function evaluateAnswer(
 
   const correct = (solution.correct ?? "").trim();
   const selected = (state.selected ?? "").trim();
+
+  // Spoken speech exercises (echo_mic / capstone_spoken)
+  if (solution.subtype === "echo_mic" || solution.subtype === "capstone_spoken") {
+    const target = ((solution.spokenText as string) || correct).trim();
+    const scaffold = solution.visualScaffold as string | undefined;
+    const spokenEval = evaluateSpokenAnswer(selected, target, scaffold);
+    return {
+      correct: spokenEval.isMatch,
+      correctSolution: target || correct,
+    };
+  }
+
   const isInteractiveCompletion =
     selected === "completed" ||
     selected === "matched" ||
