@@ -31,24 +31,32 @@ export function StatusBankView({ exercise, onSelect, selected }: StatusBankViewP
     { word: "cool", sound: "کووڵ", meaning: "نایاب" },
   ];
 
+  const framePrefix = (solution.framePrefix as string | undefined) ?? "I'm";
+  const frameSuffix = (solution.frameSuffix as string | undefined) ?? ", thank you.";
+  const title = (solution.title as string | undefined) ?? "وشەی گونجاو دابنێ لەناو ڕستەکە";
+  const instruction = (solution.instruction as string) || "بانکی وەسفی بارودۆخ (Status Adjectives Bank)";
+
   const handleSelectWord = (card: StatusCard) => {
     setActiveWord(card.word);
-    // Play full sentence audio: "I'm [word], thank you."
-    const fullSentence = `I'm ${card.word}, thank you.`;
+    const fullSentence = solution.speechTemplate
+      ? (solution.speechTemplate as string).replace("{word}", card.word)
+      : `${framePrefix ? framePrefix + " " : ""}${card.word}${frameSuffix ? (frameSuffix.startsWith(",") || frameSuffix.startsWith(".") ? frameSuffix : " " + frameSuffix) : ""}`;
     playAmericanSpeech(fullSentence, 0.88);
 
     const next = new Set(tappedWords);
     next.add(card.word);
     setTappedWords(next);
 
-    // If all 4 cards have been tapped, enable Continue
+    // If all cards have been tapped, enable Continue
     if (next.size >= cards.length) {
       onSelect((solution.correct as string) || "completed");
     }
   };
 
-  const instruction = (solution.instruction as string) || "بانکی وەسفی بارودۆخ (Status Adjectives Bank)";
   const allTapped = tappedWords.size >= cards.length;
+  const subtitle =
+    (solution.subtitle as string | undefined) ??
+    `کلیک لە وشەکان بکە تاوەکو ڕستەکە پێکبهێنیت و گوێت لە دەنگەکەی بێت (${tappedWords.size} لە ${cards.length})`;
 
   return (
     <div className="flex flex-col gap-6">
@@ -59,17 +67,17 @@ export function StatusBankView({ exercise, onSelect, selected }: StatusBankViewP
           <span>{instruction}</span>
         </span>
         <h2 dir="rtl" className="font-kurdish text-2xl font-bold text-[#4B4B4B] dark:text-white mt-1">
-          وشەی گونجاو دابنێ لەناو ڕستەکە
+          {title}
         </h2>
         <p dir="rtl" className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]">
-          کلیک لە هەر ٤ وشەکە بکە تاوەکو ڕستەکە پێکبهێنیت و گوێت لە دەنگەکەی بێت ({tappedWords.size} لە {cards.length})
+          {subtitle}
         </p>
       </div>
 
-      {/* Header Frame: I'm [ ___ ], thank you. */}
+      {/* Header Frame */}
       <div className="mx-auto flex w-full max-w-md items-center justify-center rounded-3xl border-2 border-[#1CB0F6]/40 bg-[#DDF4FF] dark:bg-[#1C3B4E] px-6 py-5 shadow-sm">
         <div dir="ltr" className="flex items-center gap-2 text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white">
-          <span>I&apos;m</span>
+          {framePrefix ? <span>{framePrefix}</span> : null}
           <span
             className={cn(
               "inline-flex min-w-24 items-center justify-center rounded-2xl border-2 border-b-4 px-3 py-1 text-xl font-black transition-all",
@@ -80,7 +88,7 @@ export function StatusBankView({ exercise, onSelect, selected }: StatusBankViewP
           >
             {activeWord ? activeWord : "___"}
           </span>
-          <span>, thank you.</span>
+          {frameSuffix ? <span>{frameSuffix}</span> : null}
         </div>
       </div>
 
@@ -140,7 +148,7 @@ export function StatusBankView({ exercise, onSelect, selected }: StatusBankViewP
       {allTapped ? (
         <div className="rounded-2xl border border-[#58CC02]/40 bg-[#E8FAD4] dark:bg-[#1E3B20] p-3 text-center animate-in fade-in">
           <p dir="rtl" className="font-kurdish text-xs font-extrabold text-[#58CC02]">
-            تەواوە! هەر ٤ دەستەواژەکەت تاقیکردەوە. کلیک لە دوگمەی بەردەوامبوون بکە.
+            تەواوە! هەموو دەستەواژەکانت تاقیکردەوە. کلیک لە دوگمەی بەردەوامبوون بکە.
           </p>
         </div>
       ) : (

@@ -29,9 +29,10 @@ export function ResponsePairingView({ exercise, onSelect, selected }: ResponsePa
     { prompt: "How are you?", response: "I'm good, thank you" },
   ];
 
-  // Fixed left order, right order can be displayed directly
+  // Fixed left order, right order can be custom or reversed to require matching
   const leftItems = pairs.map((p) => p.prompt);
-  const rightItems = ["I'm good, thank you", "Hello Ahmad"]; // deliberate alternate order to require matching
+  const rightItems =
+    (solution.rightItems as string[] | undefined) ?? [...pairs.map((p) => p.response)].reverse();
 
   const instruction = (solution.instruction as string) || "جووتبەندکردنی گفتوگۆ (Social Logic Match)";
 

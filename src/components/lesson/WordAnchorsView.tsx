@@ -65,6 +65,8 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
   };
 
   const instruction = (solution.instruction as string | undefined) ?? "پێناسەی وشە (Word Anchors)";
+  const title = (solution.title as string | undefined) ?? "سڵاوکردن لە زمانی ئینگلیزیدا";
+  const subtitle = (solution.subtitle as string | undefined) ?? `گوێ لە هەموو شێوازەکان بگرە بۆ بەردەوامبوون (${listened.size} لە ${words.length})`;
   const allListened = listened.size >= words.length;
 
   return (
@@ -76,10 +78,10 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
           <span>{instruction}</span>
         </span>
         <h2 dir="rtl" className="font-kurdish text-2xl font-bold text-[#4B4B4B] dark:text-white mt-1">
-          سڵاوکردن لە زمانی ئینگلیزیدا
+          {title}
         </h2>
         <p dir="rtl" className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]">
-          گوێ لە هەر سێ شێوازەکە بگرە بۆ بەردەوامبوون ({listened.size} لە {words.length})
+          {subtitle}
         </p>
       </div>
 

@@ -65,6 +65,13 @@ export function AnalyticBreakdownView({ exercise, onSelect, selected }: Analytic
   };
 
   const instruction = (solution.instruction as string | undefined) ?? "شیکردنەوەی پێکهاتەی ڕستە (Analytic Breakdown)";
+  const fullPhraseRow = rows.find((r) => r.isFullPhrase);
+  const title =
+    (solution.title as string | undefined) ??
+    (fullPhraseRow ? `شیکردنەوەی ڕستەی "${fullPhraseRow.english}"` : "شیکردنەوەی پێکهاتەی ڕستە");
+  const subtitle =
+    (solution.subtitle as string | undefined) ??
+    "سەرنج بدە چۆن وشەکان بە جیا دەخوێندرێنەوە، و لە کۆتاییدا پێکەوە دەبەسترێن";
 
   return (
     <div className="flex flex-col gap-6">
@@ -75,10 +82,10 @@ export function AnalyticBreakdownView({ exercise, onSelect, selected }: Analytic
           <span>{instruction}</span>
         </span>
         <h2 dir="rtl" className="font-kurdish text-2xl font-bold text-[#4B4B4B] dark:text-white mt-1">
-          شیکردنەوەی ڕستەی &quot;How are you?&quot;
+          {title}
         </h2>
         <p dir="rtl" className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]">
-          سەرنج بدە چۆن وشەکان بە جیا دەخوێندرێنەوە، و لە کۆتاییدا پێکەوە دەبەسترێن
+          {subtitle}
         </p>
       </div>
 

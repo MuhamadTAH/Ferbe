@@ -26,6 +26,9 @@ export function SlotFillerView({
     ? [correctAnswer, ...exercise.distractors]
     : ["great", "hello", "how", "are"]);
 
+  const framePrefix = (solution.framePrefix as string | undefined) ?? "I'm";
+  const frameSuffix = (solution.frameSuffix as string | undefined) ?? ", thank you.";
+  const title = (solution.title as string | undefined) ?? "بۆشاییەکە بە وشەی دروست پڕبکەرەوە";
   const instruction = (solution.instruction as string) || "بۆشاییەکە پڕبکەرەوە (Slot-and-Filler)";
 
   const answered = lastCorrect !== null;
@@ -37,9 +40,12 @@ export function SlotFillerView({
 
   useEffect(() => {
     if (answered && lastCorrect) {
-      playAmericanSpeech("I'm great, thank you.", 0.88);
+      const fullSentence = solution.speechTemplate
+        ? (solution.speechTemplate as string).replace("{word}", correctAnswer)
+        : `${framePrefix ? framePrefix + " " : ""}${correctAnswer}${frameSuffix ? (frameSuffix.startsWith(",") || frameSuffix.startsWith(".") ? frameSuffix : " " + frameSuffix) : ""}`;
+      playAmericanSpeech(fullSentence, 0.88);
     }
-  }, [answered, lastCorrect]);
+  }, [answered, lastCorrect, correctAnswer, framePrefix, frameSuffix, solution.speechTemplate]);
 
   return (
     <div className="flex flex-col items-center gap-6 text-center">
@@ -50,14 +56,14 @@ export function SlotFillerView({
           <span>{instruction}</span>
         </span>
         <h2 dir="rtl" className="font-kurdish text-2xl font-bold text-[#4B4B4B] dark:text-white mt-1">
-          بۆشاییەکە بە وشەی دروست پڕبکەرەوە
+          {title}
         </h2>
       </div>
 
       {/* Target sentence frame */}
       <div className="mx-auto flex w-full max-w-md items-center justify-center rounded-3xl border-2 border-[#1CB0F6]/40 bg-[#DDF4FF] dark:bg-[#1C3B4E] px-6 py-6 shadow-sm">
         <div dir="ltr" className="flex items-center gap-2 text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white">
-          <span>I&apos;m</span>
+          {framePrefix ? <span>{framePrefix}</span> : null}
           <span
             className={cn(
               "inline-flex min-w-24 items-center justify-center rounded-2xl border-2 border-b-4 px-3 py-1.5 text-xl font-black transition-all",
@@ -72,7 +78,7 @@ export function SlotFillerView({
           >
             {selected ? selected : "?"}
           </span>
-          <span>, thank you.</span>
+          {frameSuffix ? <span>{frameSuffix}</span> : null}
         </div>
       </div>
 

@@ -51,18 +51,53 @@ export function WordBankView({
         <p className="text-xs font-black uppercase tracking-wider text-[#AFAFAF] dark:text-[#8495A0]">
           {instruction}
         </p>
-        <p
-          dir={isKurdishPrompt ? "rtl" : "ltr"}
-          lang={isKurdishPrompt ? "ku" : "en"}
-          className={cn(
-            "mt-2 font-extrabold text-[#4B4B4B] dark:text-white",
-            isKurdishPrompt
-              ? "font-kurdish text-3xl font-bold kurdish-word"
-              : "text-2xl"
-          )}
-        >
-          {exercise.promptText}
-        </p>
+        {(() => {
+          const text = exercise.promptText.trim();
+          const match = text.match(/^(.*?)\s*\((.*?)\)$/);
+          if (match) {
+            const part1 = match[1].trim();
+            const part2 = match[2].trim();
+            const part1IsKurdish = /[\u0600-\u06FF]/.test(part1);
+            return (
+              <div className="mt-2 flex flex-col items-center gap-1.5">
+                <p
+                  dir={part1IsKurdish ? "rtl" : "ltr"}
+                  className={
+                    part1IsKurdish
+                      ? "font-kurdish text-3xl font-bold kurdish-word text-[#4B4B4B] dark:text-white"
+                      : "text-2xl font-black text-[#4B4B4B] dark:text-white"
+                  }
+                >
+                  {part1}
+                </p>
+                <p
+                  dir={part1IsKurdish ? "ltr" : "rtl"}
+                  className={
+                    part1IsKurdish
+                      ? "text-lg font-bold text-[#777777] dark:text-[#8495A0]"
+                      : "font-kurdish text-xl font-bold text-[#777777] dark:text-[#8495A0]"
+                  }
+                >
+                  ({part2})
+                </p>
+              </div>
+            );
+          }
+          return (
+            <p
+              dir={isKurdishPrompt ? "rtl" : "ltr"}
+              lang={isKurdishPrompt ? "ku" : "en"}
+              className={cn(
+                "mt-2 font-extrabold text-[#4B4B4B] dark:text-white",
+                isKurdishPrompt
+                  ? "font-kurdish text-3xl font-bold kurdish-word"
+                  : "text-2xl"
+              )}
+            >
+              {exercise.promptText}
+            </p>
+          );
+        })()}
       </div>
 
       {/* Answer row: dashed slots + built tiles */}
