@@ -58,52 +58,17 @@ export function MultipleChoiceView({
           </div>
         )}
 
-        {(() => {
-          const text = exercise.promptText.trim();
-          const match = text.match(/^(.*?)\s*\((.*?)\)$/);
-          if (match) {
-            const part1 = match[1].trim();
-            const part2 = match[2].trim();
-            const part1IsKurdish = /[\u0600-\u06FF]/.test(part1);
-            return (
-              <div className="flex flex-col items-center gap-2 select-none">
-                <div
-                  dir={part1IsKurdish ? "rtl" : "ltr"}
-                  className={
-                    part1IsKurdish
-                      ? "font-kurdish text-3xl sm:text-4xl font-bold leading-normal text-[#4B4B4B] dark:text-white"
-                      : "text-3xl sm:text-4xl font-black text-[#4B4B4B] dark:text-white"
-                  }
-                >
-                  {part1}
-                </div>
-                <div
-                  dir={part1IsKurdish ? "ltr" : "rtl"}
-                  className={
-                    part1IsKurdish
-                      ? "text-xl font-bold text-[#777777] dark:text-[#8495A0]"
-                      : "font-kurdish text-2xl font-bold text-[#777777] dark:text-[#8495A0]"
-                  }
-                >
-                  ({part2})
-                </div>
-              </div>
-            );
+        <div
+          dir={kurdishPrompt ? "rtl" : "ltr"}
+          lang={kurdishPrompt ? "ku" : "en"}
+          className={
+            kurdishPrompt
+              ? "font-kurdish text-4xl sm:text-5xl font-bold leading-normal text-[#4B4B4B] dark:text-white kurdish-word select-none"
+              : "text-3xl sm:text-4xl font-extrabold text-[#4B4B4B] dark:text-white select-none"
           }
-          return (
-            <div
-              dir={kurdishPrompt ? "rtl" : "ltr"}
-              lang={kurdishPrompt ? "ku" : "en"}
-              className={
-                kurdishPrompt
-                  ? "font-kurdish text-4xl sm:text-5xl font-bold leading-normal text-[#4B4B4B] dark:text-white kurdish-word select-none"
-                  : "text-3xl sm:text-4xl font-extrabold text-[#4B4B4B] dark:text-white select-none"
-              }
-            >
-              {exercise.promptText}
-            </div>
-          );
-        })()}
+        >
+          {exercise.promptText}
+        </div>
 
         {isSpeaking && (
           <div className="mt-4 flex items-center justify-center">

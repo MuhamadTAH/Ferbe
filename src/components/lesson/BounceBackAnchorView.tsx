@@ -25,7 +25,7 @@ export function BounceBackAnchorView({
   const solution = exercise.solutionData ?? {};
   const englishPhrase = (solution.phrase as string) || "What about you?";
   const pronunciationHelper = (solution.pronunciation as string) || "وەرەباوتیو؟";
-  const meaningKurdish = (solution.meaning as string) || "ئەی تۆ؟ / چی دەربارەی تۆ؟";
+  const meaningKurdish = (solution.meaning as string) || "ئەی تۆ؟ / تۆ چۆنیت؟";
   const correctAnswer = ((solution.correct as string) || "Ask the question back").trim();
 
   const options: string[] = (solution.options as string[] | undefined) ?? [
@@ -37,7 +37,7 @@ export function BounceBackAnchorView({
 
   const handlePlayAudio = () => {
     setIsPlaying(true);
-    playAmericanSpeech(englishPhrase, 0.88);
+    playAmericanSpeech("What about you?", 0.88);
     setTimeout(() => setIsPlaying(false), 1200);
   };
 
@@ -54,7 +54,7 @@ export function BounceBackAnchorView({
         </h2>
       </div>
 
-      {/* Large Featured Card with clean BiDi separation */}
+      {/* Large Featured Card: What about you? with clean BiDi separation */}
       <div className="flex flex-col items-center gap-3 w-full max-w-md rounded-3xl border-2 border-[#E5E5E5] bg-white p-6 shadow-sm dark:border-[#37464F] dark:bg-[#131F24]">
         {/* English phrase on strict LTR row */}
         <div dir="ltr" className="flex items-center justify-center gap-3">
@@ -64,7 +64,7 @@ export function BounceBackAnchorView({
           <button
             type="button"
             onClick={handlePlayAudio}
-            aria-label={`Play ${englishPhrase}`}
+            aria-label="Play What about you?"
             className={cn(
               "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border-b-2 transition-all cursor-pointer",
               isPlaying
@@ -94,22 +94,9 @@ export function BounceBackAnchorView({
           const answered = lastCorrect !== null;
           return options.map((opt) => {
             const isSelected = selected === opt;
-            const normOpt = opt.trim().toLowerCase();
-            const normCorrect = correctAnswer.toLowerCase();
-            const isCorrect =
-              normOpt === normCorrect ||
-              normOpt.includes(normCorrect) ||
-              (normCorrect.includes("ask") && normOpt.includes("ask"));
+            const isCorrect = opt.includes("Ask the question back") || opt === correctAnswer;
             const isCorrectRow = answered && isCorrect;
             const isWrongPick = answered && isSelected && !isCorrect;
-
-            // Two-line layout if option has English and Kurdish in parentheses
-            const match = opt.match(/^(.*?)\s*\((.*?)\)$/);
-            const part1 = match ? match[1].trim() : null;
-            const part2 = match ? match[2].trim() : null;
-            const part1IsKurdish = part1 ? /[\u0600-\u06FF]/.test(part1) : false;
-            const kurdishText = part1IsKurdish ? part1 : part2;
-            const englishText = part1IsKurdish ? part2 : part1;
 
             return (
               <button
@@ -130,21 +117,10 @@ export function BounceBackAnchorView({
                           : "border-[#E5E5E5] bg-white text-[#AFAFAF] dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#52656D]"
                 )}
               >
-                {match && englishText && kurdishText ? (
-                  <div className="flex flex-col gap-1 text-left flex-1">
-                    <span dir="ltr" className="text-base font-black text-[#4B4B4B] dark:text-white">
-                      {englishText}
-                    </span>
-                    <span dir="rtl" className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0] text-right">
-                      {kurdishText}
-                    </span>
-                  </div>
-                ) : (
-                  <span dir="rtl" className="font-kurdish text-sm sm:text-base font-bold text-right flex-1">
-                    {opt}
-                  </span>
-                )}
-                {isCorrectRow && <CheckCircle2 className="h-5 w-5 shrink-0 stroke-[2.5] text-[#58CC02] ml-2" />}
+                <span dir="rtl" className="font-kurdish text-sm sm:text-base font-bold text-right flex-1">
+                  {opt}
+                </span>
+                {isCorrectRow && <CheckCircle2 className="h-5 w-5 stroke-[2.5] text-[#58CC02] ml-2" />}
               </button>
             );
           });
