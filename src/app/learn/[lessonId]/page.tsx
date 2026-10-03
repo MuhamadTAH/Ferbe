@@ -22,6 +22,20 @@ import { SlotFillerView } from "@/components/lesson/SlotFillerView";
 import { ResponsePairingView } from "@/components/lesson/ResponsePairingView";
 import { BounceBackAnchorView } from "@/components/lesson/BounceBackAnchorView";
 import { ChatDialogueView } from "@/components/lesson/ChatDialogueView";
+import { IntonationRadarView } from "@/components/lesson/IntonationRadarView";
+import { GreetingCatcherView } from "@/components/lesson/GreetingCatcherView";
+import { MoodDecoderView } from "@/components/lesson/MoodDecoderView";
+import { SpeedTrapView } from "@/components/lesson/SpeedTrapView";
+import { AudioChoiceView } from "@/components/lesson/AudioChoiceView";
+import { BlindAudioScrambleView } from "@/components/lesson/BlindAudioScrambleView";
+import { SocialContextView } from "@/components/lesson/SocialContextView";
+import { SpeedEarGateView } from "@/components/lesson/SpeedEarGateView";
+import { TimedMicView } from "@/components/lesson/TimedMicView";
+import { SpatialAnchorView } from "@/components/lesson/SpatialAnchorView";
+import { OpinionLadderView } from "@/components/lesson/OpinionLadderView";
+import { TileAssemblyView } from "@/components/lesson/TileAssemblyView";
+import { AgreementEarTrapView } from "@/components/lesson/AgreementEarTrapView";
+import { BossScoreCardView } from "@/components/lesson/BossScoreCardView";
 import { FeedbackBanner } from "@/components/lesson/FeedbackBanner";
 import { FailureModal } from "@/components/lesson/FailureModal";
 import { LessonComplete } from "@/components/lesson/LessonComplete";
@@ -293,6 +307,149 @@ function SessionInner({ lessonId }: { lessonId: string }) {
                 onSelect={select}
                 selected={state.selected}
                 lastCorrect={state.lastCorrect}
+              />
+            );
+          }
+          if (subtype === "intonation_radar") {
+            return (
+              <IntonationRadarView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "greeting_catcher") {
+            return (
+              <GreetingCatcherView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "mood_decoder") {
+            return (
+              <MoodDecoderView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "speed_trap") {
+            return (
+              <SpeedTrapView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "audio_choice") {
+            return (
+              <AudioChoiceView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+                lastCorrect={state.lastCorrect}
+              />
+            );
+          }
+          if (subtype === "blind_audio_scramble") {
+            return (
+              <BlindAudioScrambleView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "social_context") {
+            return (
+              <SocialContextView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "speed_ear_gate") {
+            return (
+              <SpeedEarGateView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "timed_mic") {
+            return (
+              <TimedMicView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+                lastCorrect={state.lastCorrect}
+              />
+            );
+          }
+          if (subtype === "spatial_anchor") {
+            return (
+              <SpatialAnchorView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "opinion_ladder") {
+            return (
+              <OpinionLadderView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "tile_assembly") {
+            return (
+              <TileAssemblyView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "agreement_ear_trap") {
+            return (
+              <AgreementEarTrapView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+                lastCorrect={state.lastCorrect}
+              />
+            );
+          }
+          if (subtype === "boss_score_card") {
+            return (
+              <BossScoreCardView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
               />
             );
           }
