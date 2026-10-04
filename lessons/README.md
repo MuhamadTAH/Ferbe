@@ -20,3 +20,14 @@
 | **1.7** | **Boss Checkpoint: The Street Dialogue** (تاقیکردنەوەی باس) | ~3 min (8 Screens) | **Complete & Active in Production** ([`lesson-1.7-boss-checkpoint.md`](./lesson-1.7-boss-checkpoint.md)) |
 
 > **Note:** All 7 lessons and 58 screens are fully implemented with interactive custom components, seeded into Convex, and strictly aligned with the course curriculum blueprint.
+
+---
+
+## 🎨 Master UI Templates & Design Guide
+
+The complete design catalog, design tokens, color palette, audio/speech standards, and ASCII wireframe sketches (`--------`) for all **23 UI templates** are documented in:
+
+👉 [**`UI_TEMPLATES_DESIGN_GUIDE.md`**](./UI_TEMPLATES_DESIGN_GUIDE.md)
+
+Use this guide when building subsequent levels (Levels 2, 3, 4, 5) to ensure 100% visual and interactive consistency across the entire course.
+
