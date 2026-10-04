@@ -42,198 +42,156 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
         order: 1,
         xpReward: 20,
         exercises: [
-          // S1: Visual Anchor S
+          // S1: Word Anchors - Initial Sounds (S, A, T)
           {
             type: "multiple_choice",
-            promptText: "پێناسەی دەنگ: پیتی S",
+            promptText: "پێناسەی دەنگە سەرەتاییەکان: S, A, T",
             distractors: [],
             order: 1,
             solutionData: {
               subtype: "word_anchors",
-              instruction: "پێناسەی دەنگ (Sound Anchor)",
+              instruction: "پێناسەی دەنگ (Sound Anchors)",
               correct: "completed",
               words: [
                 {
                   english: "S",
                   pronunciationKurdish: "/s/",
-                  kurdish: "دەنگی /s/ وەکو دەنگی مار سسس — کلیک لە دەنگ بکە پاشان پیتەکە دابگرە",
-                  audio: "s",
+                  meaningKurdish: "دەنگی مار 🐍",
+                  note: "پیت: S",
                 },
-              ],
-            },
-          },
-          // S2: Visual Anchor A
-          {
-            type: "multiple_choice",
-            promptText: "پێناسەی دەنگ: پیتی A",
-            distractors: [],
-            order: 2,
-            solutionData: {
-              subtype: "word_anchors",
-              instruction: "پێناسەی دەنگ (Sound Anchor)",
-              correct: "completed",
-              words: [
                 {
                   english: "A",
                   pronunciationKurdish: "/æ/",
-                  kurdish: "دەنگی کورتی /æ/ وەکو لە (at, ant) — دەم کەمێک دەکرێتەوە",
-                  audio: "a",
+                  meaningKurdish: "دەنگی کورت 🍎",
+                  note: "پیت: A",
                 },
-              ],
-            },
-          },
-          // S3: Visual Anchor T
-          {
-            type: "multiple_choice",
-            promptText: "پێناسەی دەنگ: پیتی T",
-            distractors: [],
-            order: 3,
-            solutionData: {
-              subtype: "word_anchors",
-              instruction: "پێناسەی دەنگ (Sound Anchor)",
-              correct: "completed",
-              words: [
                 {
                   english: "T",
                   pronunciationKurdish: "/t/",
-                  kurdish: "دەنگی پاکی /t/ بەبێ زیادکردنی دەنگی تر (unvoiced)",
-                  audio: "t",
+                  meaningKurdish: "تەقینەوە ⏱️",
+                  note: "پیت: T",
                 },
               ],
             },
           },
-          // S4: Tactile Blending A + T -> AT
+          // S2: Tactile Blending A + T -> AT
           {
             type: "multiple_choice",
             promptText: "پیتەکان بلکێنە بۆ دروستکردنی دەنگی AT",
             distractors: [],
-            order: 4,
+            order: 2,
             solutionData: {
               subtype: "tile_assembly",
               instruction: "پیتەکان بلکێنە (Tactile Blending)",
-              visualCue: "🔤 /æ/ + /t/ = at",
-              tiles: ["A", "T"],
+              visualCue: "🔤 /æ/ + /t/ = AT",
+              tiles: ["A", "T", "S"],
               correctOrder: ["A", "T"],
               correct: "completed",
             },
           },
-          // S5: Output Rehearsal Speak AT
+          // S3: The Echo Mic - Speak AT
           {
             type: "multiple_choice",
             promptText: "دەربڕینی وشەی AT لە مایکرۆفۆن",
             distractors: [],
-            order: 5,
+            order: 3,
             solutionData: {
               subtype: "echo_mic",
-              instruction: "ڕاهێنانی دەربڕین (Rehearsal Speak)",
-              kurdishPrompt: "گوێ لە دەنگ بگرە و وشەی AT بڵێ",
-              targetWord: "at",
+              instruction: "ڕاهێنانی وتار و دەنگدانەوە (The Echo Mic)",
               spokenText: "at",
-              promptAudio: "at",
-              correct: "completed",
+              subTextGuide: "ئەت",
+              correct: "at",
             },
           },
-          // S6: Visual Anchor P
+          // S4: Word Anchors - Secondary Sounds (P, I, N)
           {
             type: "multiple_choice",
-            promptText: "پێناسەی دەنگ: پیتی P (تەقینی هەوا)",
+            promptText: "پێناسەی دەنگە لاوەکییەکان: P, I, N",
             distractors: [],
-            order: 6,
+            order: 4,
             solutionData: {
               subtype: "word_anchors",
-              instruction: "پێناسەی دەنگ (Aspirated /p/)",
+              instruction: "پێناسەی دەنگ (Sound Anchors)",
               correct: "completed",
               words: [
                 {
                   english: "P",
                   pronunciationKurdish: "/p/",
-                  kurdish: "دەنگی هەوایی /p/ — لێوەکان دەپەستێنرێن و هەوا دەتەقێتە دەرەوە نەک /b/",
-                  audio: "p",
+                  meaningKurdish: "هەوایی 💨",
+                  note: "پیت: P",
                 },
-              ],
-            },
-          },
-          // S7: Minimal Trap P vs T
-          {
-            type: "multiple_choice",
-            promptText: "کام دەنگت بیست؟ P یان T؟",
-            distractors: ["T"],
-            order: 7,
-            solutionData: {
-              subtype: "speed_trap",
-              instruction: "تەڵەی دەنگ (Minimal Trap)",
-              question: "کام دەنگت بیست؟ (P vs T)",
-              audioText: "p",
-              options: ["P", "T"],
-              correct: "P",
-              timerSeconds: 6,
-            },
-          },
-          // S8: Visual Anchor I and N -> IN
-          {
-            type: "multiple_choice",
-            promptText: "پێناسەی دەنگ: پیتەکانی I و N",
-            distractors: [],
-            order: 8,
-            solutionData: {
-              subtype: "word_anchors",
-              instruction: "دەنگەکانی I و N (IN /ɪn/)",
-              correct: "completed",
-              words: [
                 {
                   english: "I",
                   pronunciationKurdish: "/ɪ/",
-                  kurdish: "دەنگی کورتی /ɪ/ وەک لە pin",
-                  audio: "i",
+                  meaningKurdish: "دەنگی کورت 📌",
+                  note: "پیت: I",
                 },
                 {
                   english: "N",
                   pronunciationKurdish: "/n/",
-                  kurdish: "دەنگی لووت /n/ وەک لە in",
-                  audio: "n",
+                  meaningKurdish: "دەنگی لووت 👃",
+                  note: "پیت: N",
                 },
               ],
             },
           },
-          // S9: Word Assembly PAN
+          // S5: Acoustic Match - Sound to Spelling (P, T, S)
+          {
+            type: "audio_match",
+            promptText: "گوێ لە دەنگەکان بگرە و پیتە هاوتاکەیان دیاری بکە",
+            distractors: [],
+            order: 5,
+            solutionData: {
+              subtype: "acoustic_match",
+              instruction: "ڕاهێنانی بیستن (Acoustic Match)",
+              correct: "matched",
+              sounds: [
+                { id: "s1", label: "Sound 1", word: "P" },
+                { id: "s2", label: "Sound 2", word: "T" },
+                { id: "s3", label: "Sound 3", word: "S" },
+              ],
+              words: ["T", "S", "P"],
+            },
+          },
+          // S6: Tile Assembly - Word PAN
           {
             type: "multiple_choice",
             promptText: "پیتەکان ڕێکبخە بۆ وشەی PAN",
             distractors: [],
-            order: 9,
+            order: 6,
             solutionData: {
               subtype: "tile_assembly",
-              instruction: "دروستکردنی وشەی PAN (Frying Pan)",
+              instruction: "دروستکردنی وشەی PAN (Tile Assembly)",
               visualCue: "🍳 PAN",
-              tiles: ["P", "A", "N", "S", "T"],
+              tiles: ["P", "A", "N", "T"],
               correctOrder: ["P", "A", "N"],
               correct: "completed",
             },
           },
-          // S10: Word Assembly PIN
+          // S7: Tile Assembly - Word PIN
           {
             type: "multiple_choice",
             promptText: "پیتەکان ڕێکبخە بۆ وشەی PIN",
             distractors: [],
-            order: 10,
+            order: 7,
             solutionData: {
               subtype: "tile_assembly",
-              instruction: "دروستکردنی وشەی PIN (Sewing Pin)",
+              instruction: "دروستکردنی وشەی PIN (Tile Assembly)",
               visualCue: "🧷 PIN",
-              tiles: ["P", "I", "N", "A", "T"],
+              tiles: ["P", "I", "N", "A"],
               correctOrder: ["P", "I", "N"],
               correct: "completed",
             },
           },
-          // S11: Ear Check Blind Discrimination PAN vs PIN
+          // S8: Speed Discrimination PAN vs PIN
           {
             type: "multiple_choice",
-            promptText: "گوێ بگرە: PAN یان PIN؟",
+            promptText: "کام دەنگت بیست؟ PAN یان PIN؟",
             distractors: ["PAN"],
-            order: 11,
+            order: 8,
             solutionData: {
               subtype: "speed_trap",
-              instruction: "جیاکردنەوەی کوێرانە (Blind Discrimination)",
+              instruction: "جیاکردنەوەی خێرا (Speed Discrimination)",
               question: "کام وشەت بیست؟ (/æ/ vs /ɪ/)",
               audioText: "pin",
               options: ["PAN", "PIN"],
@@ -241,20 +199,50 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               timerSeconds: 5,
             },
           },
-          // S12: Production Graded Vocal Read TAP
+          // S9: The Echo Mic - Speak PIN
           {
             type: "multiple_choice",
-            promptText: "خوێندنەوەی دەنگی TAP بەبێ گوێگرتن",
+            promptText: "دەربڕینی وشەی PIN لە مایکرۆفۆن",
             distractors: [],
-            order: 12,
+            order: 9,
+            solutionData: {
+              subtype: "echo_mic",
+              instruction: "ڕاهێنانی وتار و دەنگدانەوە (The Echo Mic)",
+              spokenText: "pin",
+              subTextGuide: "پین",
+              visualScaffold: "🧷 PIN",
+              correct: "pin",
+            },
+          },
+          // S10: Tile Assembly - Word TAP
+          {
+            type: "multiple_choice",
+            promptText: "پیتەکان ڕێکبخە بۆ وشەی TAP",
+            distractors: [],
+            order: 10,
+            solutionData: {
+              subtype: "tile_assembly",
+              instruction: "دروستکردنی وشەی TAP (Tile Assembly)",
+              visualCue: "🚰 TAP",
+              tiles: ["T", "A", "P", "I"],
+              correctOrder: ["T", "A", "P"],
+              correct: "completed",
+            },
+          },
+          // S11: Timed Mic - Cold Read TAP (4s)
+          {
+            type: "multiple_choice",
+            promptText: "ناوی وێنەکە بە خێرایی بڵێ (4 چرکە)",
+            distractors: [],
+            order: 11,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "خوێندنەوەی دەنگی خێرا (Cold Read)",
+              instruction: "خوێندنەوەی خێرا (Timed Speaking)",
               visualCue: "🚰 TAP",
               scaffoldText: "TAP",
               spokenText: "tap",
               correct: "tap",
-              timerSeconds: 3,
+              timerSeconds: 4,
             },
           },
         ],
@@ -268,52 +256,88 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
         order: 2,
         xpReward: 20,
         exercises: [
-          // S1: Anchor Introduce PAN
+          // S1: Word Anchors - Group 1 (PAN, ANT, TAP)
           {
             type: "multiple_choice",
-            promptText: "ناساندنی وشە: PAN",
+            promptText: "پێناسەی وشان: PAN, ANT, TAP",
             distractors: [],
             order: 1,
             solutionData: {
               subtype: "word_anchors",
-              instruction: "ناساندنی وشە (Lexical Anchor)",
+              instruction: "پێناسەی وشە (Word Anchors)",
               correct: "completed",
               words: [
                 {
                   english: "PAN",
-                  kurdish: "تاوەی سوورکردنەوە 🍳",
                   pronunciationKurdish: "پان",
-                  audio: "pan",
+                  meaningKurdish: "تاوە 🍳",
+                  note: "سوورکردنەوە",
+                },
+                {
+                  english: "ANT",
+                  pronunciationKurdish: "ئانت",
+                  meaningKurdish: "مێروولە 🐜",
+                  note: "مێروو",
+                },
+                {
+                  english: "TAP",
+                  pronunciationKurdish: "تاپ",
+                  meaningKurdish: "حەنەفیە 🚰",
+                  note: "بەلوعە",
                 },
               ],
             },
           },
-          // S2: Anchor Introduce ANT
+          // S2: Word Anchors - Group 2 (PIN, TIN)
           {
             type: "multiple_choice",
-            promptText: "ناساندنی وشە: ANT",
+            promptText: "پێناسەی وشان: PIN, TIN",
             distractors: [],
             order: 2,
             solutionData: {
               subtype: "word_anchors",
-              instruction: "ناساندنی وشە (Lexical Anchor)",
+              instruction: "پێناسەی وشە (Word Anchors)",
               correct: "completed",
               words: [
                 {
-                  english: "ANT",
-                  kurdish: "مێروولە 🐜",
-                  pronunciationKurdish: "ئانت",
-                  audio: "ant",
+                  english: "PIN",
+                  pronunciationKurdish: "پین",
+                  meaningKurdish: "دەرزی 🧷",
+                  note: "جلوبەرگ",
+                },
+                {
+                  english: "TIN",
+                  pronunciationKurdish: "تین",
+                  meaningKurdish: "قوتوو 🥫",
+                  note: "تەنەکە",
                 },
               ],
             },
           },
-          // S3: Visual Match PAN vs ANT
+          // S3: Acoustic Match (PAN, TIN, ANT)
+          {
+            type: "audio_match",
+            promptText: "گوێ لە دەنگەکان بگرە و وشە هاوتاکەیان دیاری بکە",
+            distractors: [],
+            order: 3,
+            solutionData: {
+              subtype: "acoustic_match",
+              instruction: "ڕاهێنانی بیستن (Acoustic Match)",
+              correct: "matched",
+              sounds: [
+                { id: "s1", label: "Sound 1", word: "PAN" },
+                { id: "s2", label: "Sound 2", word: "TIN" },
+                { id: "s3", label: "Sound 3", word: "ANT" },
+              ],
+              words: ["TIN", "ANT", "PAN"],
+            },
+          },
+          // S4: Audio Choice - Visual Match PAN vs ANT
           {
             type: "multiple_choice",
             promptText: "کام وێنەیە PANە؟",
             distractors: ["🐜 ANT"],
-            order: 3,
+            order: 4,
             solutionData: {
               subtype: "audio_choice",
               instruction: "هاوتاکردنی وێنە (Visual Match)",
@@ -323,55 +347,15 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               correct: "🍳 PAN",
             },
           },
-          // S4: Anchor Introduce TIN
-          {
-            type: "multiple_choice",
-            promptText: "ناساندنی وشە: TIN",
-            distractors: [],
-            order: 4,
-            solutionData: {
-              subtype: "word_anchors",
-              instruction: "ناساندنی وشە (Lexical Anchor)",
-              correct: "completed",
-              words: [
-                {
-                  english: "TIN",
-                  kurdish: "قوتووی تەنەکە 🥫",
-                  pronunciationKurdish: "تین",
-                  audio: "tin",
-                },
-              ],
-            },
-          },
-          // S5: Anchor Introduce PIN
-          {
-            type: "multiple_choice",
-            promptText: "ناساندنی وشە: PIN",
-            distractors: [],
-            order: 5,
-            solutionData: {
-              subtype: "word_anchors",
-              instruction: "ناساندنی وشە (Lexical Anchor)",
-              correct: "completed",
-              words: [
-                {
-                  english: "PIN",
-                  kurdish: "دەرزی جلوبەرگ 🧷",
-                  pronunciationKurdish: "پین",
-                  audio: "pin",
-                },
-              ],
-            },
-          },
-          // S6: Trap Discrimination PIN vs TIN
+          // S5: Speed Trap - Discrimination PIN vs TIN (5s)
           {
             type: "multiple_choice",
             promptText: "کام وێنەیە TINە؟ (5 چرکە)",
             distractors: ["🧷 PIN"],
-            order: 6,
+            order: 5,
             solutionData: {
               subtype: "speed_trap",
-              instruction: "تەڵەی جیاکردنەوە (Trap Discrimination)",
+              instruction: "تەڵەی جیاکردنەوە (Speed Discrimination)",
               question: "کام وێنەیە TINە؟",
               audioText: "tin",
               options: ["🥫 TIN", "🧷 PIN"],
@@ -379,47 +363,27 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               timerSeconds: 5,
             },
           },
-          // S7: Anchor Introduce TAP
-          {
-            type: "multiple_choice",
-            promptText: "ناساندنی وشە: TAP",
-            distractors: [],
-            order: 7,
-            solutionData: {
-              subtype: "word_anchors",
-              instruction: "ناساندنی وشە (Lexical Anchor)",
-              correct: "completed",
-              words: [
-                {
-                  english: "TAP",
-                  kurdish: "حەنەفیەی ئاو 🚰",
-                  pronunciationKurdish: "تاپ",
-                  audio: "tap",
-                },
-              ],
-            },
-          },
-          // S8: Tile Spelling TAP
+          // S6: Tile Assembly - Word TAP
           {
             type: "multiple_choice",
             promptText: "وشەی TAP دروست بکە",
             distractors: [],
-            order: 8,
+            order: 6,
             solutionData: {
               subtype: "tile_assembly",
-              instruction: "ڕێنووسی وشەی TAP",
+              instruction: "ڕێنووسی وشەی TAP (Tile Assembly)",
               visualCue: "🚰 TAP",
-              tiles: ["T", "A", "P"],
+              tiles: ["T", "A", "P", "S"],
               correctOrder: ["T", "A", "P"],
               correct: "completed",
             },
           },
-          // S9: 4-Way Image Matrix ANT
+          // S7: Audio Choice - 4-Way Image Matrix ANT
           {
             type: "multiple_choice",
             promptText: "کامەیە ANT؟",
             distractors: ["🍳 PAN", "🥫 TIN", "🚰 TAP"],
-            order: 9,
+            order: 7,
             solutionData: {
               subtype: "audio_choice",
               instruction: "ماتریسی چوار وێنەیی (4-Way Matrix)",
@@ -429,12 +393,12 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               correct: "🐜 ANT",
             },
           },
-          // S10: Blind Listen PIN
+          // S8: Audio Choice - Blind Listen PIN
           {
             type: "multiple_choice",
             promptText: "کام وشەت بیست؟",
             distractors: ["PAN", "TIN"],
-            order: 10,
+            order: 8,
             solutionData: {
               subtype: "audio_choice",
               instruction: "گوێگرتنی کوێرانە (Blind Listen)",
@@ -444,34 +408,32 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               correct: "PIN",
             },
           },
-          // S11: Vocal Rehearsal TIN
+          // S9: The Echo Mic - Speak TIN
           {
             type: "multiple_choice",
             promptText: "دەربڕینی وشەی TIN لە مایکرۆفۆن",
             distractors: [],
-            order: 11,
+            order: 9,
             solutionData: {
               subtype: "echo_mic",
-              instruction: "ڕاهێنانی دەنگ (Vocal Rehearsal)",
-              kurdishPrompt: "گوێ لە دەنگ بگرە و وشەی TIN بڵێ",
-              targetWord: "tin",
+              instruction: "ڕاهێنانی دەنگ (The Echo Mic)",
               spokenText: "tin",
-              promptAudio: "tin",
-              visualCue: "🥫 TIN",
-              correct: "completed",
+              subTextGuide: "تین",
+              visualScaffold: "🥫 TIN",
+              correct: "tin",
             },
           },
-          // S12: Graded Vocal Production PAN
+          // S10: Timed Mic - Cold Vocal PAN (3s)
           {
             type: "multiple_choice",
             promptText: "ناوی وێنەکە بە ئینگلیزی بڵێ (3 چرکە)",
             distractors: [],
-            order: 12,
+            order: 10,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "تەواوکردنی دەنگی بەبێ نووسین (Graded Vocal)",
+              instruction: "دەربڕینی خێرا (Timed Speaking)",
               visualCue: "🍳",
-              scaffoldText: "...",
+              scaffoldText: "PAN",
               spokenText: "pan",
               correct: "pan",
               timerSeconds: 3,
@@ -488,49 +450,35 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
         order: 3,
         xpReward: 20,
         exercises: [
-          // S1: Frame Deconstruction
+          // S1: Analytic Breakdown - Deconstruct "I see a pan."
           {
             type: "multiple_choice",
-            promptText: "داڕشتەی ڕستە: I see a pan.",
+            promptText: "شیکردنەوەی پێکهاتەی ڕستە: I see a pan.",
             distractors: [],
             order: 1,
             solutionData: {
-              subtype: "word_anchors",
-              instruction: "داڕشتەی ڕستەی ئینگلیزی (SVO Frame)",
-              correct: "completed",
-              words: [
+              subtype: "analytic_breakdown",
+              instruction: "شیکردنەوەی پێکهاتەی ڕستە (Analytic Breakdown)",
+              correct: "I see a pan.",
+              rows: [
+                { english: "I", pronunciationKurdish: "ئای", meaningKurdish: "من" },
+                { english: "see", pronunciationKurdish: "سیی", meaningKurdish: "دەبینم" },
+                { english: "a pan", pronunciationKurdish: "ئە پان", meaningKurdish: "تاوەیەک" },
                 {
                   english: "I see a pan.",
-                  kurdish: "من تاوەیەک دەبینم (Subject + Verb + Object)",
-                  pronunciationKurdish: "ئای سیی ئە پان",
-                  audio: "I see a pan",
+                  pronunciationKurdish: "ئای سیی ئە پان.",
+                  meaningKurdish: "من تاوەیەک دەبینم.",
+                  isFullPhrase: true,
                 },
               ],
             },
           },
-          // S2: Tile Isolation [ I ], [ see ], [ a ]
-          {
-            type: "multiple_choice",
-            promptText: "بەشەکانی ڕستە: I + see + a",
-            distractors: [],
-            order: 2,
-            solutionData: {
-              subtype: "word_anchors",
-              instruction: "لێکۆڵینەوە لە پەیڤەکان (Tile Isolation)",
-              correct: "completed",
-              words: [
-                { english: "I", kurdish: "من (Subject)", audio: "I" },
-                { english: "see", kurdish: "دەبینم (Verb)", audio: "see" },
-                { english: "a", kurdish: "یەک (نادیار /ə/)", audio: "a" },
-              ],
-            },
-          },
-          // S3: Slot & Filler 1
+          // S2: Slot Filler - "I see an [ ___ ]"
           {
             type: "multiple_choice",
             promptText: "بۆشاییەکە پڕبکەرەوە: I see an [ ___ ]",
             distractors: ["pan", "tin"],
-            order: 3,
+            order: 2,
             solutionData: {
               subtype: "slot_filler",
               instruction: "پڕکردنەوەی بۆشایی (Slot & Filler)",
@@ -541,42 +489,42 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               correct: "ant",
             },
           },
-          // S4: Order Enforcement SVO
+          // S3: Tile Assembly - SVO Order
           {
             type: "multiple_choice",
             promptText: "ڕستەکە بەپێی ڕێزمانی ئینگلیزی ڕێکبخە",
             distractors: [],
-            order: 4,
+            order: 3,
             solutionData: {
               subtype: "tile_assembly",
-              instruction: "ڕێکخستنی SVO (Subject-Verb-Object)",
+              instruction: "ڕێکخستنی SVO (Tile Assembly)",
               visualCue: "🥫 I see a tin.",
-              tiles: ["a", "I", "see", "tin"],
-              correctOrder: ["I", "see", "a", "tin"],
+              tiles: ["a", "I", "see", "tin."],
+              correctOrder: ["I", "see", "a", "tin."],
               correct: "completed",
             },
           },
-          // S5: Receptive Audio Check
+          // S4: Audio Choice - Receptive Check
           {
             type: "multiple_choice",
             promptText: "واتای کام ڕستەیەت بیست؟",
             distractors: ["🍳 I see a pan", "🧷 I see a pin"],
-            order: 5,
+            order: 4,
             solutionData: {
               subtype: "audio_choice",
-              instruction: "پشکنینی بیستن (Receptive Audio Check)",
+              instruction: "پشکنینی بیستن (Audio Choice)",
               question: "واتای کام ڕستەیەت بیست؟",
               audioText: "I see a tap",
               options: ["🚰 I see a tap", "🍳 I see a pan", "🧷 I see a pin"],
               correct: "🚰 I see a tap",
             },
           },
-          // S6: Slot & Filler 2
+          // S5: Slot Filler - "I see a [ ___ ]"
           {
             type: "multiple_choice",
             promptText: "بۆشاییەکە پڕبکەرەوە: I see a [ ___ ]",
             distractors: ["tap", "ant"],
-            order: 6,
+            order: 5,
             solutionData: {
               subtype: "slot_filler",
               instruction: "پڕکردنەوەی بۆشایی (Slot & Filler)",
@@ -587,78 +535,80 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               correct: "pin",
             },
           },
-          // S7: Negative Distractor True / False
+          // S6: Speed Ear Gate - Rapid True/False Checkpoint
           {
             type: "multiple_choice",
             promptText: "ئایا دەنگەکە و وێنەکە یەکدەگرنەوە؟",
             distractors: [],
-            order: 7,
+            order: 6,
             solutionData: {
               subtype: "speed_ear_gate",
-              instruction: "جیاکردنەوەی ڕاست / هەڵە (True/False Gate)",
-              rounds: [{ audio: "I see a pin", display: "🍳 (Pan)", correct: false }],
+              instruction: "جیاکردنەوەی ڕاست / هەڵە (Speed Ear Gate)",
+              rounds: [
+                { audio: "I see a pin", display: "🍳 (Pan)", correct: false },
+                { audio: "I see a tin", display: "🥫 (Tin)", correct: true },
+                { audio: "I see a tap", display: "🚰 (Tap)", correct: true },
+              ],
               timerSeconds: 4,
-              passMark: 1,
+              passMark: 2,
               correct: "completed",
             },
           },
-          // S8: Rehearsal Repetition
+          // S7: The Echo Mic - Rehearsal Repetition
           {
             type: "multiple_choice",
             promptText: "دووبارەکردنەوەی ڕستەی تەواو: I see a pan",
             distractors: [],
-            order: 8,
+            order: 7,
             solutionData: {
               subtype: "echo_mic",
-              instruction: "دووبارەکردنەوەی دەنگ (Rehearsal Repetition)",
-              kurdishPrompt: "گوێ لە دەنگ بگرە و ڕستەکە بڵێ",
-              targetWord: "I see a pan",
+              instruction: "ڕاهێنانی دەنگدانەوە (The Echo Mic)",
               spokenText: "I see a pan",
-              promptAudio: "I see a pan",
-              visualCue: "🍳 I see a pan",
-              correct: "completed",
+              subTextGuide: "ئای سیی ئە پان",
+              visualScaffold: "🍳 I see a pan",
+              correct: "I see a pan",
             },
           },
-          // S9: Timed Sentence Rebuild (6s)
+          // S8: Tile Assembly - Timed Sentence Rebuild (6s)
           {
             type: "multiple_choice",
             promptText: "ڕستەکە بە خێرایی ڕێکبخە (6 چرکە)",
             distractors: [],
-            order: 9,
+            order: 8,
             solutionData: {
               subtype: "tile_assembly",
-              instruction: "ڕێکخستنی خێرای ڕستە (Timed Rebuild)",
+              instruction: "ڕێکخستنی خێرای ڕستە (Timed Tile Assembly)",
               visualCue: "🍳 I see a pan",
-              tiles: ["see", "I", "a", "pan"],
-              correctOrder: ["I", "see", "a", "pan"],
+              tiles: ["see", "I", "a", "pan."],
+              correctOrder: ["I", "see", "a", "pan."],
               timerSeconds: 6,
               correct: "completed",
             },
           },
-          // S10: Ear-to-Text Mapping
+          // S9: Audio Choice - Ear-to-Text Mapping
           {
             type: "multiple_choice",
             promptText: "کام ڕستەت بیست؟",
             distractors: ["I see a pin"],
-            order: 10,
+            order: 9,
             solutionData: {
               subtype: "audio_choice",
-              instruction: "هاوتاکردنی دەنگ و دەق (Ear-to-Text)",
+              instruction: "هاوتاکردنی دەنگ و دەق (Audio Choice)",
               question: "کام ڕستەت بیست؟",
               audioText: "I see a tin",
               options: ["I see a pin", "I see a tin"],
               correct: "I see a tin",
             },
           },
-          // S11: Vocal Ramp 1 (5s)
+          // S10: Timed Mic - Vocal Ramp (5s)
           {
             type: "multiple_choice",
             promptText: "ڕستەکە لە مایکرۆفۆن بخوێنەرەوە (5 چرکە)",
             distractors: [],
-            order: 11,
+            order: 10,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "ڕاهێنانی خێرایی (Vocal Ramp 1)",
+              instruction: "ڕاهێنانی خێرایی (Timed Speaking)",
               visualCue: "🚰 I see a tap",
               scaffoldText: "I see a tap",
               spokenText: "I see a tap",
@@ -666,20 +616,20 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               timerSeconds: 5,
             },
           },
-          // S12: Cold Vocal Production (3s)
+          // S11: Timed Mic - Cold Vocal Production (4s)
           {
             type: "multiple_choice",
-            promptText: "بەبێ دەق، ڕستەکە بڵێ (3 چرکە)",
+            promptText: "بەبێ دەق، ڕستەکە بڵێ (4 چرکە)",
             distractors: [],
-            order: 12,
+            order: 11,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "بەرهەمهێنانی دەنگی سەربەخۆ (Cold Vocal)",
+              instruction: "دەربڕینی سەربەخۆ (Timed Speaking)",
               visualCue: "🐜",
-              scaffoldText: "[ ? ] [ ? ] [ ? ] [ ? ]",
+              scaffoldText: "I see an [ ... ]",
               spokenText: "I see an ant",
               correct: "I see an ant",
-              timerSeconds: 3,
+              timerSeconds: 4,
             },
           },
         ],
@@ -693,53 +643,56 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
         order: 4,
         xpReward: 20,
         exercises: [
-          // S1: Acoustic Calibration
+          // S1: Acoustic Match (pan, pin, tan, tin)
           {
-            type: "multiple_choice",
-            promptText: "جیاوازی دەنگی نێوان PAN و PIN",
+            type: "audio_match",
+            promptText: "جیاوازی دەنگی کورت: /æ/ و /ɪ/",
             distractors: [],
             order: 1,
             solutionData: {
               subtype: "acoustic_match",
-              instruction: "جیاوازی دەنگەکان (Acoustic Calibration)",
-              target1: "pan",
-              target2: "pin",
-              label1: "/æ/ (pan 🍳)",
-              label2: "/ɪ/ (pin 🧷)",
-              correct: "completed",
+              instruction: "جیاوازی دەنگەکان (Acoustic Match)",
+              correct: "matched",
+              sounds: [
+                { id: "s1", label: "Sound 1 (/æ/)", word: "pan" },
+                { id: "s2", label: "Sound 2 (/ɪ/)", word: "pin" },
+                { id: "s3", label: "Sound 3 (/æ/)", word: "tan" },
+                { id: "s4", label: "Sound 4 (/ɪ/)", word: "tin" },
+              ],
+              words: ["pin", "tan", "pan", "tin"],
             },
           },
-          // S2: Audio Discrimination 1
+          // S2: Audio Choice - Discrimination 1
           {
             type: "multiple_choice",
             promptText: "کام دەنگەت بیست؟",
-            distractors: ["I (/ɪ/)"],
+            distractors: ["I (/ɪ/ - pin)"],
             order: 2,
             solutionData: {
               subtype: "audio_choice",
-              instruction: "ناسینەوەی دەنگ (Audio Discrimination)",
+              instruction: "ناسینەوەی دەنگ (Audio Choice)",
               question: "کام دەنگت بیست؟",
               audioText: "pan",
               options: ["A (/æ/ - pan)", "I (/ɪ/ - pin)"],
               correct: "A (/æ/ - pan)",
             },
           },
-          // S3: Audio Discrimination 2
+          // S3: Audio Choice - Discrimination 2
           {
             type: "multiple_choice",
             promptText: "کام دەنگەت بیست؟",
-            distractors: ["A (/æ/)"],
+            distractors: ["A (/æ/ - pan)"],
             order: 3,
             solutionData: {
               subtype: "audio_choice",
-              instruction: "ناسینەوەی دەنگ (Audio Discrimination)",
+              instruction: "ناسینەوەی دەنگ (Audio Choice)",
               question: "کام دەنگت بیست؟",
               audioText: "pin",
               options: ["A (/æ/ - pan)", "I (/ɪ/ - pin)"],
               correct: "I (/ɪ/ - pin)",
             },
           },
-          // S4: Pair Sorting PAT
+          // S4: Audio Choice - Pair Sorting PAT
           {
             type: "multiple_choice",
             promptText: "وشەی PAT سەر بە کام دەنگەیە؟",
@@ -754,7 +707,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               correct: "/æ/ وەک لە PAN",
             },
           },
-          // S5: Pair Sorting PIT
+          // S5: Audio Choice - Pair Sorting PIT
           {
             type: "multiple_choice",
             promptText: "وشەی PIT سەر بە کام دەنگەیە؟",
@@ -769,7 +722,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               correct: "/ɪ/ وەک لە PIN",
             },
           },
-          // S6: Speed Decision TAN or TIN (4s)
+          // S6: Speed Trap - TAN vs TIN (4s)
           {
             type: "multiple_choice",
             promptText: "TAN یان TIN؟ (4 چرکە)",
@@ -777,7 +730,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 6,
             solutionData: {
               subtype: "speed_trap",
-              instruction: "بڕیاردانی خێرا (Speed Decision)",
+              instruction: "بڕیاردانی خێرا (Speed Discrimination)",
               question: "کام وشەت بیست؟",
               audioText: "tin",
               options: ["TAN", "TIN"],
@@ -785,7 +738,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               timerSeconds: 4,
             },
           },
-          // S7: Connected Speech 1
+          // S7: Audio Choice - Connected Speech 1
           {
             type: "multiple_choice",
             promptText: "کام وێنەیەت بیست؟",
@@ -793,14 +746,14 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 7,
             solutionData: {
               subtype: "audio_choice",
-              instruction: "دەنگی بەستراوە (Connected Speech)",
+              instruction: "دەنگی بەستراوە (Audio Choice)",
               question: "گوێ بگرە: کام وێنەیە؟",
               audioText: "I see a pan",
               options: ["🍳 PAN", "🧷 PIN"],
               correct: "🍳 PAN",
             },
           },
-          // S8: Connected Speech 2
+          // S8: Audio Choice - Connected Speech 2
           {
             type: "multiple_choice",
             promptText: "کام وێنەیەت بیست؟",
@@ -808,14 +761,14 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 8,
             solutionData: {
               subtype: "audio_choice",
-              instruction: "دەنگی بەستراوە (Connected Speech)",
+              instruction: "دەنگی بەستراوە (Audio Choice)",
               question: "گوێ بگرە: کام وێنەیە؟",
               audioText: "I see a tin",
               options: ["🥫 TIN", "🔟 TEN"],
               correct: "🥫 TIN",
             },
           },
-          // S9: Rapid Identification SAT (4s)
+          // S9: Speed Trap - SAT vs SIT (4s)
           {
             type: "multiple_choice",
             promptText: "SIT یان SAT؟ (4 چرکە)",
@@ -823,7 +776,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 9,
             solutionData: {
               subtype: "speed_trap",
-              instruction: "ناسینەوەی خێرا (Rapid Identification)",
+              instruction: "ناسینەوەی خێرا (Speed Discrimination)",
               question: "کام وشەیە؟",
               audioText: "sat",
               options: ["SIT", "SAT"],
@@ -831,7 +784,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               timerSeconds: 4,
             },
           },
-          // S10: Rapid Identification TIP (4s)
+          // S10: Speed Trap - TAP vs TIP (4s)
           {
             type: "multiple_choice",
             promptText: "TAP یان TIP؟ (4 چرکە)",
@@ -839,7 +792,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 10,
             solutionData: {
               subtype: "speed_trap",
-              instruction: "ناسینەوەی خێرا (Rapid Identification)",
+              instruction: "ناسینەوەی خێرا (Speed Discrimination)",
               question: "کام وشەیە؟",
               audioText: "tip",
               options: ["TAP", "TIP"],
@@ -847,7 +800,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               timerSeconds: 4,
             },
           },
-          // S11: Echo Rehearsal PAN
+          // S11: The Echo Mic - Echo Rehearsal PAN
           {
             type: "multiple_choice",
             promptText: "دەربڕینی وشەی PAN لە مایکرۆفۆن",
@@ -855,16 +808,14 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 11,
             solutionData: {
               subtype: "echo_mic",
-              instruction: "دەربڕینی دەنگ (Echo Rehearsal)",
-              kurdishPrompt: "گوێ بگرە و بە دەنگی بەرز بڵێ PAN",
-              targetWord: "pan",
+              instruction: "دەربڕینی دەنگ (The Echo Mic)",
               spokenText: "pan",
-              promptAudio: "pan",
-              visualCue: "🍳 PAN",
-              correct: "completed",
+              subTextGuide: "پان",
+              visualScaffold: "🍳 PAN",
+              correct: "pan",
             },
           },
-          // S12: Vocal Discrimination PIN (3s)
+          // S12: Timed Mic - Vocal Discrimination PIN (3s)
           {
             type: "multiple_choice",
             promptText: "ناوی وێنەکە بڵێ (دڵنیابە PINە نەک PAN)",
@@ -872,9 +823,9 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 12,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "جیاکردنەوەی دەربڕین (Vocal Discrimination)",
+              instruction: "جیاکردنەوەی دەربڕین (Timed Speaking)",
               visualCue: "🧷 PIN",
-              scaffoldText: "PIN (not PAN)",
+              scaffoldText: "PIN",
               spokenText: "pin",
               correct: "pin",
               timerSeconds: 3,
@@ -899,12 +850,12 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 1,
             solutionData: {
               subtype: "echo_mic",
-              instruction: "گەرمکردنەوە (Warm-Up Model)",
+              instruction: "گەرمکردنەوە (The Echo Mic)",
               targetWord: "pan",
               spokenText: "pan",
-              promptAudio: "pan",
-              visualCue: "🍳 PAN",
-              correct: "completed",
+              subTextGuide: "پان",
+              visualScaffold: "🍳 PAN",
+              correct: "pan",
             },
           },
           // S2: Warm-Up TAP
@@ -915,12 +866,12 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 2,
             solutionData: {
               subtype: "echo_mic",
-              instruction: "گەرمکردنەوە (Warm-Up Model)",
+              instruction: "گەرمکردنەوە (The Echo Mic)",
               targetWord: "tap",
               spokenText: "tap",
-              promptAudio: "tap",
-              visualCue: "🚰 TAP",
-              correct: "completed",
+              subTextGuide: "تاپ",
+              visualScaffold: "🚰 TAP",
+              correct: "tap",
             },
           },
           // S3: Frame Refresh "I see a pan"
@@ -931,12 +882,12 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 3,
             solutionData: {
               subtype: "echo_mic",
-              instruction: "ڕاهێنانی نەرمی دەنگ (Frame Refresh)",
+              instruction: "ڕاهێنانی دەنگ (The Echo Mic)",
               targetWord: "I see a pan",
               spokenText: "I see a pan",
-              promptAudio: "I see a pan",
-              visualCue: "🍳 I see a pan",
-              correct: "completed",
+              subTextGuide: "ئای سیی ئە پان",
+              visualScaffold: "🍳 I see a pan",
+              correct: "I see a pan",
             },
           },
           // S4: Tier 1 Speed (5s) "I see a tin"
@@ -947,7 +898,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 4,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "ئاستی خێرایی ١ (Tier 1 Speed - 5s)",
+              instruction: "ئاستی خێرایی ١ (Timed Speaking - 5s)",
               visualCue: "🥫",
               scaffoldText: "I see a tin",
               spokenText: "I see a tin",
@@ -963,7 +914,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 5,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "ئاستی خێرایی ١ (Tier 1 Speed - 5s)",
+              instruction: "ئاستی خێرایی ١ (Timed Speaking - 5s)",
               visualCue: "🐜",
               scaffoldText: "I see an ant",
               spokenText: "I see an ant",
@@ -979,7 +930,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 6,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "دەقی کاڵکراوە (Text Fading - 5s)",
+              instruction: "دەقی کاڵکراوە (Timed Speaking - 5s)",
               visualCue: "🧷",
               scaffoldText: "I see a p__",
               spokenText: "I see a pin",
@@ -995,7 +946,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 7,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "دەقی کاڵکراوە (Text Fading - 5s)",
+              instruction: "دەقی کاڵکراوە (Timed Speaking - 5s)",
               visualCue: "🚰",
               scaffoldText: "I see a t__",
               spokenText: "I see a tap",
@@ -1011,7 +962,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 8,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "ئاستی خێرایی ٢ (Tier 2 Speed - 3s)",
+              instruction: "ئاستی خێرایی ٢ (Timed Speaking - 3s)",
               visualCue: "🍳",
               scaffoldText: "...",
               spokenText: "pan",
@@ -1027,7 +978,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 9,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "ئاستی خێرایی ٢ (Tier 2 Speed - 3s)",
+              instruction: "ئاستی خێرایی ٢ (Timed Speaking - 3s)",
               visualCue: "🥫",
               scaffoldText: "...",
               spokenText: "tin",
@@ -1043,7 +994,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 10,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "ئاستی خێرایی ٢ (Tier 2 Speed - 3s)",
+              instruction: "ئاستی خێرایی ٢ (Timed Speaking - 3s)",
               visualCue: "🐜",
               scaffoldText: "...",
               spokenText: "ant",
@@ -1059,9 +1010,9 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 11,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "سپرینتی ڕستەی تەواو (Full Frame Sprint - 4s)",
+              instruction: "سپرینتی ڕستەی تەواو (Timed Speaking - 4s)",
               visualCue: "🚰",
-              scaffoldText: "[ ڕستەی تەواو بڵێ ]",
+              scaffoldText: "I see a [ ... ]",
               spokenText: "I see a tap",
               correct: "I see a tap",
               timerSeconds: 4,
@@ -1075,7 +1026,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 12,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "سپرینتی کۆتایی (Cap Sprint - 3s)",
+              instruction: "سپرینتی کۆتایی (Timed Speaking - 3s)",
               visualCue: "🧷",
               scaffoldText: "...",
               spokenText: "I see a pin",
@@ -1102,7 +1053,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 1,
             solutionData: {
               subtype: "tile_assembly",
-              instruction: "وشەی نوێ پێکبهێنە (Unseen Blend)",
+              instruction: "وشەی نوێ پێکبهێنە (Tile Assembly)",
               visualCue: "🪑 SIT",
               tiles: ["S", "I", "T", "P"],
               correctOrder: ["S", "I", "T"],
@@ -1117,7 +1068,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 2,
             solutionData: {
               subtype: "speed_ear_gate",
-              instruction: "دەروازەی بیستنی خێرا (Rapid Acoustic Gate)",
+              instruction: "دەروازەی بیستنی خێرا (Speed Ear Gate)",
               rounds: [
                 { audio: "pan", display: "🍳 pan", correct: true },
                 { audio: "pin", display: "🥫 tin", correct: false },
@@ -1136,7 +1087,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 3,
             solutionData: {
               subtype: "tile_assembly",
-              instruction: "وەرگێڕان بۆ ئینگلیزی (Reverse Translation)",
+              instruction: "وەرگێڕان بۆ ئینگلیزی (Tile Assembly)",
               visualCue: "🍳 تاوەیەک دەبینم",
               tiles: ["pan.", "I", "see", "a", "pin."],
               correctOrder: ["I", "see", "a", "pan."],
@@ -1151,7 +1102,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 4,
             solutionData: {
               subtype: "audio_choice",
-              instruction: "تەڵەی ناسینەوە (Trap Discrimination)",
+              instruction: "تەڵەی ناسینەوە (Audio Choice)",
               question: "کام وشەت بیست؟",
               audioText: "tin",
               options: ["🥫 TIN", "🧷 PIN", "🍳 PAN"],
@@ -1166,7 +1117,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 5,
             solutionData: {
               subtype: "tile_assembly",
-              instruction: "دروستکردنی ڕستە (SVO Construction)",
+              instruction: "دروستکردنی ڕستە (Tile Assembly)",
               visualCue: "🚰 I see a tap.",
               tiles: ["tap.", "I", "a", "see"],
               correctOrder: ["I", "see", "a", "tap."],
@@ -1181,7 +1132,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 6,
             solutionData: {
               subtype: "speed_trap",
-              instruction: "پشکنینی جووتە دەنگ (Minimal Pair Gate)",
+              instruction: "پشکنینی جووتە دەنگ (Speed Discrimination)",
               question: "SAT یان SIT؟",
               audioText: "sat",
               options: ["SIT", "SAT"],
@@ -1197,8 +1148,9 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 7,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "سپرینتی دەربڕین (Production Sprint 1)",
+              instruction: "سپرینتی دەربڕین (Timed Speaking)",
               visualCue: "🥫",
+              scaffoldText: "tin",
               spokenText: "tin",
               correct: "tin",
               timerSeconds: 3,
@@ -1212,8 +1164,9 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 8,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "سپرینتی دەربڕین (Production Sprint 2)",
+              instruction: "سپرینتی دەربڕین (Timed Speaking)",
               visualCue: "🚰",
+              scaffoldText: "tap",
               spokenText: "tap",
               correct: "tap",
               timerSeconds: 3,
@@ -1227,8 +1180,9 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 9,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "دەروازەی ڕستەی تەواو (Full Sentence Gate)",
+              instruction: "دەروازەی ڕستەی تەواو (Timed Speaking)",
               visualCue: "🐜",
+              scaffoldText: "I see an ant",
               spokenText: "I see an ant",
               correct: "I see an ant",
               timerSeconds: 3,
@@ -1242,8 +1196,9 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 10,
             solutionData: {
               subtype: "timed_mic",
-              instruction: "دەروازەی ڕستەی تەواو (Full Sentence Gate)",
+              instruction: "دەروازەی ڕستەی تەواو (Timed Speaking)",
               visualCue: "🧷",
+              scaffoldText: "I see a pin",
               spokenText: "I see a pin",
               correct: "I see a pin",
               timerSeconds: 3,
@@ -1257,7 +1212,7 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
             order: 11,
             solutionData: {
               subtype: "slot_filler",
-              instruction: "پڕکردنەوەی پەیڤ (Cloze Synthesis)",
+              instruction: "پڕکردنەوەی پەیڤ (Slot & Filler)",
               frameText: "I see [ ___ ] pan.",
               visualCue: "🍳",
               correctWord: "a",
@@ -1265,14 +1220,14 @@ export const FOUNDATIONS_UNITS: UnitInput[] = [
               correct: "a",
             },
           },
-          // S12: Boss Scorecard
+          // S12: Boss Scorecard (Template 23)
           {
             type: "multiple_choice",
             promptText: "دەرەنجامی Checkpoint 1 (The Gate)",
             distractors: [],
             order: 12,
             solutionData: {
-              subtype: "boss_scorecard",
+              subtype: "boss_score_card",
               instruction: "دەروازەی پشکنینی ئاستی یەکەم (Level 1 Passed!)",
               title: "ئاستی ١ تەواو بوو! پیرۆزە!",
               grade: "A+",

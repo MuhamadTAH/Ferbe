@@ -105,12 +105,12 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
               )}
             >
               {/* Left Column: English Word + Audio Button */}
-              <div className="flex items-center gap-3.5">
+              <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
                 <button
                   type="button"
                   aria-label={`Play ${w.english}`}
                   className={cn(
-                    "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-b-2 transition-all",
+                    "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-b-2 transition-all",
                     isPlaying
                       ? "border-[#1899D6] bg-[#1CB0F6] text-white animate-pulse"
                       : isHeard
@@ -121,12 +121,12 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
                   <Volume2 className="h-5 w-5" />
                 </button>
 
-                <div className="flex flex-col text-left">
-                  <span dir="ltr" className="text-2xl font-black tracking-tight text-[#4B4B4B] dark:text-white">
+                <div className="flex flex-col text-left min-w-0">
+                  <span dir="ltr" className="text-xl sm:text-2xl font-black tracking-tight text-[#4B4B4B] dark:text-white truncate">
                     {w.english}
                   </span>
                   {w.note && (
-                    <span dir="rtl" className="font-kurdish text-[11px] font-bold text-[#AFAFAF] dark:text-[#8495A0]">
+                    <span dir="rtl" className="font-kurdish text-[11px] font-bold text-[#AFAFAF] dark:text-[#8495A0] truncate">
                       ({w.note})
                     </span>
                   )}
