@@ -443,7 +443,7 @@ function SessionInner({ lessonId }: { lessonId: string }) {
               />
             );
           }
-          if (subtype === "boss_score_card") {
+          if (subtype === "boss_score_card" || subtype === "boss_scorecard") {
             return (
               <BossScoreCardView
                 key={exercise._id}

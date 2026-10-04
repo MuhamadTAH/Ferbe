@@ -67,12 +67,13 @@ export async function getAmericanVoice(): Promise<SpeechSynthesisVoice | null> {
 }
 
 export async function playAmericanSpeech(text: string, rate: number = 0.88): Promise<void> {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  const safeText = (text ?? "").trim();
+  if (!safeText || typeof window === "undefined" || !("speechSynthesis" in window)) return;
 
   try {
     window.speechSynthesis.cancel();
     const voice = await getAmericanVoice();
-    const utterance = new SpeechSynthesisUtterance(text);
+    const utterance = new SpeechSynthesisUtterance(safeText);
     utterance.lang = "en-US";
     utterance.rate = rate;
     if (voice) {

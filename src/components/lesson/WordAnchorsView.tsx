@@ -9,9 +9,12 @@ import { KurdishGlossBadges } from "@/components/lesson/KurdishGlossBadges";
 
 interface WordItem {
   english: string;
-  pronunciationKurdish: string;
-  meaningKurdish: string;
+  pronunciationKurdish?: string;
+  meaningKurdish?: string;
+  kurdish?: string;
+  meaning?: string;
   note?: string;
+  audio?: string;
 }
 
 interface WordAnchorsViewProps {
@@ -46,12 +49,12 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
     },
   ];
 
-  const handlePlayWord = (english: string) => {
-    setPlayingWord(english);
-    playAmericanSpeech(english, 0.85);
+  const handlePlayWord = (w: WordItem) => {
+    setPlayingWord(w.english);
+    playAmericanSpeech(w.audio || w.english, 0.85);
 
     const next = new Set(listened);
-    next.add(english);
+    next.add(w.english);
     setListened(next);
 
     // If all words listened to, enable continue
@@ -65,6 +68,7 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
   };
 
   const instruction = (solution.instruction as string | undefined) ?? "پێناسەی وشە (Word Anchors)";
+  const title = (solution.title as string | undefined) || (exercise.promptText ? exercise.promptText : "ناساندنی دەنگ و وشەکان");
   const allListened = listened.size >= words.length;
 
   return (
@@ -76,10 +80,10 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
           <span>{instruction}</span>
         </span>
         <h2 dir="rtl" className="font-kurdish text-2xl font-bold text-[#4B4B4B] dark:text-white mt-1">
-          سڵاوکردن لە زمانی ئینگلیزیدا
+          {title}
         </h2>
         <p dir="rtl" className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]">
-          گوێ لە هەر سێ شێوازەکە بگرە بۆ بەردەوامبوون ({listened.size} لە {words.length})
+          گوێ لە هەموو دەنگەکان بگرە بۆ بەردەوامبوون ({listened.size} لە {words.length})
         </p>
       </div>
 
@@ -92,7 +96,7 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
           return (
             <div
               key={w.english}
-              onClick={() => handlePlayWord(w.english)}
+              onClick={() => handlePlayWord(w)}
               className={cn(
                 "group relative flex items-center justify-between rounded-2xl border-2 border-b-4 p-4.5 transition-all cursor-pointer select-none",
                 isHeard
@@ -132,7 +136,7 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
               {/* Right Column: Aligned Kurdish Pronunciation & Meaning Badges */}
               <KurdishGlossBadges
                 pronunciation={w.pronunciationKurdish}
-                meaning={w.meaningKurdish}
+                meaning={w.meaningKurdish || w.kurdish || w.meaning}
               />
 
               {/* Heard Checkmark Badge */}

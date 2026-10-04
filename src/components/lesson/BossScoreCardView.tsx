@@ -76,11 +76,15 @@ export function BossScoreCardView({ exercise, onSelect, selected }: BossScoreCar
   }
 
   // Screen 8: Mastery Scorecard
+  const statsList = solution.stats as Array<{ label: string; value: string }> | undefined;
+  const grade = (solution.grade as string | undefined) || "A+";
+  const title = (solution.title as string | undefined) || "پۆلی کۆتایی";
+
   const speedScore = Number(solution.speedScore || 85);
   const accuracyScore = Number(solution.accuracyScore || 78);
   const flowScore = Number(solution.flowScore || 82);
-  const totalScore = Math.round((speedScore + accuracyScore + flowScore) / 3);
-  const passed = totalScore >= 80;
+  const totalScore = statsList ? 100 : Math.round((speedScore + accuracyScore + flowScore) / 3);
+  const passed = statsList ? true : totalScore >= 80;
 
   return (
     <div className="flex flex-col items-center gap-6 text-center">
@@ -90,7 +94,7 @@ export function BossScoreCardView({ exercise, onSelect, selected }: BossScoreCar
           <span>{instruction}</span>
         </span>
         <h2 dir="rtl" className="font-kurdish text-2xl font-bold text-[#4B4B4B] dark:text-white mt-1">
-          پۆلی کۆتایی
+          {title}
         </h2>
       </div>
 
@@ -100,36 +104,43 @@ export function BossScoreCardView({ exercise, onSelect, selected }: BossScoreCar
         passed ? "border-[#58CC02] bg-[#E8FAD4]" : "border-[#EA2B2B] bg-[#FFDFE0]"
       )}>
         <span className={cn("text-4xl font-black", passed ? "text-[#58CC02]" : "text-[#EA2B2B]")}>
-          {totalScore}%
+          {statsList ? grade : `${totalScore}%`}
         </span>
         <span className={cn("text-xs font-black uppercase", passed ? "text-[#58A700]" : "text-[#EA2B2B]")}>
           {passed ? "PASSED" : "RETRY"}
         </span>
       </div>
 
-      {/* Score breakdown bars */}
+      {/* Score breakdown bars / stats list */}
       <div className="w-full max-w-sm flex flex-col gap-3">
-        {[
-          { label: "Response Speed", score: speedScore, icon: "⚡" },
-          { label: "Pronunciation Accuracy", score: accuracyScore, icon: "🎯" },
-          { label: "Conversational Flow", score: flowScore, icon: "🌊" },
-        ].map(({ label, score, icon }) => (
-          <div key={label} className="flex flex-col gap-1">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-[#4B4B4B] dark:text-white">{icon} {label}</span>
-              <span className={cn(
-                "text-xs font-black",
-                score >= 80 ? "text-[#58CC02]" : "text-[#FF9600]"
-              )}>{score}%</span>
-            </div>
-            <div className="h-2 w-full rounded-full bg-[#E5E5E5] dark:bg-[#37464F] overflow-hidden">
-              <div
-                className={cn("h-full rounded-full transition-all", score >= 80 ? "bg-[#58CC02]" : "bg-[#FF9600]")}
-                style={{ width: `${score}%` }}
-              />
-            </div>
-          </div>
-        ))}
+        {statsList
+          ? statsList.map(({ label, value }) => (
+              <div key={label} className="flex items-center justify-between rounded-xl border border-[#E5E5E5] bg-white dark:border-[#37464F] dark:bg-[#131F24] p-3 shadow-xs">
+                <span dir="rtl" className="font-kurdish text-xs font-black text-[#4B4B4B] dark:text-white">{label}</span>
+                <span className="text-sm font-black text-[#58CC02]">{value}</span>
+              </div>
+            ))
+          : [
+              { label: "Response Speed", score: speedScore, icon: "⚡" },
+              { label: "Pronunciation Accuracy", score: accuracyScore, icon: "🎯" },
+              { label: "Conversational Flow", score: flowScore, icon: "🌊" },
+            ].map(({ label, score, icon }) => (
+              <div key={label} className="flex flex-col gap-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-[#4B4B4B] dark:text-white">{icon} {label}</span>
+                  <span className={cn(
+                    "text-xs font-black",
+                    score >= 80 ? "text-[#58CC02]" : "text-[#FF9600]"
+                  )}>{score}%</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-[#E5E5E5] dark:bg-[#37464F] overflow-hidden">
+                  <div
+                    className={cn("h-full rounded-full transition-all", score >= 80 ? "bg-[#58CC02]" : "bg-[#FF9600]")}
+                    style={{ width: `${score}%` }}
+                  />
+                </div>
+              </div>
+            ))}
       </div>
 
       {/* Result message */}
@@ -149,15 +160,15 @@ export function BossScoreCardView({ exercise, onSelect, selected }: BossScoreCar
 
       <button
         type="button"
-        onClick={() => onSelect(passed ? "unit_mastered" : "needs_remediation")}
+        onClick={() => onSelect((solution.correct as string) || (passed ? "completed" : "needs_remediation"))}
         className={cn(
-          "w-full max-w-sm rounded-3xl border-2 border-b-4 py-5 text-lg font-black transition-all",
+          "w-full max-w-sm rounded-3xl border-2 border-b-4 py-5 text-lg font-black transition-all cursor-pointer",
           passed
             ? "border-[#46A302] bg-[#58CC02] text-white hover:bg-[#46A302]"
             : "border-[#1899D6] bg-[#1CB0F6] text-white hover:bg-[#1899D6]"
         )}
       >
-        {passed ? "🚀 Unlock Unit 2" : "🔄 Try Again"}
+        {passed ? "🚀 تەواوکردنی قۆناغەکە" : "🔄 Try Again"}
       </button>
     </div>
   );

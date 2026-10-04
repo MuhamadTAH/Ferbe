@@ -9,8 +9,11 @@ import { KurdishGlossBadges } from "@/components/lesson/KurdishGlossBadges";
 
 interface StatusCard {
   word: string;
-  sound: string;
-  meaning: string;
+  sound?: string;
+  pronunciationKurdish?: string;
+  meaning?: string;
+  meaningKurdish?: string;
+  kurdish?: string;
 }
 
 interface StatusBankViewProps {
@@ -123,8 +126,8 @@ export function StatusBankView({ exercise, onSelect, selected }: StatusBankViewP
 
               {/* Aligned Kurdish Pronunciation & Meaning Badges */}
               <KurdishGlossBadges
-                pronunciation={card.sound}
-                meaning={card.meaning}
+                pronunciation={card.sound || card.pronunciationKurdish}
+                meaning={card.meaning || card.meaningKurdish || card.kurdish}
               />
 
               {isTapped && (

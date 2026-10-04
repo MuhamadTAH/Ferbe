@@ -27,19 +27,26 @@ export function AcousticMatchView({ exercise, onSelect, selected }: AcousticMatc
 
   const solution = exercise.solutionData ?? {};
 
-  // Sounds (left column) randomized order: e.g. Sound 1 (Hi), Sound 2 (Hey), Sound 3 (Hello)
-  const soundTiles: SoundTile[] = (solution.sounds as SoundTile[] | undefined) ?? [
-    { id: "s1", label: "Sound 1", word: "Hi" },
-    { id: "s2", label: "Sound 2", word: "Hey" },
-    { id: "s3", label: "Sound 3", word: "Hello" },
-  ];
+  // Sounds (left column) randomized order
+  const soundTiles: SoundTile[] =
+    (solution.sounds as SoundTile[] | undefined) ??
+    (solution.target1 && solution.target2
+      ? [
+          { id: "s1", label: (solution.label1 as string) || (solution.target1 as string), word: solution.target1 as string },
+          { id: "s2", label: (solution.label2 as string) || (solution.target2 as string), word: solution.target2 as string },
+        ]
+      : [
+          { id: "s1", label: "Sound 1", word: "Hi" },
+          { id: "s2", label: "Sound 2", word: "Hey" },
+          { id: "s3", label: "Sound 3", word: "Hello" },
+        ]);
 
-  // English words (right column): e.g. Hey, Hello, Hi (zero Kurdish text)
-  const wordTiles: string[] = (solution.words as string[] | undefined) ?? [
-    "Hey",
-    "Hello",
-    "Hi",
-  ];
+  // English words (right column)
+  const wordTiles: string[] =
+    (solution.words as string[] | undefined) ??
+    (solution.target1 && solution.target2
+      ? [solution.target2 as string, solution.target1 as string]
+      : ["Hey", "Hello", "Hi"]);
 
   const instruction = (solution.instruction as string) || "ڕاهێنانی بیستن (Acoustic Match)";
 

@@ -3,8 +3,8 @@
 import { cn } from "@/lib/utils";
 
 interface KurdishGlossBadgesProps {
-  pronunciation: string;
-  meaning: string;
+  pronunciation?: string;
+  meaning?: string;
   className?: string;
 }
 
@@ -17,8 +17,14 @@ export function KurdishGlossBadges({
   meaning,
   className,
 }: KurdishGlossBadgesProps) {
-  // Strip redundant surrounding parentheses if passed in meaning
-  const cleanMeaning = meaning.replace(/^\((.*)\)$/, "$1").trim();
+  const safePronunciation = (pronunciation ?? "").trim();
+  const safeMeaning = (meaning ?? "").trim();
+  const cleanMeaning = safeMeaning.replace(/^\((.*)\)$/, "$1").trim();
+
+  // If neither pronunciation nor meaning exists, don't render empty container
+  if (!safePronunciation && !cleanMeaning) {
+    return null;
+  }
 
   return (
     <div
@@ -29,20 +35,28 @@ export function KurdishGlossBadges({
       )}
     >
       {/* Row 1: Reading */}
-      <span className="text-[11px] font-bold text-[#AFAFAF] dark:text-[#8495A0] whitespace-nowrap">
-        خوێندنەوە:
-      </span>
-      <span className="rounded-lg bg-[#EBF6FF] dark:bg-[#1C3342] px-2.5 py-0.5 font-kurdish text-sm font-extrabold text-[#1899D6] dark:text-[#3BC0F8] text-center whitespace-nowrap">
-        {pronunciation}
-      </span>
+      {safePronunciation ? (
+        <>
+          <span className="text-[11px] font-bold text-[#AFAFAF] dark:text-[#8495A0] whitespace-nowrap">
+            خوێندنەوە:
+          </span>
+          <span className="rounded-lg bg-[#EBF6FF] dark:bg-[#1C3342] px-2.5 py-0.5 font-kurdish text-sm font-extrabold text-[#1899D6] dark:text-[#3BC0F8] text-center whitespace-nowrap">
+            {safePronunciation}
+          </span>
+        </>
+      ) : null}
 
       {/* Row 2: Meaning */}
-      <span className="text-[11px] font-bold text-[#AFAFAF] dark:text-[#8495A0] whitespace-nowrap">
-        واتا:
-      </span>
-      <span className="rounded-lg bg-[#F5F5F5] dark:bg-[#202F36] px-2.5 py-0.5 font-kurdish text-sm font-bold text-[#4B4B4B] dark:text-[#DCE6EC] text-center whitespace-nowrap">
-        ({cleanMeaning})
-      </span>
+      {cleanMeaning ? (
+        <>
+          <span className="text-[11px] font-bold text-[#AFAFAF] dark:text-[#8495A0] whitespace-nowrap">
+            واتا:
+          </span>
+          <span className="rounded-lg bg-[#F5F5F5] dark:bg-[#202F36] px-2.5 py-0.5 font-kurdish text-sm font-bold text-[#4B4B4B] dark:text-[#DCE6EC] text-center whitespace-nowrap">
+            ({cleanMeaning})
+          </span>
+        </>
+      ) : null}
     </div>
   );
 }

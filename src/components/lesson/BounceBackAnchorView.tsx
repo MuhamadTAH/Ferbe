@@ -23,9 +23,9 @@ export function BounceBackAnchorView({
   const [isPlaying, setIsPlaying] = useState(false);
 
   const solution = exercise.solutionData ?? {};
-  const englishPhrase = (solution.phrase as string) || "What about you?";
-  const pronunciationHelper = (solution.pronunciation as string) || "وەرەباوتیو؟";
-  const meaningKurdish = (solution.meaning as string) || "ئەی تۆ؟ / تۆ چۆنیت؟";
+  const englishPhrase = (solution.phrase as string) || (solution.english as string) || "What about you?";
+  const pronunciationHelper = (solution.pronunciation as string) || (solution.pronunciationKurdish as string) || "وەرەباوتیو؟";
+  const meaningKurdish = (solution.meaning as string) || (solution.meaningKurdish as string) || (solution.kurdish as string) || "ئەی تۆ؟ / تۆ چۆنیت؟";
   const correctAnswer = ((solution.correct as string) || "Ask the question back").trim();
 
   const options: string[] = (solution.options as string[] | undefined) ?? [

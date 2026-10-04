@@ -9,8 +9,10 @@ import { KurdishGlossBadges } from "@/components/lesson/KurdishGlossBadges";
 
 interface BreakdownRow {
   english: string;
-  pronunciationKurdish: string;
-  meaningKurdish: string;
+  pronunciationKurdish?: string;
+  meaningKurdish?: string;
+  kurdish?: string;
+  meaning?: string;
   isFullPhrase?: boolean;
 }
 
@@ -139,7 +141,7 @@ export function AnalyticBreakdownView({ exercise, onSelect, selected }: Analytic
               {/* Middle & Right: Aligned Kurdish Transliteration & Meaning Badges */}
               <KurdishGlossBadges
                 pronunciation={row.pronunciationKurdish}
-                meaning={row.meaningKurdish}
+                meaning={row.meaningKurdish || row.kurdish || row.meaning}
               />
 
               {isRow4 && playedRow4 && (

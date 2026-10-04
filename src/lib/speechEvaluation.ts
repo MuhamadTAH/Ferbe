@@ -17,8 +17,9 @@ export interface SpeechEvaluationResult {
 /**
  * Expand standard English contractions to canonical words.
  */
-export function expandContractions(text: string): string {
-  return text
+export function expandContractions(text: string = ""): string {
+  const safe = (text ?? "").toString();
+  return safe
     .toLowerCase()
     .replace(/[’']/g, "")
     .replace(/\b(i'm|im)\b/g, "i am")
@@ -41,7 +42,7 @@ export function expandContractions(text: string): string {
  * Normalize text for spoken speech matching:
  * lowercase, expand contractions, strip all punctuation, collapse whitespace.
  */
-export function normalizeSpeech(text: string): string {
+export function normalizeSpeech(text: string = ""): string {
   const expanded = expandContractions(text);
   return expanded
     .replace(/[^a-z0-9\s]/g, " ")
@@ -52,10 +53,11 @@ export function normalizeSpeech(text: string): string {
 /**
  * Generate candidate target sentences from visual scaffold options like "I'm [good / cool], thank you."
  */
-export function extractCandidateTargets(target: string, scaffold?: string): string[] {
+export function extractCandidateTargets(target: string = "", scaffold?: string): string[] {
+  const safeTarget = (target ?? "").toString().trim();
   const candidates = new Set<string>();
-  if (target.trim().length > 0) {
-    candidates.add(target.trim());
+  if (safeTarget.length > 0) {
+    candidates.add(safeTarget);
   }
 
   if (scaffold && scaffold.includes("[") && scaffold.includes("]")) {

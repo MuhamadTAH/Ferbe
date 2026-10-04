@@ -160,13 +160,21 @@ export function evaluateAnswer(
   const correct = (solution.correct ?? "").trim();
   const selected = (state.selected ?? "").trim();
 
-  // Spoken speech exercises (echo_mic / capstone_spoken)
-  if (solution.subtype === "echo_mic" || solution.subtype === "capstone_spoken") {
-    const target = ((solution.spokenText as string) || correct).trim();
-    const scaffold = solution.visualScaffold as string | undefined;
+  // Spoken speech exercises (echo_mic / capstone_spoken / timed_mic)
+  if (
+    solution.subtype === "echo_mic" ||
+    solution.subtype === "capstone_spoken" ||
+    solution.subtype === "timed_mic"
+  ) {
+    const target = (
+      (solution.spokenText as string) ||
+      (solution.correct as string) ||
+      correct
+    ).trim();
+    const scaffold = (solution.visualScaffold || solution.scaffoldText) as string | undefined;
     const spokenEval = evaluateSpokenAnswer(selected, target, scaffold);
     return {
-      correct: spokenEval.isMatch,
+      correct: spokenEval.isMatch || selected.toLowerCase() === target.toLowerCase(),
       correctSolution: target || correct,
     };
   }
@@ -175,6 +183,7 @@ export function evaluateAnswer(
     selected === "completed" ||
     selected === "matched" ||
     selected === "paired" ||
+    selected === "unit_mastered" ||
     (correct.length > 0 && selected.toLowerCase() === correct.toLowerCase());
 
   return {

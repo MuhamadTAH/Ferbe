@@ -21,12 +21,17 @@ export function SlotFillerView({
 }: SlotFillerViewProps) {
 
   const solution = exercise.solutionData ?? {};
-  const correctAnswer = ((solution.correct as string) || "great").trim();
+  const correctAnswer = ((solution.correctWord as string) || (solution.correct as string) || "great").trim();
   const options = (solution.options as string[] | undefined) ?? (exercise.distractors
     ? [correctAnswer, ...exercise.distractors]
     : ["great", "hello", "how", "are"]);
 
   const instruction = (solution.instruction as string) || "بۆشاییەکە پڕبکەرەوە (Slot-and-Filler)";
+  const visualCue = (solution.visualCue as string) || "";
+  const frameText = (solution.frameText as string) || "I'm [ ___ ], thank you.";
+  const parts = frameText.split(/\[\s*___\s*\]/);
+  const prefix = parts[0] ?? "";
+  const suffix = parts[1] ?? "";
 
   const answered = lastCorrect !== null;
 
@@ -37,9 +42,10 @@ export function SlotFillerView({
 
   useEffect(() => {
     if (answered && lastCorrect) {
-      playAmericanSpeech("I'm great, thank you.", 0.88);
+      const fullSentence = `${prefix}${correctAnswer}${suffix}`.replace(/\s+/g, " ").trim();
+      playAmericanSpeech(fullSentence, 0.88);
     }
-  }, [answered, lastCorrect]);
+  }, [answered, lastCorrect, prefix, suffix, correctAnswer]);
 
   return (
     <div className="flex flex-col items-center gap-6 text-center">
@@ -55,9 +61,14 @@ export function SlotFillerView({
       </div>
 
       {/* Target sentence frame */}
-      <div className="mx-auto flex w-full max-w-md items-center justify-center rounded-3xl border-2 border-[#1CB0F6]/40 bg-[#DDF4FF] dark:bg-[#1C3B4E] px-6 py-6 shadow-sm">
-        <div dir="ltr" className="flex items-center gap-2 text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white">
-          <span>I&apos;m</span>
+      <div className="mx-auto flex flex-col w-full max-w-md items-center justify-center rounded-3xl border-2 border-[#1CB0F6]/40 bg-[#DDF4FF] dark:bg-[#1C3B4E] px-6 py-6 shadow-sm gap-2">
+        {visualCue && (
+          <div className="text-4xl mb-1 select-none animate-in zoom-in-95">
+            {visualCue}
+          </div>
+        )}
+        <div dir="ltr" className="flex items-center justify-center flex-wrap gap-2 text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white">
+          {prefix && <span>{prefix}</span>}
           <span
             className={cn(
               "inline-flex min-w-24 items-center justify-center rounded-2xl border-2 border-b-4 px-3 py-1.5 text-xl font-black transition-all",
@@ -72,7 +83,7 @@ export function SlotFillerView({
           >
             {selected ? selected : "?"}
           </span>
-          <span>, thank you.</span>
+          {suffix && <span>{suffix}</span>}
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Volume2, Turtle, Zap, CheckCircle2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Volume2, Turtle, Zap, CheckCircle2, X, Timer } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Exercise } from "@/lib/sessionMachine";
 import { playAmericanSpeech } from "@/lib/americanVoice";
@@ -14,10 +14,17 @@ interface SpeedTrapViewProps {
 
 export function SpeedTrapView({ exercise, onSelect, selected }: SpeedTrapViewProps) {
   const solution = exercise.solutionData ?? {};
+  const options = (solution.options as string[] | undefined);
+  const audioText = (solution.audioText as string | undefined);
+  const timerSeconds = Number(solution.timerSeconds || 5);
+  const instruction = (solution.instruction as string) || (options ? "جیاکردنەوەی خێرا (Speed Discrimination)" : "ڕاهێنانی بیستن (Connected Speech)");
+  const question = (solution.question as string) || exercise.promptText || "کامەیان دروستە؟";
+  const correctAnswer = ((solution.correct as string) || "").trim();
+
+  // For connected speech comparison mode:
   const slowText = (solution.slowText as string) || "How — are — you?";
   const fastText = (solution.fastText as string) || "How are you?";
   const promptKurdish = (solution.promptKurdish as string) || "کامیان دەچێتە گفتوگۆی ڕاستەقینە؟";
-  const instruction = (solution.instruction as string) || "ڕاهێنانی بیستن (Connected Speech)";
   const slowLabel = (solution.slowLabel as string) || "Slow / Articulated";
   const fastLabel = (solution.fastLabel as string) || "Natural Native Speed";
   const correctButton = (solution.correct as string) || "fast"; // "slow" | "fast"
@@ -25,7 +32,41 @@ export function SpeedTrapView({ exercise, onSelect, selected }: SpeedTrapViewPro
   const [slowPlayed, setSlowPlayed] = useState(false);
   const [fastPlayed, setFastPlayed] = useState(false);
   const [answered, setAnswered] = useState<"correct" | "wrong" | null>(null);
-  const [playingId, setPlayingId] = useState<"slow" | "fast" | null>(null);
+  const [playingId, setPlayingId] = useState<"slow" | "fast" | "audio" | null>(null);
+
+  // Timer state for options mode
+  const [timeLeft, setTimeLeft] = useState(timerSeconds);
+  const [timerActive, setTimerActive] = useState(Boolean(options && options.length > 0));
+
+  // If options mode, auto-play audio on mount
+  useEffect(() => {
+    if (options && audioText) {
+      const t = setTimeout(() => {
+        playSingleAudio();
+      }, 400);
+      return () => clearTimeout(t);
+    }
+  }, []);
+
+  // Timer countdown for options mode
+  useEffect(() => {
+    if (!options || !timerActive || answered !== null) return;
+    if (timeLeft <= 0) {
+      setTimerActive(false);
+      setAnswered("wrong");
+      onSelect("timeout");
+      return;
+    }
+    const t = setTimeout(() => setTimeLeft((v) => v - 1), 1000);
+    return () => clearTimeout(t);
+  }, [options, timerActive, timeLeft, answered]);
+
+  const playSingleAudio = () => {
+    if (!audioText) return;
+    setPlayingId("audio");
+    playAmericanSpeech(audioText, 0.9);
+    setTimeout(() => setPlayingId(null), 1200);
+  };
 
   const playSlow = () => {
     setSlowPlayed(true);
@@ -47,6 +88,121 @@ export function SpeedTrapView({ exercise, onSelect, selected }: SpeedTrapViewPro
     setAnswered(correct ? "correct" : "wrong");
     onSelect(correct ? "completed" : choice);
   };
+
+  const handlePickOption = (opt: string) => {
+    if (answered !== null) return;
+    setTimerActive(false);
+    const isCorrect = opt.trim().toLowerCase() === correctAnswer.toLowerCase();
+    setAnswered(isCorrect ? "correct" : "wrong");
+    onSelect(opt);
+  };
+
+  // Branch 1: Options Discrimination Mode (Minimal Pairs / Blind Discrimination)
+  if (options && options.length > 0) {
+    const timerPercent = timerSeconds > 0 ? timeLeft / timerSeconds : 1;
+    return (
+      <div className="flex flex-col gap-6">
+        {/* Header */}
+        <div className="flex flex-col items-center gap-1.5 text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-xl bg-[#FFF4E5] dark:bg-[#342416] px-3.5 py-1 text-xs font-black uppercase tracking-wider text-[#FF9600]">
+            <Timer className="h-3.5 w-3.5" />
+            <span>{instruction}</span>
+          </span>
+          <h2 dir="rtl" className="font-kurdish text-2xl font-bold text-[#4B4B4B] dark:text-white mt-1">
+            {question}
+          </h2>
+        </div>
+
+        {/* Timer countdown progress bar */}
+        <div className="w-full max-w-md mx-auto flex items-center gap-3">
+          <div className="h-3 flex-1 overflow-hidden rounded-full bg-[#E5E5E5] dark:bg-[#37464F]">
+            <div
+              className={cn(
+                "h-full rounded-full transition-all duration-1000",
+                timerPercent > 0.4 ? "bg-[#FF9600]" : "bg-[#EA2B2B]"
+              )}
+              style={{ width: `${Math.max(0, timerPercent * 100)}%` }}
+            />
+          </div>
+          <span className="text-xs font-black text-[#AFAFAF] min-w-8 text-right">
+            {timeLeft}s
+          </span>
+        </div>
+
+        {/* Playable audio button */}
+        {audioText && (
+          <button
+            type="button"
+            onClick={playSingleAudio}
+            className={cn(
+              "mx-auto flex w-full max-w-sm items-center justify-center gap-3 rounded-3xl border-2 border-b-4 py-8 transition-all cursor-pointer",
+              playingId === "audio"
+                ? "border-[#1CB0F6] bg-[#DDF4FF] dark:border-[#1CB0F6] dark:bg-[#1C3B4E]"
+                : "border-[#E5E5E5] bg-white hover:border-[#1CB0F6] dark:border-[#37464F] dark:bg-[#131F24]"
+            )}
+          >
+            <Volume2 className={cn("h-8 w-8", playingId === "audio" ? "text-[#1CB0F6] animate-pulse" : "text-[#AFAFAF]")} />
+            <span className={cn("text-base font-black", playingId === "audio" ? "text-[#1CB0F6]" : "text-[#AFAFAF] dark:text-[#8495A0]")}>
+              {playingId === "audio" ? "گوێ بگرە..." : "▶ کلیک بکە بۆ گوێگرتنەوە"}
+            </span>
+          </button>
+        )}
+
+        {/* Options grid */}
+        <div className="grid grid-cols-2 gap-3 w-full max-w-md mx-auto">
+          {options.map((opt) => {
+            const isSelected = selected === opt;
+            const isCorrect = opt.trim().toLowerCase() === correctAnswer.toLowerCase();
+            const isCorrectRow = answered && isCorrect;
+            const isWrongPick = answered && isSelected && !isCorrect;
+
+            return (
+              <button
+                key={opt}
+                type="button"
+                disabled={answered !== null}
+                onClick={() => handlePickOption(opt)}
+                className={cn(
+                  "flex items-center justify-between rounded-2xl border-2 border-b-4 p-5 font-black text-xl transition-all cursor-pointer select-none",
+                  !answered && isSelected
+                    ? "border-[#84D8FF] bg-[#DDF4FF] text-[#1899D6] dark:border-[#3BC0F8] dark:bg-[#202F36]"
+                    : !answered
+                      ? "border-[#E5E5E5] bg-white text-[#4B4B4B] hover:border-[#1CB0F6] hover:bg-[#F7F7F7] dark:border-[#37464F] dark:bg-[#131F24] dark:text-white"
+                      : isCorrectRow
+                        ? "border-[#A5ED6E] bg-[#D7FFB8] text-[#58A700] dark:border-[#58CC02] dark:bg-[#1E3B20] dark:text-[#58CC02]"
+                        : isWrongPick
+                          ? "border-[#FFB2B2] bg-[#FFDFE0] text-[#EA2B2B] dark:border-[#EA2B2B] dark:bg-[#3A181D] dark:text-[#FF6666]"
+                          : "border-[#E5E5E5] bg-white text-[#AFAFAF] dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#52656D]"
+                )}
+              >
+                <span dir="ltr">{opt}</span>
+                {isCorrectRow && <CheckCircle2 className="h-5 w-5 stroke-[2.5] text-[#58CC02]" />}
+                {isWrongPick && <X className="h-5 w-5 stroke-[2.5] text-[#EA2B2B]" />}
+              </button>
+            );
+          })}
+        </div>
+
+        {answered && (
+          <div className={cn(
+            "rounded-2xl border p-3 text-center animate-in fade-in max-w-md mx-auto w-full",
+            answered === "correct"
+              ? "border-[#58CC02]/40 bg-[#E8FAD4] dark:bg-[#1E3B20]"
+              : "border-[#EA2B2B]/40 bg-[#FFDFE0] dark:bg-[#3A181D]"
+          )}>
+            <p dir="rtl" className={cn(
+              "font-kurdish text-xs font-extrabold",
+              answered === "correct" ? "text-[#58CC02]" : "text-[#EA2B2B]"
+            )}>
+              {answered === "correct"
+                ? "دەستخۆش! بە وردی گوێت لێگرت و دەستنیشانت کرد."
+                : "کات تەواو بوو یان هەڵە بوو! لە ڕاهێنانی داهاتوودا هەوڵبدەرەوە."}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   const bothPlayed = slowPlayed && fastPlayed;
 
