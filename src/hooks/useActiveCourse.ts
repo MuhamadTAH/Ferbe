@@ -16,6 +16,16 @@ export interface CourseMeta {
 
 export const AVAILABLE_COURSES: CourseMeta[] = [
   {
+    slug: "english-foundations",
+    title: "English Foundations & Phonics",
+    nativeTitle: "ئینگلیزی لە سفرەوە (دەنگسازی و بنەماکان)",
+    shortLabel: "Foundations",
+    flagType: "uk",
+    sourceLanguage: "ckb",
+    targetLanguage: "en",
+    description: "Master English phonics, letter blending (S, A, T, P, I, N), minimal pairs, and rapid speaking frames.",
+  },
+  {
     slug: "english-from-kurdish",
     title: "English for Kurdish Speakers",
     nativeTitle: "ئینگلیزی بۆ کورد",

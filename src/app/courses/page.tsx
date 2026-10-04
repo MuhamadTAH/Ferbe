@@ -38,6 +38,21 @@ interface CourseItem {
 
 const COURSES: CourseItem[] = [
   {
+    id: "english-foundations",
+    name: "English Foundations & Phonics",
+    nativeName: "ئینگلیزی لە سفرەوە (دەنگسازی و بنەماکان)",
+    category: "kurdish",
+    learners: "32.1K learners",
+    badge: "Phonics & Blends",
+    badgeColor: "bg-[#E8FAD4] dark:bg-[#1E3B20] text-[#58CC02] border-[#58CC02]/40",
+    description:
+      "Master English from zero with zero translation! Sound & blend (S, A, T, P, I, N), concrete lexical anchors, acoustic minimal pairs, and rapid speaking frames.",
+    script: "Latin script phonics · Kurdish Sorani instructions",
+    status: "active",
+    href: "/learn?course=english-foundations",
+    flag: "uk",
+  },
+  {
     id: "english-from-kurdish",
     name: "English for Kurdish Speakers",
     nativeName: "ئینگلیزی بۆ کورد",
