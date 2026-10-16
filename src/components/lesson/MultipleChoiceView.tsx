@@ -3,6 +3,7 @@
 import { Check, X, Volume2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Exercise } from "@/lib/sessionMachine";
+import { playAmericanSpeech } from "@/lib/americanVoice";
 
 const LABELS = ["1", "2", "3", "4", "5", "6"];
 
@@ -109,7 +110,10 @@ export function MultipleChoiceView({
               key={`${exercise._id}:${option}`}
               type="button"
               disabled={answered}
-              onClick={() => onSelect(option)}
+              onClick={() => {
+                if (!isKurdishOption) playAmericanSpeech(option, 0.85);
+                onSelect(option);
+              }}
               className={cn(
                 "flex items-center gap-3 rounded-2xl border-2 border-b-4 px-4 py-3 font-bold transition-colors",
                 !answered && isSelected
