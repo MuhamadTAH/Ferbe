@@ -16,6 +16,7 @@ interface MatchPairInput {
   id?: string;
   word?: string;
   emoji?: string;
+  imageUrl?: string;
   left?: string;
   right?: string;
 }
@@ -24,6 +25,7 @@ interface ResolvedPair {
   id: string;
   word: string;
   emoji: string;
+  imageUrl?: string;
 }
 
 interface PairMatchViewProps {
@@ -52,6 +54,7 @@ export function PairMatchView({
       id: p.id ?? word,
       word,
       emoji: p.emoji ?? p.right ?? "❓",
+      imageUrl: p.imageUrl,
     };
   });
 
@@ -175,7 +178,16 @@ export function PairMatchView({
                       : "border-[#E5E5E5] bg-white hover:border-[#1CB0F6] hover:bg-[#F7F7F7] dark:border-[#37464F] dark:bg-[#131F24]"
                 )}
               >
-                <span className="text-4xl leading-none">{pair.emoji}</span>
+                {pair.imageUrl ? (
+                  <img
+                    src={pair.imageUrl}
+                    alt={pair.word}
+                    className="h-16 w-16 object-contain"
+                    loading="eager"
+                  />
+                ) : (
+                  <span className="text-4xl leading-none">{pair.emoji}</span>
+                )}
               </button>
             );
           })}

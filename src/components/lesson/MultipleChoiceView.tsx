@@ -28,6 +28,7 @@ export function MultipleChoiceView({
   const answered = lastCorrect !== null;
   const correctAnswer = (exercise.solutionData.correct ?? "").trim();
   const icon = exercise.solutionData?.icon as string | undefined;
+  const imageUrl = exercise.solutionData?.imageUrl as string | undefined;
   const instruction = exercise.solutionData?.instruction as string | undefined;
   const isSpeaking = Boolean(exercise.solutionData?.isSpeaking || exercise.solutionData?.type === "speak");
   const spokenText = ((exercise.solutionData?.spokenText as string | undefined) ?? correctAnswer).trim();
@@ -52,10 +53,21 @@ export function MultipleChoiceView({
       )}
 
       <div className="flex flex-col items-center justify-center py-4 text-center">
-        {icon && (
-          <div className="mb-3 flex h-24 w-24 items-center justify-center rounded-3xl border-2 border-black/10 bg-[#F7F7F7] text-5xl shadow-sm dark:border-white/10 dark:bg-[#202F36]">
-            {icon}
+        {imageUrl ? (
+          <div className="mb-3 flex h-40 w-40 items-center justify-center overflow-hidden rounded-3xl border-2 border-black/10 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-[#202F36]">
+            <img
+              src={imageUrl}
+              alt={correctAnswer || "illustration"}
+              className="h-full w-full object-contain"
+              loading="eager"
+            />
           </div>
+        ) : (
+          icon && (
+            <div className="mb-3 flex h-24 w-24 items-center justify-center rounded-3xl border-2 border-black/10 bg-[#F7F7F7] text-5xl shadow-sm dark:border-white/10 dark:bg-[#202F36]">
+              {icon}
+            </div>
+          )
         )}
 
         <div

@@ -76,15 +76,17 @@ interface JobWord {
   meaningKurdish: string;
   article: string;
   emoji: string;
+  /** Cropped illustration from the book (Unit 3 Jobs, p.10). */
+  image: string;
 }
 
 const JOB_WORDS: JobWord[] = [
-  { english: "doctor", pronunciationKurdish: "دۆکتەر", meaningKurdish: "پزیشک", article: "a", emoji: "👨‍⚕️" },
-  { english: "nurse", pronunciationKurdish: "نێرس", meaningKurdish: "پەرستار", article: "a", emoji: "👩‍⚕️" },
-  { english: "teacher", pronunciationKurdish: "تیچەر", meaningKurdish: "مامۆستا", article: "a", emoji: "👩‍🏫" },
-  { english: "policeman", pronunciationKurdish: "پۆلیسمەن", meaningKurdish: "پۆلیس", article: "a", emoji: "👮" },
-  { english: "chef", pronunciationKurdish: "شێف", meaningKurdish: "چێشتلێنەر", article: "a", emoji: "👨‍🍳" },
-  { english: "firefighter", pronunciationKurdish: "فایەرفایتەر", meaningKurdish: "ئاگرکوژێنەرەوە", article: "a", emoji: "👨‍🚒" },
+  { english: "doctor", pronunciationKurdish: "دۆکتەر", meaningKurdish: "پزیشک", article: "a", emoji: "👨‍⚕️", image: "/images/sunrise3/jobs/doctor.png" },
+  { english: "nurse", pronunciationKurdish: "نێرس", meaningKurdish: "پەرستار", article: "a", emoji: "👩‍⚕️", image: "/images/sunrise3/jobs/nurse.png" },
+  { english: "teacher", pronunciationKurdish: "تیچەر", meaningKurdish: "مامۆستا", article: "a", emoji: "👩‍🏫", image: "/images/sunrise3/jobs/teacher.png" },
+  { english: "policeman", pronunciationKurdish: "پۆلیسمەن", meaningKurdish: "پۆلیس", article: "a", emoji: "👮", image: "/images/sunrise3/jobs/policeman.png" },
+  { english: "chef", pronunciationKurdish: "شێف", meaningKurdish: "چێشتلێنەر", article: "a", emoji: "👨‍🍳", image: "/images/sunrise3/jobs/chef.png" },
+  { english: "firefighter", pronunciationKurdish: "فایەرفایتەر", meaningKurdish: "ئاگرکوژێنەرەوە", article: "a", emoji: "👨‍🚒", image: "/images/sunrise3/jobs/firefighter.png" },
 ];
 
 /** Split an array into consecutive groups of at most `size` items. */
@@ -126,6 +128,7 @@ export function buildPractice1Exercises(words: JobWord[]): ExerciseInput[] {
           meaningKurdish: w.meaningKurdish,
           note: `${w.article} ${w.english}`,
           emoji: w.emoji,
+          imageUrl: w.image,
         })),
       },
       order: order++,
@@ -142,7 +145,12 @@ export function buildPractice1Exercises(words: JobWord[]): ExerciseInput[] {
         subtype: "pair_match",
         instruction: "جووتبەندکردن (Matching)",
         correct: "matched",
-        pairs: group.map((w) => ({ id: w.english, word: w.english, emoji: w.emoji })),
+        pairs: group.map((w) => ({
+          id: w.english,
+          word: w.english,
+          emoji: w.emoji,
+          imageUrl: w.image,
+        })),
       },
       order: order++,
     });
@@ -158,6 +166,7 @@ export function buildPractice1Exercises(words: JobWord[]): ExerciseInput[] {
         subtype: "image_mcq",
         instruction: "هەڵبژاردنی وێنە (Choose the word)",
         icon: w.emoji,
+        imageUrl: w.image,
         correct: w.english,
       },
       order: order++,

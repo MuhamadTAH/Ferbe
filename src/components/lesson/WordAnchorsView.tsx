@@ -16,6 +16,7 @@ interface WordItem {
   note?: string;
   audio?: string;
   emoji?: string;
+  imageUrl?: string;
 }
 
 interface WordAnchorsViewProps {
@@ -107,10 +108,21 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
             >
               {/* Left Column: Image Tile + English Word + Audio Button */}
               <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
-                {w.emoji && (
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#F7F7F7] dark:bg-[#202F36] text-2xl leading-none">
-                    {w.emoji}
+                {w.imageUrl ? (
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#E5E5E5] bg-white dark:border-[#37464F] dark:bg-[#202F36]">
+                    <img
+                      src={w.imageUrl}
+                      alt={w.english}
+                      className="h-full w-full object-contain"
+                      loading="eager"
+                    />
                   </span>
+                ) : (
+                  w.emoji && (
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#F7F7F7] dark:bg-[#202F36] text-2xl leading-none">
+                      {w.emoji}
+                    </span>
+                  )
                 )}
                 <button
                   type="button"
