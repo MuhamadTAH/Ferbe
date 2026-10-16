@@ -109,17 +109,17 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
               {/* Left Column: Image Tile + English Word + Audio Button */}
               <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
                 {w.imageUrl ? (
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#E5E5E5] bg-white dark:border-[#37464F] dark:bg-[#202F36]">
+                  <span className="flex h-28 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-black/5 bg-gradient-to-b from-[#EAF4FF] to-white shadow-sm dark:border-white/10 dark:from-[#1B262C] dark:to-[#131F24]">
                     <img
                       src={w.imageUrl}
                       alt={w.english}
-                      className="h-full w-full object-contain"
+                      className="h-full w-full object-contain p-1.5"
                       loading="eager"
                     />
                   </span>
                 ) : (
                   w.emoji && (
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#F7F7F7] dark:bg-[#202F36] text-2xl leading-none">
+                    <span className="flex h-28 w-24 shrink-0 items-center justify-center rounded-2xl border border-black/5 bg-gradient-to-b from-[#EAF4FF] to-white text-5xl leading-none dark:border-white/10 dark:from-[#1B262C] dark:to-[#131F24]">
                       {w.emoji}
                     </span>
                   )

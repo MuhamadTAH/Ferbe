@@ -139,7 +139,7 @@ export function PairMatchView({
                 disabled={answered || isMatched}
                 onClick={() => handleLeftClick(pair.id)}
                 className={cn(
-                  "flex items-center justify-between rounded-2xl border-2 border-b-4 p-4 font-black transition-all select-none cursor-pointer min-h-20 text-left",
+                  "flex items-center justify-between rounded-2xl border-2 border-b-4 p-4 font-black transition-all select-none cursor-pointer min-h-28 text-left",
                   isMatched
                     ? "border-[#58CC02] bg-[#E8FAD4] text-[#58A700] dark:border-[#58CC02] dark:bg-[#132817] dark:text-[#58CC02]"
                     : isSelected
@@ -170,7 +170,7 @@ export function PairMatchView({
                 disabled={answered || isMatched}
                 onClick={() => handleRightClick(pair.id)}
                 className={cn(
-                  "flex items-center justify-center rounded-2xl border-2 border-b-4 p-3 transition-all select-none cursor-pointer min-h-20",
+                  "flex items-center justify-center rounded-2xl border-2 border-b-4 p-2 transition-all select-none cursor-pointer min-h-28",
                   isMatched
                     ? "border-[#58CC02] bg-[#E8FAD4] dark:border-[#58CC02] dark:bg-[#132817]"
                     : isSelected
@@ -182,11 +182,11 @@ export function PairMatchView({
                   <img
                     src={pair.imageUrl}
                     alt={pair.word}
-                    className="h-16 w-16 object-contain"
+                    className="h-24 w-24 object-contain"
                     loading="eager"
                   />
                 ) : (
-                  <span className="text-4xl leading-none">{pair.emoji}</span>
+                  <span className="text-5xl leading-none">{pair.emoji}</span>
                 )}
               </button>
             );

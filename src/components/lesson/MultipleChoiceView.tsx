@@ -55,7 +55,7 @@ export function MultipleChoiceView({
 
       <div className="flex flex-col items-center justify-center py-4 text-center">
         {imageUrl ? (
-          <div className="mb-3 flex h-40 w-40 items-center justify-center overflow-hidden rounded-3xl border-2 border-black/10 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-[#202F36]">
+          <div className="mb-4 flex h-56 w-56 items-center justify-center overflow-hidden rounded-3xl border-2 border-black/10 bg-gradient-to-b from-[#EAF4FF] to-white p-2 shadow-sm sm:h-64 sm:w-64 dark:border-white/10 dark:from-[#1B262C] dark:to-[#131F24]">
             <img
               src={imageUrl}
               alt={correctAnswer || "illustration"}
