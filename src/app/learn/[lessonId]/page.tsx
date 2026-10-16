@@ -20,6 +20,7 @@ import { EchoMicView } from "@/components/lesson/EchoMicView";
 import { StatusBankView } from "@/components/lesson/StatusBankView";
 import { SlotFillerView } from "@/components/lesson/SlotFillerView";
 import { ResponsePairingView } from "@/components/lesson/ResponsePairingView";
+import { PairMatchView } from "@/components/lesson/PairMatchView";
 import { BounceBackAnchorView } from "@/components/lesson/BounceBackAnchorView";
 import { ChatDialogueView } from "@/components/lesson/ChatDialogueView";
 import { IntonationRadarView } from "@/components/lesson/IntonationRadarView";
@@ -285,6 +286,17 @@ function SessionInner({ lessonId }: { lessonId: string }) {
                 exercise={exercise}
                 onSelect={select}
                 selected={state.selected}
+              />
+            );
+          }
+          if (subtype === "pair_match") {
+            return (
+              <PairMatchView
+                key={exercise._id}
+                exercise={exercise}
+                onSelect={select}
+                selected={state.selected}
+                lastCorrect={state.lastCorrect}
               />
             );
           }

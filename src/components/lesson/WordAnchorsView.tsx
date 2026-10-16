@@ -15,6 +15,7 @@ interface WordItem {
   meaning?: string;
   note?: string;
   audio?: string;
+  emoji?: string;
 }
 
 interface WordAnchorsViewProps {
@@ -104,8 +105,13 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
                   : "border-[#E5E5E5] bg-white hover:border-[#1CB0F6] hover:bg-[#F4FBFF] dark:border-[#37464F] dark:bg-[#131F24] dark:hover:border-[#1CB0F6]"
               )}
             >
-              {/* Left Column: English Word + Audio Button */}
+              {/* Left Column: Image Tile + English Word + Audio Button */}
               <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
+                {w.emoji && (
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#F7F7F7] dark:bg-[#202F36] text-2xl leading-none">
+                    {w.emoji}
+                  </span>
+                )}
                 <button
                   type="button"
                   aria-label={`Play ${w.english}`}

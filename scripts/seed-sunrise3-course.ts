@@ -64,10 +64,10 @@ const LESSON_ACTIVITY: Record<number, string> = {
 };
 
 // ---------------------------------------------------------------------------
-// Practice 1 — Vocabulary Audio-Visual Drill.
-// Design (from the Gemini design chat): a single word-anchors intake grid the
-// child taps through (hearing each word), followed by one isolated "echo mic"
-// speaking screen per word. First instance in the book = Unit 3 Jobs (p.10):
+// Practice 1 — Vocabulary Audio-Visual Drill (revised per
+// docs/sunrise3-practice-1-rules.md): chunked word anchors (3 cards/screen),
+// word↔image matching, image multiple-choice, then the echo mic at the end.
+// First instance in the book = Unit 3 Jobs (p.10):
 // doctor, nurse, teacher, policeman, chef, firefighter.
 // ---------------------------------------------------------------------------
 interface JobWord {
@@ -75,43 +75,97 @@ interface JobWord {
   pronunciationKurdish: string;
   meaningKurdish: string;
   article: string;
+  emoji: string;
 }
 
 const JOB_WORDS: JobWord[] = [
-  { english: "doctor", pronunciationKurdish: "دۆکتەر", meaningKurdish: "پزیشک", article: "a" },
-  { english: "nurse", pronunciationKurdish: "نێرس", meaningKurdish: "پەرستار", article: "a" },
-  { english: "teacher", pronunciationKurdish: "تیچەر", meaningKurdish: "مامۆستا", article: "a" },
-  { english: "policeman", pronunciationKurdish: "پۆلیسمەن", meaningKurdish: "پۆلیس", article: "a" },
-  { english: "chef", pronunciationKurdish: "شێف", meaningKurdish: "چێشتلێنەر", article: "a" },
-  { english: "firefighter", pronunciationKurdish: "فایەرفایتەر", meaningKurdish: "ئاگرکوژێنەرەوە", article: "a" },
+  { english: "doctor", pronunciationKurdish: "دۆکتەر", meaningKurdish: "پزیشک", article: "a", emoji: "👨‍⚕️" },
+  { english: "nurse", pronunciationKurdish: "نێرس", meaningKurdish: "پەرستار", article: "a", emoji: "👩‍⚕️" },
+  { english: "teacher", pronunciationKurdish: "تیچەر", meaningKurdish: "مامۆستا", article: "a", emoji: "👩‍🏫" },
+  { english: "policeman", pronunciationKurdish: "پۆلیسمەن", meaningKurdish: "پۆلیس", article: "a", emoji: "👮" },
+  { english: "chef", pronunciationKurdish: "شێف", meaningKurdish: "چێشتلێنەر", article: "a", emoji: "👨‍🍳" },
+  { english: "firefighter", pronunciationKurdish: "فایەرفایتەر", meaningKurdish: "ئاگرکوژێنەرەوە", article: "a", emoji: "👨‍🚒" },
 ];
 
-/** Practice 1: build the intake grid + one echo-mic screen per word. */
+/** Split an array into consecutive groups of at most `size` items. */
+function chunk<T>(items: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    out.push(items.slice(i, i + size));
+  }
+  return out;
+}
+
+/**
+ * Practice 1 — Vocabulary Audio-Visual Drill, revised build rules.
+ * Max 3 items per screen (never 6 at once); a 6-word set becomes multiple
+ * screens. Trainings, in order:
+ *   1. Visual Word Anchors (chunked 3 + 3) — tap every card to hear it.
+ *   2. Matching (3 word labels ↔ 3 images per screen).
+ *   3. Image multiple-choice (one screen per word, repeat across the set).
+ *   4. Isolated Echo Mic at the end (one screen per word).
+ */
 export function buildPractice1Exercises(words: JobWord[]): ExerciseInput[] {
   const exercises: ExerciseInput[] = [];
+  let order = 1;
 
-  // Screen 1 — Visual Word Anchors (intake grid: tap every card to hear it).
-  exercises.push({
-    type: "multiple_choice",
-    promptText: "پیشەکان — دەست لە وێنەکان بدە و گوێ بگرە",
-    distractors: [],
-    solutionData: {
-      subtype: "word_anchors",
-      instruction: "پێناسەی وشە (Word Anchors)",
-      title: "پیشەکان",
-      correct: "completed",
-      words: words.map((w) => ({
-        english: w.english,
-        pronunciationKurdish: w.pronunciationKurdish,
-        meaningKurdish: w.meaningKurdish,
-        note: `${w.article} ${w.english}`,
-      })),
-    },
-    order: 1,
+  // Training 1 — Visual Word Anchors, chunked to 3 cards per screen.
+  chunk(words, 3).forEach((group, idx) => {
+    exercises.push({
+      type: "multiple_choice",
+      promptText: "گوێ لە وێنەکان بگرە و دەست لێیان بدە",
+      distractors: [],
+      solutionData: {
+        subtype: "word_anchors",
+        instruction: "پێناسەی وشە (Word Anchors)",
+        title: idx === 0 ? "پیشەکان" : "پیشەکان (بەشی دووەم)",
+        correct: "completed",
+        words: group.map((w) => ({
+          english: w.english,
+          pronunciationKurdish: w.pronunciationKurdish,
+          meaningKurdish: w.meaningKurdish,
+          note: `${w.article} ${w.english}`,
+          emoji: w.emoji,
+        })),
+      },
+      order: order++,
+    });
   });
 
-  // Screens 2..N+1 — Isolated Echo Mic (listen, then repeat the word aloud).
-  words.forEach((w, i) => {
+  // Training 2 — Matching: 3 word labels ↔ 3 images per screen.
+  chunk(words, 3).forEach((group) => {
+    exercises.push({
+      type: "multiple_choice",
+      promptText: "وشەکە بە وێنەکەی ببەستەوە",
+      distractors: [],
+      solutionData: {
+        subtype: "pair_match",
+        instruction: "جووتبەندکردن (Matching)",
+        correct: "matched",
+        pairs: group.map((w) => ({ id: w.english, word: w.english, emoji: w.emoji })),
+      },
+      order: order++,
+    });
+  });
+
+  // Training 3 — Image multiple-choice: one screen per word.
+  words.forEach((w) => {
+    exercises.push({
+      type: "multiple_choice",
+      promptText: "ئەمە چییە؟",
+      distractors: words.filter((x) => x.english !== w.english).map((x) => x.english),
+      solutionData: {
+        subtype: "image_mcq",
+        instruction: "هەڵبژاردنی وێنە (Choose the word)",
+        icon: w.emoji,
+        correct: w.english,
+      },
+      order: order++,
+    });
+  });
+
+  // Training 4 — Isolated Echo Mic at the end: one screen per word.
+  words.forEach((w) => {
     exercises.push({
       type: "multiple_choice",
       promptText: "گوێ بگرە و بە دەنگ دووبارەی بکەرەوە",
@@ -124,7 +178,7 @@ export function buildPractice1Exercises(words: JobWord[]): ExerciseInput[] {
         subTextGuide: w.pronunciationKurdish,
         visualScaffold: `${w.article} ${w.english} — ${w.meaningKurdish}`,
       },
-      order: i + 2,
+      order: order++,
     });
   });
 
