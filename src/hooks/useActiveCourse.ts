@@ -45,6 +45,16 @@ export const AVAILABLE_COURSES: CourseMeta[] = [
     targetLanguage: "en",
     description: "Master conversational English from Kurdish with Mohammed Mahdi. 5 levels of interactive dialogues, acoustic matching, and speech production.",
   },
+  {
+    slug: "sunrise-3",
+    title: "Sunrise 3 — English for Kurdish Schools",
+    nativeTitle: "ئینگلیزی پۆلی ٣ (Sunrise 3)",
+    shortLabel: "Sunrise 3",
+    flagType: "uk",
+    sourceLanguage: "ckb",
+    targetLanguage: "en",
+    description: "The Sunrise 3 Student's Book rebuilt as an interactive course: 18 units of vocabulary, story dialogues, phonics and spelling for Kurdish primary learners.",
+  },
 ];
 
 const STORAGE_KEY = "ferbe_active_course";

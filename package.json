@@ -15,6 +15,7 @@
     "seed:english": "tsx scripts/seed-english-course.ts",
     "seed:foundations": "tsx scripts/seed-english-foundations.ts",
     "seed:mahdi": "tsx scripts/seed-mohammed-mahdi-course.ts",
+    "seed:sunrise3": "tsx scripts/seed-sunrise3-course.ts",
     "generate:audio": "tsx scripts/generate-kurdish-audio.ts"
   },
   "dependencies": {

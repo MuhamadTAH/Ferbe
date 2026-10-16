@@ -82,6 +82,21 @@ const COURSES: CourseItem[] = [
     href: "/learn?course=mohammed-mahdi-english",
     flag: "uk",
   },
+  {
+    id: "sunrise-3",
+    name: "Sunrise 3 — English for Kurdish Schools",
+    nativeName: "ئینگلیزی پۆلی ٣ (Sunrise 3)",
+    category: "kurdish",
+    learners: "New",
+    badge: "Textbook",
+    badgeColor: "bg-[#FAF5FF] dark:bg-[#2A1B3D] text-[#CE82FF] border-[#CE82FF]/40",
+    description:
+      "The Sunrise 3 Student's Book as an interactive course. 18 units of vocabulary intake, story dialogues, phonics and spelling, starting with the Jobs vocabulary drill.",
+    script: "English Latin script · Kurdish Sorani instructions",
+    status: "active",
+    href: "/learn?course=sunrise-3",
+    flag: "uk",
+  },
 ];
 
 function FlagIcon({ flag }: { flag: CourseItem["flag"] }) {
