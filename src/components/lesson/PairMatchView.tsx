@@ -80,6 +80,9 @@ export function PairMatchView({
       setMatched(next);
       setSelectedLeft(null);
       setSelectedRight(null);
+      // Confirm a correct match by naming the pair out loud.
+      const matchedPair = pairs.find((p) => p.id === leftId);
+      playAmericanSpeech(matchedPair?.word ?? leftId, 0.8);
       if (next.size >= pairs.length) {
         onSelect(correctToken);
       }
@@ -103,7 +106,8 @@ export function PairMatchView({
   const handleRightClick = (id: string) => {
     if (answered || matched.has(id)) return;
     setSelectedRight(id);
-    playAmericanSpeech(id, 0.9);
+    // Stay silent on the image so tapping it does not reveal the answer;
+    // the word is heard when its label is tapped and again on a correct match.
     if (selectedLeft) tryMatch(selectedLeft, id);
   };
 
