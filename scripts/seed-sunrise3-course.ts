@@ -102,7 +102,7 @@ function chunk<T>(items: T[], size: number): T[][] {
  * Practice 1 — Vocabulary Audio-Visual Drill, revised build rules.
  * Max 3 items per screen (never 6 at once); a 6-word set becomes multiple
  * screens. Trainings, in order:
- *   1. Visual Word Anchors (chunked 3 + 3) — tap every card to hear it.
+ *   1. Visual Word Anchors (vertical cards, 2 per screen) — tap every card to hear it.
  *   2. Matching (3 word labels ↔ 3 images per screen).
  *   3. Image multiple-choice (one screen per word, repeat across the set).
  *   4. Isolated Echo Mic at the end (one screen per word).
@@ -111,8 +111,9 @@ export function buildPractice1Exercises(words: JobWord[]): ExerciseInput[] {
   const exercises: ExerciseInput[] = [];
   let order = 1;
 
-  // Training 1 — Visual Word Anchors, chunked to 3 cards per screen.
-  chunk(words, 3).forEach((group, idx) => {
+  // Training 1 — Visual Word Anchors: vertical cards (image on top,
+  // explanation below), 2 per screen.
+  chunk(words, 2).forEach((group, idx) => {
     exercises.push({
       type: "multiple_choice",
       promptText: "گوێ لە وێنەکان بگرە و دەست لێیان بدە",
@@ -120,7 +121,7 @@ export function buildPractice1Exercises(words: JobWord[]): ExerciseInput[] {
       solutionData: {
         subtype: "word_anchors",
         instruction: "پێناسەی وشە (Word Anchors)",
-        title: idx === 0 ? "پیشەکان" : "پیشەکان (بەشی دووەم)",
+        title: idx === 0 ? "پیشەکان" : `پیشەکان (بەشی ${idx + 1})`,
         correct: "completed",
         words: group.map((w) => ({
           english: w.english,

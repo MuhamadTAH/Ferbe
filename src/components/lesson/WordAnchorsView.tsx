@@ -89,8 +89,8 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
         </p>
       </div>
 
-      {/* 3 Stacked Word Cards */}
-      <div className="flex flex-col gap-3.5">
+      {/* Vertical word cards — image on top, explanation below (2 per screen) */}
+      <div className="grid grid-cols-1 gap-4">
         {words.map((w) => {
           const isHeard = listened.has(w.english);
           const isPlaying = playingWord === w.english;
@@ -100,67 +100,66 @@ export function WordAnchorsView({ exercise, onSelect, selected }: WordAnchorsVie
               key={w.english}
               onClick={() => handlePlayWord(w)}
               className={cn(
-                "group relative flex items-center justify-between rounded-2xl border-2 border-b-4 p-4.5 transition-all cursor-pointer select-none",
+                "group relative flex flex-col overflow-hidden rounded-3xl border-2 border-b-4 transition-all cursor-pointer select-none",
                 isHeard
                   ? "border-[#58CC02] bg-[#F7FCF0] dark:border-[#58CC02] dark:bg-[#132817]"
                   : "border-[#E5E5E5] bg-white hover:border-[#1CB0F6] hover:bg-[#F4FBFF] dark:border-[#37464F] dark:bg-[#131F24] dark:hover:border-[#1CB0F6]"
               )}
             >
-              {/* Left Column: Image Tile + English Word + Audio Button */}
-              <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
+              {/* Image on top — big and centered */}
+              <div className="flex h-44 w-full items-center justify-center border-b border-black/5 bg-gradient-to-b from-[#EAF4FF] to-white p-3 sm:h-52 dark:border-white/10 dark:from-[#1B262C] dark:to-[#131F24]">
                 {w.imageUrl ? (
-                  <span className="flex h-28 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-black/5 bg-gradient-to-b from-[#EAF4FF] to-white shadow-sm dark:border-white/10 dark:from-[#1B262C] dark:to-[#131F24]">
-                    <img
-                      src={w.imageUrl}
-                      alt={w.english}
-                      className="h-full w-full object-contain p-1.5"
-                      loading="eager"
-                    />
-                  </span>
+                  <img
+                    src={w.imageUrl}
+                    alt={w.english}
+                    className="h-full w-auto max-w-full object-contain"
+                    loading="eager"
+                  />
                 ) : (
-                  w.emoji && (
-                    <span className="flex h-28 w-24 shrink-0 items-center justify-center rounded-2xl border border-black/5 bg-gradient-to-b from-[#EAF4FF] to-white text-5xl leading-none dark:border-white/10 dark:from-[#1B262C] dark:to-[#131F24]">
-                      {w.emoji}
-                    </span>
-                  )
+                  <span className="text-7xl leading-none">{w.emoji}</span>
                 )}
-                <button
-                  type="button"
-                  aria-label={`Play ${w.english}`}
-                  className={cn(
-                    "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-b-2 transition-all",
-                    isPlaying
-                      ? "border-[#1899D6] bg-[#1CB0F6] text-white animate-pulse"
-                      : isHeard
-                        ? "border-[#46A302] bg-[#58CC02] text-white"
-                        : "border-[#1899D6] bg-[#1CB0F6] text-white group-hover:scale-105"
-                  )}
-                >
-                  <Volume2 className="h-5 w-5" />
-                </button>
-
-                <div className="flex flex-col text-left min-w-0">
-                  <span dir="ltr" className="text-xl sm:text-2xl font-black tracking-tight text-[#4B4B4B] dark:text-white truncate">
-                    {w.english}
-                  </span>
-                  {w.note && (
-                    <span dir="rtl" className="font-kurdish text-[11px] font-bold text-[#AFAFAF] dark:text-[#8495A0] truncate">
-                      ({w.note})
-                    </span>
-                  )}
-                </div>
               </div>
 
-              {/* Right Column: Aligned Kurdish Pronunciation & Meaning Badges */}
-              <KurdishGlossBadges
-                pronunciation={w.pronunciationKurdish}
-                meaning={w.meaningKurdish || w.kurdish || w.meaning}
-              />
+              {/* Explanation below — word, article and Kurdish gloss */}
+              <div className="flex items-center justify-between gap-3 p-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <button
+                    type="button"
+                    aria-label={`Play ${w.english}`}
+                    className={cn(
+                      "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-b-2 transition-all",
+                      isPlaying
+                        ? "border-[#1899D6] bg-[#1CB0F6] text-white animate-pulse"
+                        : isHeard
+                          ? "border-[#46A302] bg-[#58CC02] text-white"
+                          : "border-[#1899D6] bg-[#1CB0F6] text-white group-hover:scale-105"
+                    )}
+                  >
+                    <Volume2 className="h-5 w-5" />
+                  </button>
+
+                  <div className="flex min-w-0 flex-col text-left">
+                    <span dir="ltr" className="truncate text-2xl font-black tracking-tight text-[#4B4B4B] dark:text-white">
+                      {w.english}
+                    </span>
+                    {w.note && (
+                      <span dir="rtl" className="truncate font-kurdish text-xs font-bold text-[#AFAFAF] dark:text-[#8495A0]">
+                        ({w.note})
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <KurdishGlossBadges
+                  pronunciation={w.pronunciationKurdish}
+                  meaning={w.meaningKurdish || w.kurdish || w.meaning}
+                />
+              </div>
 
               {/* Heard Checkmark Badge */}
               {isHeard && (
-                <div className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#58CC02] text-white shadow-sm">
-                  <CheckCircle2 className="h-3.5 w-3.5 stroke-[3]" />
+                <div className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-[#58CC02] text-white shadow-sm">
+                  <CheckCircle2 className="h-4 w-4 stroke-[3]" />
                 </div>
               )}
             </div>
