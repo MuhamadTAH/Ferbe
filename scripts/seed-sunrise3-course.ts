@@ -536,6 +536,21 @@ const leadingSound = (word: string): string => {
   return DIGRAPHS.includes(two) ? two : lower[0];
 };
 
+/**
+ * Keep the first item per key. PairMatchView draws its right column from the
+ * pair's value, so two pairs sharing a value are visually identical and cannot
+ * be told apart when tapped.
+ */
+const uniqBy = <T>(items: T[], key: (item: T) => string): T[] => {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const k = key(item);
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+};
+
 // ===========================================================================
 // Practice 1 — Vocabulary Audio-Visual Drill
 //   1. Visual Word Anchors (vertical cards, 2 per screen)
@@ -571,6 +586,7 @@ export function buildPractice1Exercises(words: Word[]): ExerciseInput[] {
   });
 
   chunk(words, 3)
+    .map((group) => uniqBy(group, (x) => x.emoji))
     .filter((group) => group.length >= 2)
     .forEach((group) => {
     exercises.push({
@@ -724,6 +740,7 @@ export function buildPractice2Exercises(unit: UnitData): ExerciseInput[] {
   });
 
   chunk(words, 3)
+    .map((group) => uniqBy(group, (x) => x.emoji))
     .filter((group) => group.length >= 2)
     .forEach((group) => {
     exercises.push({
@@ -848,25 +865,40 @@ export function buildPractice4Exercises(unit: UnitData): ExerciseInput[] {
   const exercises: ExerciseInput[] = [];
   let order = 1;
 
-  chunk(phonics, 3).forEach((group) => {
-    const target = group[0];
-    const letter = target[0].toUpperCase();
-    exercises.push({
-      type: "multiple_choice",
-      promptText: `کام وشە بە پیتی «${letter}» دەست پێدەکات؟`,
-      distractors: group.slice(1),
-      solutionData: {
-        subtype: "image_mcq",
-        instruction: "دەنگی سەرەتا (Initial sound)",
-        icon: letter,
-        correct: target,
-        isSpeaking: true,
-        type: "speak",
-        spokenText: target,
-      },
-      order: order++,
+  phonics
+    .filter(
+      (word, i) =>
+        phonics.some(
+          (other, j) => j !== i && other[0].toLowerCase() !== word[0].toLowerCase(),
+        ),
+    )
+    .slice(0, 3)
+    .forEach((target) => {
+      const letter = target[0].toUpperCase();
+      // A distractor that also starts with `letter` would be a second valid
+      // answer to "which word starts with <letter>?", so exclude those.
+      const distractors = uniqBy(
+        phonics.filter(
+          (w) => w !== target && w[0].toLowerCase() !== target[0].toLowerCase(),
+        ),
+        (w) => w,
+      ).slice(0, 3);
+      exercises.push({
+        type: "multiple_choice",
+        promptText: `کام وشە بە پیتی «${letter}» دەست پێدەکات؟`,
+        distractors,
+        solutionData: {
+          subtype: "image_mcq",
+          instruction: "دەنگی سەرەتا (Initial sound)",
+          icon: letter,
+          correct: target,
+          isSpeaking: true,
+          type: "speak",
+          spokenText: target,
+        },
+        order: order++,
+      });
     });
-  });
 
   phonics.filter(uniqueLetterWord).slice(0, 3).forEach((word) => {
     exercises.push({
@@ -886,6 +918,7 @@ export function buildPractice4Exercises(unit: UnitData): ExerciseInput[] {
   });
 
   chunk(words, 3)
+    .map((group) => uniqBy(group, (x) => x.emoji))
     .filter((group) => group.length >= 2)
     .forEach((group) => {
       exercises.push({
@@ -903,9 +936,10 @@ export function buildPractice4Exercises(unit: UnitData): ExerciseInput[] {
     });
 
   phonics.slice(0, 4).forEach((word) => {
-    if (word.length < 3) return;
     const gapIndex = Math.floor(word.length / 2);
     const missing = word[gapIndex];
+    // Skip words whose midpoint is a space/apostrophe — not a letter to choose.
+    if (word.length < 3 || !/[a-zA-Z]/.test(missing)) return;
     const shown = word.slice(0, gapIndex) + "_" + word.slice(gapIndex + 1);
     const alphabet = "abcdefghijklmnopqrstuvwxyz".replace(missing.toLowerCase(), "");
     const decoys = [0, 1, 2]
@@ -995,8 +1029,9 @@ export function buildPractice5Exercises(unit: UnitData): ExerciseInput[] {
   });
 
   chunk(phonics, 3)
+    .map((group) => uniqBy(group, (word) => leadingSound(word)))
     .filter((group) => group.length >= 2)
-    .forEach((group, gi) => {
+    .forEach((group) => {
       exercises.push({
         type: "multiple_choice",
         promptText: "وشەکە بخە سندوقی دەنگی گونجاو",
@@ -1005,10 +1040,10 @@ export function buildPractice5Exercises(unit: UnitData): ExerciseInput[] {
           subtype: "pair_match",
           instruction: "پۆلێنکردنی دەنگ (Sound Sorting)",
           correct: "matched",
-          pairs: group.map((word, i) => ({
+          pairs: group.map((word) => ({
             id: word,
             left: word,
-            right: i % 2 === 0 ? (gi % 2 === 0 ? "/sound 1/" : "/sound 3/") : (gi % 2 === 0 ? "/sound 2/" : "/sound 4/"),
+            right: leadingSound(word).toUpperCase(),
           })),
         },
         order: order++,
@@ -1052,19 +1087,56 @@ export function buildPractice6Exercises(unit: UnitData): ExerciseInput[] {
       });
     });
 
-  const contraction = sentences[0].replace("isn't", "is not").replace("aren't", "are not").replace("I'm not", "I am not");
-  const cTokens = contraction.replace(/([.?!,'’])/g, " $1").split(/\s+/).filter(Boolean);
-  exercises.push({
-    type: "word_bank",
-    promptText: "ڕستەکە بنووسە بە شێوەی کورتکراوە",
-    distractors: ["not", "is"],
-    solutionData: {
-      subtype: "word_bank",
-      instruction: "مەغناطیسی کورتکراوە (Contraction Magnet)",
-      tokens: cTokens,
-    },
-    order: order++,
-  });
+  // Contraction magnet: transform the sentence in whichever direction has a
+  // real counterpart. tokenize() would split the apostrophe, so use plain
+  // word-splitting for the contracted form.
+  const CONTRACT: [RegExp, string][] = [
+    [/\bis not\b/g, "isn't"],
+    [/\bare not\b/g, "aren't"],
+    [/\bI am\b/g, "I'm"],
+    [/\bit is\b/g, "it's"],
+    [/\bthat is\b/g, "that's"],
+    [/\bthey are\b/g, "they're"],
+    [/\bwe are\b/g, "we're"],
+    [/\byou are\b/g, "you're"],
+    [/\bcannot\b/g, "can't"],
+    [/\bdo not\b/g, "don't"],
+  ];
+  const EXPAND: [RegExp, string][] = [
+    [/\bisn't\b/g, "is not"],
+    [/\baren't\b/g, "are not"],
+    [/\bI'm\b/g, "I am"],
+    [/\bit's\b/g, "it is"],
+    [/\bthat's\b/g, "that is"],
+    [/\bthey're\b/g, "they are"],
+    [/\bwe're\b/g, "we are"],
+    [/\byou're\b/g, "you are"],
+    [/\bcan't\b/g, "can not"],
+    [/\bdon't\b/g, "do not"],
+  ];
+  const source = sentences[0];
+  const contracted = CONTRACT.reduce((s, [re, to]) => s.replace(re, to), source);
+  const expanded = EXPAND.reduce((s, [re, to]) => s.replace(re, to), source);
+  const asContract = contracted !== source;
+  if (asContract || expanded !== source) {
+    const targetSentence = asContract ? contracted : expanded;
+    const cTokens = targetSentence.split(/\s+/).filter(Boolean);
+    exercises.push({
+      type: "word_bank",
+      promptText: asContract
+        ? "ڕستەکە بنووسە بە شێوەی کورتکراوە"
+        : "شێوەی درێژکراوی ڕستەکە بنووسە",
+      distractors: ["not", "is"].filter(
+        (d) => !cTokens.some((t) => t.toLowerCase() === d),
+      ),
+      solutionData: {
+        subtype: "word_bank",
+        instruction: "مەغناطیسی کورتکراوە (Contraction Magnet)",
+        tokens: cTokens,
+      },
+      order: order++,
+    });
+  }
 
   // One-Tap Error Hunter: tap the single mis-spelled word.
   const plainWords = tokenize(sentences[0]).filter((t) => /^[a-zA-Z]{4,}$/.test(t));
@@ -1108,23 +1180,27 @@ export function buildPractice6Exercises(unit: UnitData): ExerciseInput[] {
     order: order++,
   });
 
-  const qa = sentences.slice(0, 3);
-  exercises.push({
-    type: "multiple_choice",
-    promptText: "پرسیارەکان بە وەڵامەکان ببەستەوە",
-    distractors: [],
-    solutionData: {
-      subtype: "pair_match",
-      instruction: "پرسیار و وەڵام (Q & A Match)",
-      correct: "matched",
-      pairs: qa.map((s) => ({
-        id: s,
-        left: s,
-        right: s.endsWith("?") ? "?" : ".",
-      })),
-    },
-    order: order++,
-  });
+  // Pair by trailing punctuation; keep at most one pair per punctuation mark
+  // so the right column has no two identical tiles.
+  const qa = uniqBy(sentences.slice(0, 3), (s) => (s.endsWith("?") ? "?" : "."));
+  if (qa.length >= 2) {
+    exercises.push({
+      type: "multiple_choice",
+      promptText: "پرسیارەکان بە وەڵامەکان ببەستەوە",
+      distractors: [],
+      solutionData: {
+        subtype: "pair_match",
+        instruction: "پرسیار و وەڵام (Q & A Match)",
+        correct: "matched",
+        pairs: qa.map((s) => ({
+          id: s,
+          left: s,
+          right: s.endsWith("?") ? "?" : ".",
+        })),
+      },
+      order: order++,
+    });
+  }
 
   return exercises;
 }
@@ -1139,18 +1215,23 @@ export function buildPractice7Exercises(unit: UnitData, rows: { left: string; ri
   const exercises: ExerciseInput[] = [];
   let order = 1;
 
-  exercises.push({
-    type: "multiple_choice",
-    promptText: "جیندەکان بە هێڵ ببەستەوە",
-    distractors: [],
-    solutionData: {
-      subtype: "pair_match",
-      instruction: "تەلپیچاوی ڕووناک (Wire Tracer)",
-      correct: "matched",
-      pairs: rows.map((r) => ({ id: r.left, left: r.left, right: r.right })),
-    },
-    order: order++,
-  });
+  // Two pronouns can share a verb form ("You are" / "They are"); keep one pair
+  // per right-hand tile so the column has no identical tiles.
+  const wireRows = uniqBy(rows, (r) => r.right);
+  if (wireRows.length >= 2) {
+    exercises.push({
+      type: "multiple_choice",
+      promptText: "جیندەکان بە هێڵ ببەستەوە",
+      distractors: [],
+      solutionData: {
+        subtype: "pair_match",
+        instruction: "تەلپیچاوی ڕووناک (Wire Tracer)",
+        correct: "matched",
+        pairs: wireRows.map((r) => ({ id: r.left, left: r.left, right: r.right })),
+      },
+      order: order++,
+    });
+  }
 
   const sentence = pickSentence(unit.punctuation ?? unit.story);
   if (sentence) {
@@ -1370,11 +1451,14 @@ export function buildPractice10Exercises(item: string, emoji: string): ExerciseI
       subtype: "pair_match",
       instruction: "تاک و کۆ (Singular vs plural)",
       correct: "matched",
-      pairs: [
-        { id: "one", left: `1 ${item}`, right: "There is" },
-        { id: "two", left: `2 ${item}s`, right: "There are" },
-        { id: "many", left: `25 ${item}s`, right: "There are" },
-      ],
+      pairs: uniqBy(
+        [
+          { id: "one", left: `1 ${item}`, right: "There is" },
+          { id: "two", left: `2 ${item}s`, right: "There are" },
+          { id: "many", left: `25 ${item}s`, right: "There are" },
+        ],
+        (p) => p.right,
+      ),
     },
     order: order++,
   });
