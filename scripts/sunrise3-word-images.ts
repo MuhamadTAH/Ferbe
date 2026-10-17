@@ -1,6 +1,15 @@
 // AUTO-GENERATED from the Sunrise 3 book (scripts/_save_images.py).
 // Keyed by "<unitOrder>:<wordLower>" -> public image path.
 export const SUNRISE3_WORD_IMAGES: Record<string, string> = {
+  // Unit 1 & 2 (Review) — pictures cropped from the review spreads (p4-p8).
+  "1:apple": "/images/sunrise3/review/apple.png",
+  "1:cap": "/images/sunrise3/review/cap.png",
+  "1:hat": "/images/sunrise3/review/hat.png",
+  "2:banana": "/images/sunrise3/review/banana.png",
+  "2:flower": "/images/sunrise3/review/flower.png",
+  "2:rabbit": "/images/sunrise3/review/rabbit.png",
+  "2:spider": "/images/sunrise3/review/spider.png",
+  "2:teeth": "/images/sunrise3/review/teeth.png",
   "3:chef": "/images/sunrise3/jobs/chef.png",
   "3:doctor": "/images/sunrise3/jobs/doctor.png",
   "3:firefighter": "/images/sunrise3/jobs/firefighter.png",
