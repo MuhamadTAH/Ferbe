@@ -1,5 +1,6 @@
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api";
+import { SUNRISE3_WORD_IMAGES } from "./sunrise3-word-images";
 
 // ===========================================================================
 // Sunrise 3 — full course seed.
@@ -611,7 +612,7 @@ export function buildPractice1Exercises(words: Word[]): ExerciseInput[] {
   words.forEach((x) => {
     exercises.push({
       type: "multiple_choice",
-      promptText: "ئەمە چییە؟",
+      promptText: "What is this?",
       distractors: otherWords(words, x.english),
       solutionData: {
         subtype: "image_mcq",
@@ -772,32 +773,15 @@ export function buildPractice3Exercises(unit: UnitData): ExerciseInput[] {
   const exercises: ExerciseInput[] = [];
   let order = 1;
 
-  exercises.push({
-    type: "multiple_choice",
-    promptText: "ئامرازەکان بپشکنە — دەست لێیان بدە",
-    distractors: [],
-    solutionData: {
-      subtype: "word_anchors",
-      instruction: "پشکنینی وێنە (Visual Grid)",
-      title: "ئەمە چییە؟",
-      correct: "completed",
-      words: words.map((x) => ({
-        english: x.english,
-        pronunciationKurdish: x.pron,
-        meaningKurdish: x.meaning,
-        note: `${x.article} ${x.english}`,
-        emoji: x.emoji,
-        imageUrl: x.image,
-      })),
-    },
-    order: order++,
-  });
-
-  words.slice(0, 5).forEach((x) => {
+  // English "Is this X or Y?" questions. The word anchors already appear in
+  // Practice 1, so this practice is Q&A only (no repeated anchor screen).
+  words.slice(0, 5).forEach((x, i) => {
+    const pool = words.filter((w) => w.english !== x.english);
+    const wrong = pool[i % pool.length];
     exercises.push({
       type: "multiple_choice",
-      promptText: `ئەمە چییە؟ — ${x.emoji}`,
-      distractors: otherWords(words, x.english),
+      promptText: `Is this ${x.article} ${x.english} or ${wrong.article} ${wrong.english}?`,
+      distractors: [wrong.english],
       solutionData: {
         subtype: "image_mcq",
         instruction: "پرسیار و وەڵام (Ask and answer)",
@@ -806,7 +790,7 @@ export function buildPractice3Exercises(unit: UnitData): ExerciseInput[] {
         correct: x.english,
         isSpeaking: true,
         type: "speak",
-        spokenText: `It's ${x.article} ${x.english}.`,
+        spokenText: `Is this ${x.article} ${x.english}? Yes, it is.`,
       },
       order: order++,
     });
@@ -814,10 +798,11 @@ export function buildPractice3Exercises(unit: UnitData): ExerciseInput[] {
 
   const mystery = words[words.length - 1];
   const wrong = otherWords(words, mystery.english)[0];
+  const mysteryWrong = words.find((w) => w.english === wrong) ?? words[0];
   exercises.push({
     type: "multiple_choice",
-    promptText: `یاری نهێنی: ئایا ئەمە ${mystery.english}ە؟ (ئایا ${wrong}ە؟)`,
-    distractors: [wrong, ...otherWords(words, mystery.english).slice(1)],
+    promptText: `Is this ${mystery.article} ${mystery.english} or ${mysteryWrong.article} ${mysteryWrong.english}?`,
+    distractors: [wrong],
     solutionData: {
       subtype: "image_mcq",
       instruction: "یاری دۆزینەوە (Mystery game)",
@@ -1551,10 +1536,29 @@ const POSSESSIVES = [
   { left: "group", right: "Their" },
 ];
 
+/** Word name -> book image, ignoring the unit (lets review units reuse images). */
+const BOOK_IMAGE_BY_WORD: Record<string, string> = Object.fromEntries(
+  Object.entries(SUNRISE3_WORD_IMAGES).map(([k, v]) => [k.split(":")[1], v]),
+);
+
+/** Attach the cropped book picture to each word; falls back to an existing path. */
+function withBookImages(unit: UnitData, order: number): UnitData {
+  return {
+    ...unit,
+    words: unit.words.map((word) => ({
+      ...word,
+      image:
+        SUNRISE3_WORD_IMAGES[`${order}:${word.english.toLowerCase()}`] ??
+        BOOK_IMAGE_BY_WORD[word.english.toLowerCase()] ??
+        word.image,
+    })),
+  };
+}
+
 function buildUnits(): UnitInput[] {
   return UNIT_TOPICS.map((u, idx) => {
     const order = idx + 1;
-    const unit = UNIT_DATA[idx];
+    const unit = withBookImages(UNIT_DATA[idx], order);
 
     const lessons: LessonInput[] = [1, 2, 3].map((ln) => ({
       title: `${order}.${ln} ${u.topic} — ${LESSON_ACTIVITY[ln]}`,
@@ -1628,6 +1632,16 @@ function buildUnits(): UnitInput[] {
         order: 4,
         xpReward: 25,
         exercises: buildPractice12Exercises(unit),
+      });
+    }
+
+    // Each practice builder restarts its own order counter, so a lesson that
+    // concatenates several practices (e.g. Unit 1 Lesson 1 = Practice 1 + 3)
+    // would otherwise have colliding orders and the server's order sort would
+    // interleave them. Renumber every lesson into one gap-free sequence.
+    for (const lesson of lessons) {
+      lesson.exercises.forEach((exercise, i) => {
+        exercise.order = i + 1;
       });
     }
 
