@@ -25,7 +25,7 @@ interface UnitView {
   lessons: LessonView[];
 }
 
-function LessonsList({ courseSlug }: { courseSlug: string }) {
+function LessonsList({ courseSlug, autoWin }: { courseSlug: string; autoWin: boolean }) {
   const curriculum = useQuery(api.curriculum.getCourseCurriculum, { courseSlug });
 
   if (curriculum === undefined) {
@@ -44,20 +44,6 @@ function LessonsList({ courseSlug }: { courseSlug: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Demo banner */}
-      <div className="rounded-2xl border-2 border-b-4 border-[#1899D6] bg-[#DDF4FF] p-4 text-sm font-bold text-[#1899D6]">
-        Demo mode: every lesson link has{" "}
-        <code className="rounded bg-white/70 px-1.5 py-0.5 font-mono text-xs">
-          ?win=1
-        </code>{" "}
-        — the lesson plays itself and always wins, so you can watch any lesson
-        end to end. Remove{" "}
-        <code className="rounded bg-white/70 px-1.5 py-0.5 font-mono text-xs">
-          ?win=1
-        </code>{" "}
-        to play normally.
-      </div>
-
       <p className="text-xs font-black uppercase tracking-wider text-[#AFAFAF]">
         {units.length} units · {lessonCount} lessons
       </p>
@@ -71,7 +57,7 @@ function LessonsList({ courseSlug }: { courseSlug: string }) {
             {unit.lessons.map((lesson) => (
               <Link
                 key={lesson._id}
-                href={`/learn/${lesson._id}?win=1`}
+                href={`/learn/${lesson._id}${autoWin ? "?win=1" : ""}`}
                 className="flex items-center justify-between rounded-2xl border-2 border-b-4 border-[#E5E5E5] bg-white px-4 py-3 font-bold text-[#4B4B4B] transition-colors hover:border-[#58CC02] hover:bg-[#F7FFEF] dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#DCE6EC]"
               >
                 <span className="pr-2 text-sm">{lesson.title}</span>
@@ -91,6 +77,7 @@ function LessonsList({ courseSlug }: { courseSlug: string }) {
 function LessonsInner() {
   const { activeCourseSlug } = useActiveCourse();
   const [courseSlug, setCourseSlug] = useState(activeCourseSlug || "");
+  const [autoWin, setAutoWin] = useState(false);
 
   const selected = courseSlug || activeCourseSlug || AVAILABLE_COURSES[0].slug;
 
@@ -99,6 +86,22 @@ function LessonsInner() {
       <h1 className="mb-4 text-2xl font-black text-[#4B4B4B] dark:text-white">
         All lessons / هەموو وانەکان
       </h1>
+
+      <button
+        type="button"
+        onClick={() => setAutoWin((v) => !v)}
+        className={
+          "mb-4 flex w-full items-center justify-between rounded-2xl border-2 border-b-4 px-4 py-3 text-left text-xs font-extrabold uppercase tracking-wider transition-colors " +
+          (autoWin
+            ? "border-[#46A302] bg-[#58CC02] text-white"
+            : "border-[#E5E5E5] bg-white text-[#777777] hover:bg-[#F7F7F7] dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#8495A0]")
+        }
+      >
+        <span>Auto-win demo {autoWin ? "ON" : "OFF"}</span>
+        <span className="normal-case tracking-normal opacity-80">
+          {autoWin ? "lessons play themselves" : "tap to auto-play every lesson"}
+        </span>
+      </button>
 
       <div className="mb-6 flex flex-wrap gap-2">
         {AVAILABLE_COURSES.map((course) => (
@@ -118,7 +121,7 @@ function LessonsInner() {
         ))}
       </div>
 
-      <LessonsList key={selected} courseSlug={selected} />
+      <LessonsList key={selected} courseSlug={selected} autoWin={autoWin} />
     </div>
   );
 }

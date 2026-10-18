@@ -17,6 +17,7 @@ import {
   Settings,
   HelpCircle,
   LogOut,
+  ListChecks,
   X,
   Sun,
   Moon,
@@ -82,6 +83,15 @@ function ClerkMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
   return (
     <>
       <Link
+        href="/lessons"
+        onClick={onClose}
+        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-xs font-extrabold text-[#4B4B4B] dark:text-white hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] transition-colors text-left"
+      >
+        <ListChecks className="h-5 w-5 text-[#58CC02]" />
+        <span>All lessons · هەموو وانەکان</span>
+      </Link>
+
+      <Link
         href="/character"
         onClick={onClose}
         className="flex w-full items-center gap-3 rounded-xl p-2.5 text-xs font-extrabold text-[#4B4B4B] dark:text-white hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] transition-colors text-left"
@@ -136,6 +146,15 @@ function ClerkMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
 function DefaultMoreActions({ onClose, onOpenHelp }: MoreSubActionsProps) {
   return (
     <>
+      <Link
+        href="/lessons"
+        onClick={onClose}
+        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-xs font-extrabold text-[#4B4B4B] dark:text-white hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] transition-colors text-left"
+      >
+        <ListChecks className="h-5 w-5 text-[#58CC02]" />
+        <span>All lessons · هەموو وانەکان</span>
+      </Link>
+
       <Link
         href="/character"
         onClick={onClose}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Dumbbell, User, Flame, Heart } from "lucide-react";
+import { BookOpen, Dumbbell, User, Flame, Heart, ListChecks } from "lucide-react";
 import { UserButton, useAuth } from "@clerk/nextjs";
 import { SquirrelAvatar } from "@/components/duo/SquirrelAvatar";
 import { useQuery } from "convex/react";
@@ -137,6 +137,13 @@ export function AppHeader() {
           >
             <Dumbbell className="h-4 w-4" />
             <span className="hidden sm:inline">Practice</span>
+          </Link>
+          <Link
+            href="/lessons"
+            className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-extrabold uppercase tracking-wide text-[#777777] dark:text-[#8495A0] hover:bg-[#F7F7F7] dark:hover:bg-[#202F36] hover:text-[#58CC02] dark:hover:text-[#58CC02] sm:px-3 sm:text-sm"
+          >
+            <ListChecks className="h-4 w-4" />
+            <span className="hidden sm:inline">Lessons</span>
           </Link>
 
           {hasClerk ? <HeaderAuthSection /> : null}
