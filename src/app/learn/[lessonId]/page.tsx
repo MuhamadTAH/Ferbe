@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
 import { useAppConfig } from "@/providers/ConvexClientProvider";
 import { ConfigRequired, ErrorBoundary } from "@/components/states/ScreenState";
@@ -50,7 +50,13 @@ function solutionIsKurdish(
   return false;
 }
 
-function SessionInner({ lessonId }: { lessonId: string }) {
+function SessionInner({
+  lessonId,
+  autoSolve,
+}: {
+  lessonId: string;
+  autoSolve: boolean;
+}) {
   const {
     session,
     state,
@@ -63,7 +69,7 @@ function SessionInner({ lessonId }: { lessonId: string }) {
     continueSession,
     restart,
     progress,
-  } = useLessonSession(lessonId);
+  } = useLessonSession(lessonId, { autoSolve });
 
   const exercise = currentExercise(state);
   const isHeartsExhausted = state.phase === "HEARTS_EXHAUSTED";
@@ -547,10 +553,14 @@ function SessionInner({ lessonId }: { lessonId: string }) {
   );
 }
 
-export default function LessonSessionPage() {
+function LessonSessionPageInner() {
   const { hasConvex } = useAppConfig();
   const params = useParams<{ lessonId: string }>();
+  const searchParams = useSearchParams();
   const lessonId = params?.lessonId ?? "";
+  // "?win=1" turns on the auto-win demo so a reviewer can watch every lesson
+  // play itself to completion.
+  const autoSolve = searchParams?.get("win") === "1";
 
   if (!hasConvex) {
     return <ConfigRequired missing="NEXT_PUBLIC_CONVEX_URL" />;
@@ -564,7 +574,21 @@ export default function LessonSessionPage() {
   }
   return (
     <ErrorBoundary>
-      <SessionInner key={lessonId} lessonId={lessonId} />
+      <SessionInner key={lessonId} lessonId={lessonId} autoSolve={autoSolve} />
     </ErrorBoundary>
+  );
+}
+
+export default function LessonSessionPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="py-24 text-center font-extrabold text-[#AFAFAF]">
+          Loading lesson...
+        </div>
+      }
+    >
+      <LessonSessionPageInner />
+    </Suspense>
   );
 }

@@ -217,6 +217,7 @@ export type SessionAction =
   | { type: "BUILD_TOKEN"; id: string }
   | { type: "UNBUILD_TOKEN"; id: string }
   | { type: "SUBMIT" }
+  | { type: "AUTO_SOLVE" }
   | { type: "EVALUATE" }
   | { type: "CONTINUE" }
   | { type: "RESTART" }
@@ -271,6 +272,47 @@ export function sessionReducer(
       const evaluation = evaluateAnswer(exercise, state);
       return {
         ...state,
+        phase: "EVALUATING",
+        pending: {
+          correct: evaluation.correct,
+          correctSolution: evaluation.correctSolution,
+          exerciseId: exercise._id,
+        },
+      };
+    }
+
+    // Auto-solve: fill the correct answer and move to EVALUATING so the normal
+    // EVALUATE step grades it. Used by the "?win=1" demo mode so a reviewer can
+    // walk every lesson without answering.
+    case "AUTO_SOLVE": {
+      if (state.phase !== "ACTIVE_QUESTION") return state;
+      const exercise = currentExercise(state);
+      if (!exercise) return { ...state, phase: "SESSION_COMPLETE" };
+
+      let attemptState: SessionState = state;
+      if (exercise.type === "word_bank") {
+        const tokens = exercise.solutionData.tokens ?? [];
+        const used = new Set<string>();
+        const built: string[] = [];
+        for (const token of tokens) {
+          const tile = state.bankTiles.find(
+            (t) => t.token === token && !used.has(t.id)
+          );
+          if (tile) {
+            used.add(tile.id);
+            built.push(tile.id);
+          }
+        }
+        attemptState = { ...state, built };
+      } else {
+        const correct =
+          String(exercise.solutionData.correct ?? "").trim() || "completed";
+        attemptState = { ...state, selected: correct };
+      }
+
+      const evaluation = evaluateAnswer(exercise, attemptState);
+      return {
+        ...attemptState,
         phase: "EVALUATING",
         pending: {
           correct: evaluation.correct,

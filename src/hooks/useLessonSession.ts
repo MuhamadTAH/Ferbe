@@ -39,7 +39,11 @@ export interface CompleteLessonResult {
  * - completeLesson persists XP, progress and streak at SESSION_COMPLETE
  * Server failures never crash the session; they surface in the return value.
  */
-export function useLessonSession(lessonId: string) {
+export function useLessonSession(
+  lessonId: string,
+  options: { autoSolve?: boolean } = {}
+) {
+  const autoSolve = options.autoSolve ?? false;
   const typedLessonId = lessonId as Id<"lessons">;
 
   const sessionQuery = useQuery(api.curriculum.getLessonSession, {
@@ -95,6 +99,24 @@ export function useLessonSession(lessonId: string) {
         );
       });
   }, [state.phase, state.firstTryCorrect, state.total, typedLessonId, completeLesson]);
+
+  // Demo/auto-win mode (?win=1): answer correctly and advance on its own so a
+  // reviewer can walk through every lesson without playing.
+  useEffect(() => {
+    if (!autoSolve) return;
+    if (state.phase === "ACTIVE_QUESTION") {
+      const t = window.setTimeout(() => dispatch({ type: "AUTO_SOLVE" }), 200);
+      return () => window.clearTimeout(t);
+    }
+    if (state.phase === "EVALUATING") {
+      const t = window.setTimeout(() => dispatch({ type: "EVALUATE" }), 200);
+      return () => window.clearTimeout(t);
+    }
+    if (state.phase === "FEEDBACK_SUCCESS" || state.phase === "FEEDBACK_ERROR") {
+      const t = window.setTimeout(() => dispatch({ type: "CONTINUE" }), 500);
+      return () => window.clearTimeout(t);
+    }
+  }, [autoSolve, state.phase]);
 
   const select = useCallback((value: string) => {
     playOptionSelectSound();
