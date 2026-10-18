@@ -115,7 +115,6 @@ const UNIT_DATA: UnitData[] = [
   {
     topic: "Review: Alphabet, to be/to have",
     words: [
-      w("duck", "داک", "مراوی", "🦆"),
       w("cap", "کاپ", "شەپکە", "🧢"),
       w("hat", "هات", "کڵاو", "🎩"),
       w("pen", "پێن", "قەڵەم", "🖊️"),
@@ -132,8 +131,8 @@ const UNIT_DATA: UnitData[] = [
       "She has an apple.",
       "He has a cat.",
     ],
-    phonics: ["ant", "cat", "apple", "duck", "hat", "pen"],
-    punctuation: ["I have a car.", "She has an apple.", "He has a cat.", "They have a duck."],
+    phonics: ["ant", "cat", "apple", "hat", "pen"],
+    punctuation: ["I have a car.", "She has an apple.", "He has a cat."],
   },
   {
     topic: "Review: Present continuous",
@@ -775,7 +774,8 @@ export function buildPractice3Exercises(unit: UnitData): ExerciseInput[] {
 
   // English "Is this X or Y?" questions. The word anchors already appear in
   // Practice 1, so this practice is Q&A only (no repeated anchor screen).
-  words.slice(0, 5).forEach((x, i) => {
+  // Leave the last word for the mystery game so it is never asked twice.
+  words.slice(0, Math.min(5, words.length - 1)).forEach((x, i) => {
     const pool = words.filter((w) => w.english !== x.english);
     const wrong = pool[i % pool.length];
     exercises.push({
