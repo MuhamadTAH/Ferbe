@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>یاساکانی GH | Fêrbe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    try {
+      var urlParams = new URLSearchParams(window.location.search);
+      var themeParam = urlParams.get('theme');
+      if (themeParam === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else if (themeParam === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        var theme = localStorage.getItem('ferbe_theme');
+        if (theme === 'light') document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {}
+  </script>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg2: #f7f7f7;
+      --card: #ffffff;
+      --text: #4b4b4b;
+      --muted: #777777;
+      --muted2: #afafaf;
+      --border: #e5e5e5;
+
+      --primary: #58cc02;
+      --primary-shade: #46a302;
+      --secondary: #1cb0f6;
+      --secondary-shade: #1899d6;
+      --border-gray: #e5e5e5;
+      --danger: #ea2b2b;
+      --danger-shade: #d33131;
+
+      --green: #58cc02;
+      --green-shade: #46a302;
+      --green-text: #58a700;
+      --green-bg: #d7ffb8;
+      --green-border: #a5ed6e;
+
+      --blue: #1cb0f6;
+      --blue-shade: #1899d6;
+      --blue-bg: #ddf4ff;
+      --blue-border: #84d8ff;
+
+      --red: #ea2b2b;
+      --red-bg: #ffdfe0;
+      --red-border: #ffb2b2;
+
+      --orange: #ff9600;
+      --purple: #9333ea;
+
+      --font-body: 'Noto Sans Arabic', 'Nunito', system-ui, sans-serif;
+      --font-en: 'Nunito', system-ui, sans-serif;
+    }
+
+    html.dark {
+      --bg: #131f24;
+      --bg2: #202f36;
+      --card: #131f24;
+      --text: #ffffff;
+      --muted: #8495a0;
+      --muted2: #52656d;
+      --border: #37464f;
+      --border-gray: #37464f;
+      --green-text: #58cc02;
+      --green-bg: #1e3b20;
+      --blue-bg: #202f36;
+      --blue-border: #3bc0f8;
+      --red-bg: #3a181d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 42rem;
+      min-height: 100vh;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* ---------- Lesson top bar (matches /learn/[lessonId]) ---------- */
+    .lesson-top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+
+    .exit-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted2);
+      font-size: 26px;
+      line-height: 1;
+      font-weight: 800;
+      transition: color 0.15s ease;
+    }
+    .exit-btn:hover { color: var(--muted); }
+
+    .progress-bar-container {
+      flex: 1;
+      height: 16px;
+      background-color: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background-color: var(--green);
+      border-radius: 999px;
+      transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .badge-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-en);
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge.hearts { color: var(--red); }
+    .badge.streak { color: var(--orange); }
+    .badge.xp { color: var(--blue); }
+
+    /* ---------- Exercise area ---------- */
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: 8px 16px 170px 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .lesson-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .lesson-subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* ---------- 3D push buttons (app style) ---------- */
+    .btn-3d {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border-radius: 16px;
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: transform 0.08s ease, filter 0.08s ease, background-color 0.15s ease;
+    }
+    .btn-3d:active { transform: translateY(4px); }
+
+    .btn-primary {
+      background-color: var(--green);
+      color: #fff;
+      box-shadow: 0 4px 0 var(--green-shade);
+    }
+    .btn-primary:active { box-shadow: 0 0 0 var(--green-shade); }
+
+    .btn-danger {
+      background-color: var(--danger);
+      color: #fff;
+      box-shadow: 0 4px 0 var(--danger-shade);
+    }
+    .btn-danger:active { box-shadow: 0 0 0 var(--danger-shade); }
+
+    .btn-outline {
+      background-color: var(--card);
+      color: var(--muted2);
+      border: 2px solid var(--border);
+      border-bottom-width: 4px;
+    }
+
+    .btn-3d:disabled {
+      background-color: var(--border);
+      color: var(--muted2);
+      border: 0;
+      box-shadow: none;
+      cursor: default;
+      transform: none;
+    }
+
+    .btn-skip {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      color: var(--muted2);
+      padding: 10px 4px;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+    .btn-skip:hover { color: var(--muted); }
+
+    /* ---------- Instruction cards ---------- */
+    .instruction-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 22px 20px;
+      box-shadow: 0 4px 0 var(--border);
+      margin-bottom: 20px;
+      animation: popIn 0.25s ease;
+    }
+
+    .rule-tag {
+      display: inline-block;
+      padding: 5px 12px;
+      background: var(--green-bg);
+      color: var(--green-text);
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      margin-bottom: 12px;
+    }
+
+    .rule-tag.warning {
+      background: #fff4e5;
+      color: #cc7800;
+    }
+    html.dark .rule-tag.warning { background: #342416; color: var(--orange); }
+
+    .rule-heading {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .rule-description {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .rule-description b { color: var(--green-text); }
+
+    .examples-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .example-box {
+      border: 2px solid var(--border);
+      border-bottom-width: 4px;
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      background: var(--bg2);
+    }
+
+    .example-word {
+      font-family: var(--font-en);
+      font-size: 21px;
+      font-weight: 900;
+      color: var(--text);
+      direction: ltr;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .example-word span.highlight {
+      color: var(--green);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .example-word span.silent {
+      color: var(--muted2);
+      text-decoration: line-through;
+    }
+
+    .example-trans {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-top: 5px;
+    }
+
+    .speak-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      padding: 2px;
+      line-height: 1;
+    }
+
+    /* ---------- Option cards (matches MultipleChoiceView) ---------- */
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-bottom-width: 4px;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+    .option-card:hover { background: var(--bg2); }
+
+    .opt-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border);
+      border-bottom-width: 4px;
+      border-radius: 10px;
+      font-family: var(--font-en);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted2);
+    }
+
+    .opt-text { flex: 1; }
+
+    .option-card.selected {
+      border-color: var(--blue-border);
+      background-color: var(--blue-bg);
+      color: var(--blue-shade);
+    }
+    .option-card.selected .opt-badge {
+      border-color: var(--blue-border);
+      color: var(--blue);
+    }
+
+    .option-card.correct {
+      border-color: var(--green-border);
+      background-color: var(--green-bg);
+      color: var(--green-text);
+      cursor: default;
+    }
+    .option-card.correct .opt-badge {
+      border-color: var(--green-border);
+      color: var(--green-text);
+    }
+
+    .option-card.wrong {
+      border-color: var(--red-border);
+      background-color: var(--red-bg);
+      color: var(--red);
+      cursor: default;
+    }
+    .option-card.wrong .opt-badge {
+      border-color: var(--red-border);
+      color: var(--red);
+    }
+
+    /* ---------- Pair matching (matches PairMatchView) ---------- */
+    .pairs-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .pair-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .pair-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-bottom-width: 4px;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .pair-card.en {
+      font-family: var(--font-en);
+      direction: ltr;
+    }
+
+    .pair-card.active {
+      border-color: var(--blue-border);
+      background-color: var(--blue-bg);
+      color: var(--blue-shade);
+    }
+
+    .pair-card.wrong {
+      border-color: var(--red-border);
+      background-color: var(--red-bg);
+      color: var(--red);
+      animation: shake 0.3s ease;
+    }
+
+    .pair-card.matched {
+      border-color: var(--green-border);
+      background-color: var(--green-bg);
+      color: var(--green-text);
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    /* ---------- Sorting buckets ---------- */
+    .chips-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+      min-height: 52px;
+      padding: 10px;
+      background: var(--bg2);
+      border-radius: 16px;
+    }
+
+    .word-chip {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-bottom-width: 4px;
+      border-radius: 12px;
+      padding: 8px 16px;
+      font-family: var(--font-en);
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.12s ease;
+    }
+
+    .bucket-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bucket-target {
+      border: 2px dashed var(--muted2);
+      border-radius: 16px;
+      padding: 12px;
+      background: var(--card);
+      min-height: 68px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.12s ease, background-color 0.12s ease;
+    }
+
+    .bucket-target.correct {
+      border-color: var(--green-border);
+      background: var(--green-bg);
+    }
+    .bucket-target.wrong {
+      border-color: var(--red-border);
+      background: var(--red-bg);
+    }
+
+    .bucket-header {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .bucket-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* ---------- Bottom sheet / feedback (matches FeedbackBanner) ---------- */
+    .bottom-sheet {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 42rem;
+      padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
+      background: var(--bg);
+      border-top: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 50;
+      transition: background-color 0.15s ease;
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .footer-row .btn-3d { flex: 0 0 auto; min-width: 150px; }
+
+    .bottom-sheet.correct {
+      background: var(--green-bg);
+      border-top-color: var(--green-border);
+    }
+    .bottom-sheet.wrong {
+      background: var(--red-bg);
+      border-top-color: var(--red-border);
+    }
+
+    .feedback-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 17px;
+    }
+    .feedback-row.correct { color: var(--green-text); }
+    .feedback-row.wrong { color: var(--red); }
+
+    .feedback-sub {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ---------- Modals ---------- */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-box {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      padding: 32px 24px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-icon { font-size: 60px; margin-bottom: 16px; }
+    .modal-title { font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+    .modal-desc {
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.7;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.96); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    @media (max-width: 420px) {
+      .badge-group { gap: 8px; font-size: 13px; }
+      .examples-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Lesson top bar -->
+  <header class="lesson-top">
+    <button class="exit-btn" type="button" onclick="exitDemo()" aria-label="Exit">✕</button>
+    <div class="progress-bar-container">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="badge-group">
+      <div class="badge hearts" title="Hearts">❤️ <span id="heartCount">5</span></div>
+      <div class="badge streak" title="Streak">⚡ <span id="streakCount">0</span></div>
+      <div class="badge xp" title="XP">💎 <span id="xpCount">0</span></div>
+    </div>
+  </header>
+
+  <!-- Exercise area -->
+  <main id="gameViewport"></main>
+
+  <!-- Bottom sheet -->
+  <div class="bottom-sheet" id="bottomSheet">
+    <div id="feedbackContainer" style="display: none;">
+      <div class="feedback-row" id="feedbackTitle"></div>
+      <div class="feedback-sub" id="feedbackBody"></div>
+    </div>
+    <div class="footer-row" id="footerRow">
+      <button class="btn-skip" type="button" id="skipButton" onclick="skipStep()">تێپەڕاندن (Skip)</button>
+      <button class="btn-3d btn-outline" id="mainActionButton" onclick="handleMainAction()">دەستپێبکە</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- Sound effects (Web Audio) ----------
+  class SoundFX {
+    constructor() { this.ctx = null; }
+    init() {
+      if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    playCorrect() {
+      this.init();
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.connect(gain); gain.connect(this.ctx.destination);
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.setValueAtTime(659.25, now + 0.1);
+      osc.frequency.setValueAtTime(783.99, now + 0.2);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+      osc.start(now); osc.stop(now + 0.45);
+    }
+    playWrong() {
+      this.init();
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.connect(gain); gain.connect(this.ctx.destination);
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.setValueAtTime(180, now + 0.15);
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+      osc.start(now); osc.stop(now + 0.35);
+    }
+    playClick() {
+      this.init();
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.connect(gain); gain.connect(this.ctx.destination);
+      osc.frequency.setValueAtTime(800, now);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+      osc.start(now); osc.stop(now + 0.08);
+    }
+  }
+
+  const sfx = new SoundFX();
+
+  function speakWord(word) {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.85;
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+
+  function exitDemo() {
+    window.location.href = '/learn?course=sunrise-3';
+  }
+
+  // ---------- Lesson data ----------
+  const LESSON_SLIDES = [
+    {
+      type: "instruction",
+      tag: "یاسای ١: سەرەتای وشە",
+      title: "دەنگی (گ) لە سەرەتادا",
+      desc: "کاتێک پیتەکانی <b>gh</b> دەکەونە سەرەتای هەر وشەیەکەوە، بە دەنگی <b>(گ)</b> دەخوێندرێنەوە:",
+      examples: [
+        { en: "Ghost", highlight: "Gh", rest: "ost", ku: "تارمایی", sound: "Ghost" },
+        { en: "Ghana", highlight: "Gh", rest: "ana", ku: "وڵاتی غانا", sound: "Ghana" }
+      ]
+    },
+    {
+      type: "instruction",
+      tag: "یاسای ٢: ناوەڕاستی وشە",
+      title: "بێدەنگ لە ناوەڕاستدا",
+      desc: "ئەگەر پیتەکانی <b>gh</b> لە ناوەڕاستی وشەدا هاتن، بە تەواوی <b>بێدەنگ (Silent)</b> دەبن و ناخوێندرێنەوە:",
+      examples: [
+        { en: "Night", pre: "Ni", silent: "gh", post: "t", ku: "شەو", sound: "Night" },
+        { en: "Fight", pre: "Fi", silent: "gh", post: "t", ku: "شەڕ", sound: "Fight" }
+      ]
+    },
+    {
+      type: "instruction",
+      tag: "یاسای ٣: کۆتایی وشە",
+      title: "دەنگی (ف) لە کۆتاییدا",
+      desc: "لە زۆربەی وشە باوەکاندا، کاتێک <b>gh</b> دەکەوێتە کۆتایی وشە، دەنگی <b>(ف)</b> دروست دەکات:",
+      examples: [
+        { en: "Laugh", pre: "Lau", highlight: "gh", ku: "پێکەنین", sound: "Laugh" },
+        { en: "Cough", pre: "Cou", highlight: "gh", ku: "کۆکە / کۆخە", sound: "Cough" }
+      ]
+    },
+    {
+      type: "instruction",
+      tag: "تێبینیی گرنگ: حاڵەتی تایبەت",
+      isWarning: true,
+      title: "کۆتایی بێدەنگ (Silent)",
+      desc: "ئاگاداربە! هەندێک وشە هەن کە <b>gh</b> لە کۆتاییاندایە بەڵام ناکرێن بە (ف)، بەڵکو بە <b>بێدەنگی</b> دەمێننەوە:",
+      examples: [
+        { en: "High", pre: "Hi", silent: "gh", ku: "بەرز", sound: "High" },
+        { en: "Sigh", pre: "Si", silent: "gh", ku: "هەناسەی سارد / هەڵکێشان", sound: "Sigh" }
+      ]
+    },
+    {
+      type: "quiz_choice",
+      title: "دەنگی پیتی (gh) لەم وشەیەدا چییە؟",
+      promptWord: "Ghost",
+      kuPrompt: "تارمایی",
+      options: [
+        { text: "دەنگی (ف)", correct: false },
+        { text: "بێ دەنگە (ناخوێندرێتەوە)", correct: false },
+        { text: "دەنگی (گ)", correct: true }
+      ],
+      explanation: "چونکە gh لە سەرەتای وشەیە، دەنگی (گ) دەدات."
+    },
+    {
+      type: "quiz_pairs",
+      title: "وشەکان بە واتا کوردییەکەیان ببەستەوە:",
+      pairs: [
+        { id: 1, en: "Night", ku: "شەو" },
+        { id: 2, en: "Fight", ku: "شەڕ" },
+        { id: 3, en: "Laugh", ku: "پێکەنین" },
+        { id: 4, en: "Cough", ku: "کۆکە" }
+      ]
+    },
+    {
+      type: "quiz_choice",
+      title: "ئایا ئەم یاسایە ڕاستە یان هەڵە؟",
+      statement: "«کاتێک پیتەکانی gh دەکەونە ناوەڕاستی وشە، دەنگی (ف) دەدەن.»",
+      options: [
+        { text: "ڕاستە", correct: false },
+        { text: "هەڵەیە (بێدەنگ دەبن)", correct: true }
+      ],
+      explanation: "لە ناوەڕاستدا (وەک Night و Fight) هەمیشە بێ دەنگ دەبن."
+    },
+    {
+      type: "quiz_sort",
+      title: "وشەکان بخەرە ناو دەستەی گونجاو:",
+      words: ["Ghost", "Ghana", "Laugh", "Cough", "High", "Sigh"],
+      buckets: {
+        g: { label: "دەنگی (گ)", words: ["Ghost", "Ghana"] },
+        f: { label: "دەنگی (ف)", words: ["Laugh", "Cough"] },
+        silent: { label: "بێدەنگ (Silent)", words: ["High", "Sigh"] }
+      }
+    },
+    {
+      type: "quiz_choice",
+      title: "کامیان لەمانە دەنگی (ف) دروست ناکات؟",
+      promptWord: "دۆزینەوەی وشەی جیاواز",
+      kuPrompt: "بەپێی تێبینییە تایبەتەکە",
+      options: [
+        { text: "Laugh", correct: false },
+        { text: "High", correct: true },
+        { text: "Cough", correct: false }
+      ],
+      explanation: "لە وشەی High پیتەکانی gh بێدەنگن و ناکرێن بە (ف)."
+    }
+  ];
+
+  // ---------- State ----------
+  let currentStep = 0;
+  let hearts = 5;
+  let streak = 0;
+  let xp = 0;
+  let selectedOption = null;
+  let matchingState = { selectedEn: null, selectedKu: null, matchedCount: 0 };
+  let sortState = { selectedWord: null, placed: { g: [], f: [], silent: [] } };
+  let isAnswerChecked = false;
+
+  const viewport = document.getElementById("gameViewport");
+  const bottomSheet = document.getElementById("bottomSheet");
+  const mainBtn = document.getElementById("mainActionButton");
+  const skipButton = document.getElementById("skipButton");
+  const footerRow = document.getElementById("footerRow");
+  const feedbackContainer = document.getElementById("feedbackContainer");
+  const feedbackTitle = document.getElementById("feedbackTitle");
+  const feedbackBody = document.getElementById("feedbackBody");
+  const progressFill = document.getElementById("progressFill");
+  const heartCountEl = document.getElementById("heartCount");
+  const xpCountEl = document.getElementById("xpCount");
+  const streakCountEl = document.getElementById("streakCount");
+
+  function renderCurrentStep() {
+    isAnswerChecked = false;
+    feedbackContainer.style.display = "none";
+    bottomSheet.className = "bottom-sheet";
+    mainBtn.className = "btn-3d btn-primary";
+    skipButton.style.visibility = "visible";
+
+    const progress = (currentStep / LESSON_SLIDES.length) * 100;
+    progressFill.style.width = `${progress}%`;
+
+    const slide = LESSON_SLIDES[currentStep];
+
+    if (slide.type === "instruction") {
+      renderInstructionSlide(slide);
+      mainBtn.innerText = currentStep === 3 ? "تێگەیشتم، با دەست بە تاقیکردنەوە بکەین!" : "بەردەوام بە";
+      mainBtn.disabled = false;
+      skipButton.style.visibility = "hidden";
+    } else if (slide.type === "quiz_choice") {
+      renderChoiceQuiz(slide);
+      mainBtn.innerText = "پشکنین";
+      mainBtn.disabled = true;
+    } else if (slide.type === "quiz_pairs") {
+      renderPairsQuiz(slide);
+      mainBtn.innerText = "پشکنین";
+      mainBtn.disabled = true;
+    } else if (slide.type === "quiz_sort") {
+      renderSortQuiz(slide);
+      mainBtn.innerText = "پشکنین";
+      mainBtn.disabled = true;
+    }
+  }
+
+  // 1. Instruction slide
+  function renderInstructionSlide(slide) {
+    const examplesHtml = slide.examples.map(ex => {
+      let wordMarkup = "";
+      if (ex.highlight && ex.rest) {
+        wordMarkup = `<span class="highlight">${ex.highlight}</span>${ex.rest}`;
+      } else if (ex.pre && ex.silent && ex.post) {
+        wordMarkup = `${ex.pre}<span class="silent">${ex.silent}</span>${ex.post}`;
+      } else if (ex.pre && ex.highlight) {
+        wordMarkup = `${ex.pre}<span class="highlight">${ex.highlight}</span>`;
+      } else if (ex.pre && ex.silent) {
+        wordMarkup = `${ex.pre}<span class="silent">${ex.silent}</span>`;
+      }
+      return `
+        <div class="example-box">
+          <div class="example-word">
+            ${wordMarkup}
+            <button class="speak-btn" onclick="speakWord('${ex.sound}')" title="گوێبگرە">🔊</button>
+          </div>
+          <div class="example-trans">${ex.ku}</div>
+        </div>
+      `;
+    }).join("");
+
+    viewport.innerHTML = `
+      <div class="lesson-subtitle" style="margin-bottom: 14px;">وانەی سەرەتایی: چۆنیەتی خوێندنەوە</div>
+      <div class="instruction-card">
+        <span class="rule-tag ${slide.isWarning ? 'warning' : ''}">${slide.tag}</span>
+        <div class="rule-heading">${slide.title}</div>
+        <div class="rule-description">${slide.desc}</div>
+        <div class="examples-grid">${examplesHtml}</div>
+      </div>
+    `;
+  }
+
+  // 2. Multiple choice
+  function renderChoiceQuiz(slide) {
+    selectedOption = null;
+    let promptHtml = "";
+    if (slide.promptWord) {
+      promptHtml = `
+        <div class="instruction-card" style="text-align: center; padding: 20px;">
+          <div class="example-word" style="font-size: 30px; justify-content: center;">
+            ${slide.promptWord}
+            <button class="speak-btn" onclick="speakWord('${slide.promptWord}')">🔊</button>
+          </div>
+          <div class="example-trans" style="font-size: 15px;">واتا: ${slide.kuPrompt}</div>
+        </div>
+      `;
+    } else if (slide.statement) {
+      promptHtml = `
+        <div class="instruction-card" style="text-align: center; font-size: 18px; font-weight: 700; line-height: 1.8;">
+          ${slide.statement}
+        </div>
+      `;
+    }
+
+    const optionsHtml = slide.options.map((opt, i) => `
+      <div class="option-card" data-index="${i}" onclick="selectOption(${i})">
+        <span class="opt-badge">${i + 1}</span>
+        <span class="opt-text">${opt.text}</span>
+      </div>
+    `).join("");
+
+    viewport.innerHTML = `
+      <div class="lesson-title">${slide.title}</div>
+      ${promptHtml}
+      <div class="options-grid" id="optionsContainer">${optionsHtml}</div>
+    `;
+  }
+
+  function selectOption(index) {
+    if (isAnswerChecked) return;
+    sfx.playClick();
+    selectedOption = index;
+    document.querySelectorAll(".option-card").forEach((c, idx) => {
+      c.classList.toggle("selected", idx === index);
+    });
+    mainBtn.disabled = false;
+    mainBtn.className = "btn-3d btn-primary";
+  }
+
+  // 3. Matching pairs
+  function renderPairsQuiz(slide) {
+    matchingState = { selectedEn: null, selectedKu: null, matchedCount: 0 };
+    const enShuffled = [...slide.pairs].sort(() => Math.random() - 0.5);
+    const kuShuffled = [...slide.pairs].sort(() => Math.random() - 0.5);
+
+    viewport.innerHTML = `
+      <div class="lesson-title">${slide.title}</div>
+      <div class="lesson-subtitle">یەک وشەی ئینگلیزی و یەک واتای کوردی هەڵبژێرە</div>
+      <div class="pairs-container">
+        <div class="pair-col" id="enCol">
+          ${enShuffled.map(p => `
+            <div class="pair-card en" data-id="${p.id}" onclick="handlePairClick(this, 'en')">${p.en}</div>
+          `).join("")}
+        </div>
+        <div class="pair-col" id="kuCol">
+          ${kuShuffled.map(p => `
+            <div class="pair-card" data-id="${p.id}" onclick="handlePairClick(this, 'ku')">${p.ku}</div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  function handlePairClick(el, type) {
+    if (isAnswerChecked) return;
+    sfx.playClick();
+    const id = el.dataset.id;
+    const colId = type === 'en' ? 'enCol' : 'kuCol';
+
+    document.querySelectorAll(`#${colId} .pair-card`).forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+
+    if (type === 'en') {
+      matchingState.selectedEn = id;
+      speakWord(el.innerText);
+    } else {
+      matchingState.selectedKu = id;
+    }
+
+    if (matchingState.selectedEn && matchingState.selectedKu) {
+      if (matchingState.selectedEn === matchingState.selectedKu) {
+        sfx.playCorrect();
+        document.querySelector(`.pair-card.en[data-id="${matchingState.selectedEn}"]`).classList.add('matched');
+        document.querySelector(`.pair-card:not(.en)[data-id="${matchingState.selectedKu}"]`).classList.add('matched');
+        matchingState.matchedCount++;
+        matchingState.selectedEn = null;
+        matchingState.selectedKu = null;
+
+        if (matchingState.matchedCount === 4) {
+          mainBtn.disabled = false;
+          mainBtn.className = "btn-3d btn-primary";
+          mainBtn.innerText = "بەردەوام بە";
+          isAnswerChecked = true;
+          skipButton.style.visibility = "hidden";
+          showFeedback(true, "نایابە! هەموو جووتەکان دروستن.");
+        }
+      } else {
+        sfx.playWrong();
+        const wrongEn = document.querySelector(`.pair-card.en[data-id="${matchingState.selectedEn}"]`);
+        const wrongKu = document.querySelector(`.pair-card:not(.en)[data-id="${matchingState.selectedKu}"]`);
+        wrongEn.classList.add('wrong');
+        wrongKu.classList.add('wrong');
+        setTimeout(() => {
+          wrongEn.classList.remove('wrong', 'active');
+          wrongKu.classList.remove('wrong', 'active');
+          matchingState.selectedEn = null;
+          matchingState.selectedKu = null;
+        }, 420);
+      }
+    }
+  }
+
+  // 4. Sorting buckets
+  function renderSortQuiz(slide) {
+    sortState = { selectedWord: null, placed: { g: [], f: [], silent: [] } };
+    viewport.innerHTML = `
+      <div class="lesson-title">${slide.title}</div>
+      <div class="lesson-subtitle">وشەیەک دیاری بکە و پاشان سندوقی گونجاو دابگرە</div>
+      <div class="chips-bank" id="chipsBank">
+        ${slide.words.map(w => `<div class="word-chip" onclick="selectChip('${w}', this)">${w}</div>`).join("")}
+      </div>
+      <div class="bucket-group">
+        <div class="bucket-target" data-bucket="g" onclick="placeChip('g')">
+          <div class="bucket-header">دەنگی (گ) - لە سەرەتادا</div>
+          <div class="bucket-chips" id="bucket_g"></div>
+        </div>
+        <div class="bucket-target" data-bucket="f" onclick="placeChip('f')">
+          <div class="bucket-header">دەنگی (ف) - لە کۆتاییدا</div>
+          <div class="bucket-chips" id="bucket_f"></div>
+        </div>
+        <div class="bucket-target" data-bucket="silent" onclick="placeChip('silent')">
+          <div class="bucket-header">بێدەنگ (Silent) - ناوەڕاست یان حاڵەتی تایبەت</div>
+          <div class="bucket-chips" id="bucket_silent"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  function selectChip(word, el) {
+    if (isAnswerChecked) return;
+    sfx.playClick();
+    speakWord(word);
+    document.querySelectorAll(".word-chip").forEach(c => c.style.borderColor = "var(--border)");
+    el.style.borderColor = "var(--blue)";
+    sortState.selectedWord = { word, el };
+  }
+
+  function placeChip(bucketKey) {
+    if (!sortState.selectedWord || isAnswerChecked) return;
+    sfx.playClick();
+    const { word, el } = sortState.selectedWord;
+
+    el.remove();
+    sortState.placed[bucketKey].push(word);
+
+    const chipEl = document.createElement("div");
+    chipEl.className = "word-chip";
+    chipEl.style.fontSize = "13px";
+    chipEl.style.padding = "4px 10px";
+    chipEl.style.cursor = "default";
+    chipEl.innerText = word;
+    document.getElementById(`bucket_${bucketKey}`).appendChild(chipEl);
+
+    sortState.selectedWord = null;
+
+    const totalPlaced = Object.values(sortState.placed).reduce((acc, arr) => acc + arr.length, 0);
+    if (totalPlaced === LESSON_SLIDES[currentStep].words.length) {
+      mainBtn.disabled = false;
+      mainBtn.className = "btn-3d btn-primary";
+    }
+  }
+
+  // 5. Main action
+  function handleMainAction() {
+    const slide = LESSON_SLIDES[currentStep];
+
+    if (slide.type === "instruction") {
+      sfx.playClick();
+      advance();
+      return;
+    }
+
+    if (!isAnswerChecked) {
+      let isCorrect = false;
+      let explanation = "";
+
+      if (slide.type === "quiz_choice") {
+        if (selectedOption === null) return;
+        isCorrect = slide.options[selectedOption].correct;
+        explanation = slide.explanation;
+
+        document.querySelectorAll(".option-card").forEach((card, i) => {
+          card.classList.remove("selected");
+          if (slide.options[i].correct) card.classList.add("correct");
+          else if (i === selectedOption) card.classList.add("wrong");
+        });
+      } else if (slide.type === "quiz_sort") {
+        const correctBuckets = slide.buckets;
+        isCorrect = (
+          [...sortState.placed.g].sort().join(",") === [...correctBuckets.g.words].sort().join(",") &&
+          [...sortState.placed.f].sort().join(",") === [...correctBuckets.f.words].sort().join(",") &&
+          [...sortState.placed.silent].sort().join(",") === [...correctBuckets.silent.words].sort().join(",")
+        );
+        explanation = isCorrect ? "هەموو وشەکان لە سندوقی تەواوی خۆیان دانران!" : "هەندێک لە وشەکان لە سندوقی دروستدا نین.";
+
+        document.querySelectorAll(".bucket-target").forEach((bucketEl) => {
+          const key = bucketEl.dataset.bucket;
+          const expected = [...correctBuckets[key].words].sort().join(",");
+          const actual = [...sortState.placed[key]].sort().join(",");
+          bucketEl.classList.add(actual === expected ? "correct" : "wrong");
+        });
+      }
+
+      if (isCorrect) {
+        sfx.playCorrect();
+        streak++;
+        xp += 15;
+        showFeedback(true, explanation || "ئافەرم! وەڵامەکەت تەواوە.");
+      } else {
+        sfx.playWrong();
+        streak = 0;
+        hearts--;
+        showFeedback(false, explanation || "وەڵامەکەت هەڵەیە، ئاگاداری یاساکە بە!");
+        updateStats();
+        if (hearts <= 0) {
+          triggerGameOver();
+          return;
+        }
+      }
+
+      updateStats();
+      isAnswerChecked = true;
+      skipButton.style.visibility = "hidden";
+      mainBtn.innerText = "بەردەوام بە";
+    } else {
+      sfx.playClick();
+      advance();
+    }
+  }
+
+  function skipStep() {
+    sfx.playClick();
+    advance();
+  }
+
+  function advance() {
+    currentStep++;
+    if (currentStep >= LESSON_SLIDES.length) triggerVictory();
+    else renderCurrentStep();
+  }
+
+  function showFeedback(isCorrect, message) {
+    feedbackContainer.style.display = "block";
+    bottomSheet.className = `bottom-sheet ${isCorrect ? 'correct' : 'wrong'}`;
+    feedbackTitle.className = `feedback-row ${isCorrect ? 'correct' : 'wrong'}`;
+    feedbackTitle.innerHTML = isCorrect ? "<span>✔ نایابە!</span>" : "<span>✖ هەڵەیە!</span>";
+    feedbackBody.innerText = message;
+    mainBtn.className = `btn-3d ${isCorrect ? 'btn-primary' : 'btn-danger'}`;
+  }
+
+  function updateStats() {
+    heartCountEl.innerText = hearts;
+    xpCountEl.innerText = xp;
+    streakCountEl.innerText = streak;
+  }
+
+  function triggerGameOver() {
+    const modal = document.createElement("div");
+    modal.className = "modal-backdrop";
+    modal.innerHTML = `
+      <div class="modal-box">
+        <div class="modal-icon">💔</div>
+        <div class="modal-title">دڵەکانت تەواو بوون!</div>
+        <div class="modal-desc">پێویستە جارێکی تر وانە سەرەتاییەکان بخوێنیتەوە بۆ ئەوەی یاساکانی gh بە تەواوی فێربیت.</div>
+        <button class="btn-3d btn-primary" onclick="restartLesson()">دووبارە دەستپێبکەوە</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  function triggerVictory() {
+    progressFill.style.width = "100%";
+    const modal = document.createElement("div");
+    modal.className = "modal-backdrop";
+    modal.innerHTML = `
+      <div class="modal-box">
+        <div class="modal-icon">🏆</div>
+        <div class="modal-title">پیرۆزە! وانەکەت تەواو کرد</div>
+        <div class="modal-desc">تۆ هەموو یاساکانی بێژەکردنی پیتی gh فێربوویت و ${xp} بەردی گرانبەها (XP) کۆکردەوە!</div>
+        <button class="btn-3d btn-primary" onclick="restartLesson()">دووبارەکردنەوەی وانە</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  function restartLesson() {
+    document.querySelectorAll(".modal-backdrop").forEach(m => m.remove());
+    currentStep = 0;
+    hearts = 5;
+    streak = 0;
+    xp = 0;
+    updateStats();
+    renderCurrentStep();
+  }
+
+  // Initialize
+  renderCurrentStep();
+</script>
+</body>
+</html>
