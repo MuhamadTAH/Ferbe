@@ -232,13 +232,7 @@ export const recordAnswer = mutation({
       .first();
     if (!stats) return { hearts: 5 };
 
-    if (!args.correct) {
-      const hearts = Math.max(0, stats.hearts - 1);
-      if (hearts !== stats.hearts) {
-        await ctx.db.patch(stats._id, { hearts });
-      }
-      return { hearts };
-    }
+    // Hearts deduction is disabled so mistakes do not deplete hearts during learning
     return { hearts: stats.hearts };
   },
 });

@@ -57,13 +57,13 @@ describe("lesson session machine", () => {
     expect(currentExercise(s)?._id).toBe("e2");
   });
 
-  it("re-queues a wrong answer and deducts a heart upon CONTINUE", () => {
+  it("re-queues a wrong answer while keeping hearts upon CONTINUE", () => {
     let s = started();
     s = sessionReducer(s, { type: "SELECT", value: "Water" });
     s = sessionReducer(s, { type: "SUBMIT" });
     s = sessionReducer(s, { type: "EVALUATE" });
     expect(s.phase).toBe("FEEDBACK_ERROR");
-    expect(s.hearts).toBe(4);
+    expect(s.hearts).toBe(5);
     // Remains on e1 during feedback error so user sees their mistake
     expect(currentExercise(s)?._id).toBe("e1");
     expect(s.correctSolution).toBe("Hello");
@@ -74,7 +74,7 @@ describe("lesson session machine", () => {
     expect(s.queue[s.queue.length - 1]._id).toBe("e1");
   });
 
-  it("transitions to HEARTS_EXHAUSTED when hearts hit 0", () => {
+  it("keeps hearts and remains on FEEDBACK_ERROR without locking out the learner", () => {
     let s = started();
     for (let i = 0; i < 5; i++) {
       s = sessionReducer(s, { type: "SELECT", value: "Wrong" });
@@ -82,8 +82,8 @@ describe("lesson session machine", () => {
       s = sessionReducer(s, { type: "EVALUATE" });
       if (i < 4) s = sessionReducer(s, { type: "CONTINUE" });
     }
-    expect(s.hearts).toBe(0);
-    expect(s.phase).toBe("HEARTS_EXHAUSTED");
+    expect(s.hearts).toBe(5);
+    expect(s.phase).toBe("FEEDBACK_ERROR");
   });
 
   it("restarting from HEARTS_EXHAUSTED resets hearts and queue", () => {
@@ -221,7 +221,7 @@ describe("lesson session machine", () => {
 
       expect(s.phase).toBe("FEEDBACK_ERROR");
       expect(s.lastCorrect).toBe(false);
-      expect(s.hearts).toBe(4);
+      expect(s.hearts).toBe(5);
     });
 
     it("accepts correct spoken input with or without punctuation", () => {

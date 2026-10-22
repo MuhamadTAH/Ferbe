@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  Star,
   Zap,
   Target,
   Flame,
@@ -11,7 +10,6 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
-  RotateCcw,
 } from "lucide-react";
 import { PushButton } from "@/components/duo/PushButton";
 import { QuestChest } from "@/components/duo/QuestChest";
@@ -361,36 +359,20 @@ export function LessonComplete({
           </>
         )}
 
-        {/* REVIEW LESSON Button (Duolingo authentic) */}
+        {/* REVIEW LESSON Button */}
         <button
           type="button"
-          onClick={() => setIsScorecardOpen(true)}
+          onClick={() => {
+            if (onRestart) {
+              onRestart();
+            } else if (typeof window !== "undefined") {
+              window.location.reload();
+            }
+          }}
           className="w-full rounded-2xl border-2 border-[#E5E5E5] border-b-4 bg-white py-3 text-xs font-extrabold uppercase tracking-wider text-[#1CB0F6] transition-all hover:bg-[#F7F7F7] active:translate-y-[2px] active:border-b-2 shadow-xs cursor-pointer dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#3BC0F8] dark:hover:bg-[#202F36]"
         >
           REVIEW LESSON
         </button>
-
-        {/* PRACTICE AGAIN Button */}
-        {onRestart ? (
-          <button
-            type="button"
-            onClick={onRestart}
-            className="flex items-center justify-center gap-1.5 w-full rounded-2xl border-2 border-[#E5E5E5] border-b-4 bg-white py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#777777] transition-all hover:bg-[#F7F7F7] active:translate-y-[2px] active:border-b-2 shadow-xs cursor-pointer dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#8495A0] dark:hover:bg-[#202F36]"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span>PRACTICE AGAIN</span>
-          </button>
-        ) : (
-          <Link href="/practice" className="w-full">
-            <button
-              type="button"
-              className="flex items-center justify-center gap-1.5 w-full rounded-2xl border-2 border-[#E5E5E5] border-b-4 bg-white py-2.5 text-xs font-extrabold uppercase tracking-wider text-[#777777] transition-all hover:bg-[#F7F7F7] active:translate-y-[2px] active:border-b-2 shadow-xs cursor-pointer dark:border-[#37464F] dark:bg-[#131F24] dark:text-[#8495A0] dark:hover:bg-[#202F36]"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              <span>PRACTICE AGAIN</span>
-            </button>
-          </Link>
-        )}
       </div>
 
       {/* SCORECARD DRAWER MODAL */}

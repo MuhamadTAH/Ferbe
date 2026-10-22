@@ -27,6 +27,7 @@ export function SlotFillerView({
     : ["great", "hello", "how", "are"]);
 
   const instruction = (solution.instruction as string) || "بۆشاییەکە پڕبکەرەوە (Slot-and-Filler)";
+  const imageUrl = (solution.imageUrl as string) || "";
   const visualCue = (solution.visualCue as string) || "";
   const frameText = (solution.frameText as string) || "I'm [ ___ ], thank you.";
   const parts = frameText.split(/\[\s*___\s*\]/);
@@ -62,11 +63,19 @@ export function SlotFillerView({
 
       {/* Target sentence frame */}
       <div className="mx-auto flex flex-col w-full max-w-md items-center justify-center rounded-3xl border-2 border-[#1CB0F6]/40 bg-[#DDF4FF] dark:bg-[#1C3B4E] px-6 py-6 shadow-sm gap-2">
-        {visualCue && (
+        {imageUrl ? (
+          <div className="mb-2 flex items-center justify-center">
+            <img
+              src={imageUrl}
+              alt={correctAnswer}
+              className="h-28 w-28 object-contain rounded-2xl bg-white p-2 shadow-sm border border-black/5"
+            />
+          </div>
+        ) : visualCue ? (
           <div className="text-4xl mb-1 select-none animate-in zoom-in-95">
             {visualCue}
           </div>
-        )}
+        ) : null}
         <div dir="ltr" className="flex items-center justify-center flex-wrap gap-2 text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white">
           {prefix && <span>{prefix}</span>}
           <span

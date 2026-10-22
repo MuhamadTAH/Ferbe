@@ -189,6 +189,7 @@ function SessionInner({
         currentStreak={result?.currentStreak ?? 0}
         totalXp={result?.totalXp ?? 0}
         nextLessonId={session.nextLessonId}
+        onRestart={restart}
       />
     );
   }

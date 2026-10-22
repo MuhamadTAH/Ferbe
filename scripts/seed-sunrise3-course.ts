@@ -120,6 +120,7 @@ const UNIT_DATA: UnitData[] = [
       w("pen", "پێن", "قەڵەم", "🖊️"),
       w("car", "کار", "ئۆتۆمبێل", "🚗"),
       w("apple", "ئاپڵ", "سێو", "🍎", "an"),
+      w("cat", "کات", "پشیلە", "🐱"),
     ],
     story: [
       "Hello! My name's Sirwa.",
@@ -132,7 +133,7 @@ const UNIT_DATA: UnitData[] = [
       "He has a cat.",
     ],
     phonics: ["ant", "cat", "apple", "hat", "pen"],
-    punctuation: ["I have a car.", "She has an apple.", "He has a cat."],
+    punctuation: ["I have a car.", "She has an apple.", "He has a cat.", "He is Nabaz."],
   },
   {
     topic: "Review: Present continuous",
@@ -612,7 +613,7 @@ export function buildPractice1Exercises(words: Word[]): ExerciseInput[] {
     exercises.push({
       type: "multiple_choice",
       promptText: "What is this?",
-      distractors: otherWords(words, x.english),
+      distractors: otherWords(words, x.english).slice(0, 2),
       solutionData: {
         subtype: "image_mcq",
         instruction: "هەڵبژاردنی وێنە (Choose the word)",
@@ -639,9 +640,372 @@ export function buildPractice1Exercises(words: Word[]): ExerciseInput[] {
         spokenText: x.english,
         subTextGuide: x.pron,
         visualScaffold: `${x.article} ${x.english} — ${x.meaning}`,
+        imageUrl: x.image,
       },
       order: order++,
     });
+  });
+
+  return exercises;
+}
+
+function generateStoryDecoys(correct: string, unitWords: Word[]): string[] {
+  const decoys: string[] = [];
+
+  // 1. Grammatical & pronoun foils (He's / She's / I'm, He has / She has / I have)
+  if (correct.startsWith("He's ")) {
+    decoys.push(correct.replace("He's ", "She's "));
+    decoys.push(correct.replace("He's ", "I'm "));
+  } else if (correct.startsWith("She's ")) {
+    decoys.push(correct.replace("She's ", "He's "));
+    decoys.push(correct.replace("She's ", "I'm "));
+  } else if (correct.startsWith("I'm ") || correct.startsWith("My name's ")) {
+    decoys.push("He's Nabaz.");
+    decoys.push("She's Sirwa.");
+  } else if (correct.startsWith("He has ")) {
+    decoys.push(correct.replace("He has ", "She has "));
+    decoys.push(correct.replace("He has ", "I have "));
+  } else if (correct.startsWith("She has ")) {
+    decoys.push(correct.replace("She has ", "He has "));
+    decoys.push(correct.replace("She has ", "I have "));
+  } else if (correct.startsWith("I have ")) {
+    decoys.push(correct.replace("I have ", "He has "));
+    decoys.push(correct.replace("I have ", "She has "));
+  } else if (correct === "Wow!") {
+    decoys.push("Goodbye!");
+    decoys.push("Oh no!");
+  }
+
+  // 2. Noun foils from unit vocabulary
+  if (decoys.length < 2 && unitWords.length >= 2) {
+    for (const w of unitWords) {
+      for (const targetWord of unitWords) {
+        if (targetWord.english !== w.english) {
+          const re = new RegExp(`\\b${targetWord.english}\\b`, "i");
+          if (re.test(correct)) {
+            const variant = correct.replace(re, w.english);
+            if (variant !== correct && !decoys.includes(variant)) {
+              decoys.push(variant);
+            }
+          }
+        }
+      }
+      if (decoys.length >= 2) break;
+    }
+  }
+
+  // 3. Fallback decoys if needed
+  if (decoys.length < 2) {
+    decoys.push("Yes, it is.");
+    decoys.push("No, it isn't.");
+  }
+
+  return decoys.slice(0, 2);
+}
+
+/**
+ * Custom builder for Sunrise 3 SB Page 5:
+ *   Activity 1: Listen and read. Say (Panels 1-4: Sirwa, Nabaz, pen, yo-yo, Wow!)
+ *   Activity 2: Choose objects. Point and say (cat, apple, car)
+ */
+export function buildUnit1Practice2Exercises(): ExerciseInput[] {
+  const exercises: ExerciseInput[] = [];
+  let order = 1;
+
+  // -------------------------------------------------------------------------
+  // Part 1: Sunrise 3 SB Page 5, Activity 1: Listen and read. Say.
+  // -------------------------------------------------------------------------
+
+  // 1. Panel 1 — Who is this girl?
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "ناوی ئەو کچە چییە؟ (What is her name?)",
+    distractors: ["Emma", "Kate"],
+    solutionData: {
+      subtype: "image_mcq",
+      instruction: "کتێبی Sunrise 3 — لاپەڕە ٥ (Listen & Read)",
+      imageUrl: "/images/sunrise3/stories/unit1_panel1.png",
+      correct: "Sirwa",
+      isSpeaking: true,
+      type: "speak",
+      spokenText: "Hello! My name's Sirwa.",
+    },
+    order: order++,
+  });
+
+  // 2. Panel 1 — What does Sirwa say?
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "سیروە چی دەڵێت کاتێک سڵاو دەکات؟",
+    distractors: ["Goodbye! My name's Sirwa.", "Good night!"],
+    solutionData: {
+      subtype: "image_mcq",
+      instruction: "سڵاوکردن و ناساندن (Greeting)",
+      imageUrl: "/images/sunrise3/stories/unit1_panel1.png",
+      correct: "Hello! My name's Sirwa.",
+      isSpeaking: true,
+      type: "speak",
+      spokenText: "Hello! My name's Sirwa.",
+    },
+    order: order++,
+  });
+
+  // 3. Panel 2 — Who is the boy?
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "ناوی ئەو کوڕە چییە؟ (What is his name?)",
+    distractors: ["Jack", "Dan"],
+    solutionData: {
+      subtype: "image_mcq",
+      instruction: "کتێبی Sunrise 3 — لاپەڕە ٥ (Panel 2)",
+      imageUrl: "/images/sunrise3/stories/unit1_panel2.png",
+      correct: "Nabaz",
+      isSpeaking: true,
+      type: "speak",
+      spokenText: "He's Nabaz.",
+    },
+    order: order++,
+  });
+
+  // 4. Panel 2 — How does Sirwa introduce Nabaz?
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "سیروە چۆن هاوڕێکەی دەناسێنێت؟ (How does Sirwa introduce him?)",
+    distractors: ["She's Nabaz.", "I'm Nabaz."],
+    solutionData: {
+      subtype: "image_mcq",
+      instruction: "ناساندنی کەسی سێیەم (Introducing a friend)",
+      imageUrl: "/images/sunrise3/stories/unit1_panel2.png",
+      correct: "He's Nabaz.",
+      isSpeaking: true,
+      type: "speak",
+      spokenText: "He's Nabaz.",
+    },
+    order: order++,
+  });
+
+  // 5. Panel 3 — What does Nabaz have? (He has a pen.)
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "نابەز چی پێیە؟ (What does he have?)",
+    distractors: ["He has a yo-yo.", "He has a car."],
+    solutionData: {
+      subtype: "image_mcq",
+      instruction: "خاوەندارێتی (What he has)",
+      imageUrl: "/images/sunrise3/stories/unit1_panel3.png",
+      correct: "He has a pen.",
+      isSpeaking: true,
+      type: "speak",
+      spokenText: "He has a pen.",
+    },
+    order: order++,
+  });
+
+  // 6. Panel 3 — What does Sirwa have? (I have a yo-yo.)
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "سیروە چی پێیە؟ (What does she have?)",
+    distractors: ["I have a pen.", "I have a cat."],
+    solutionData: {
+      subtype: "image_mcq",
+      instruction: "خاوەندارێتی (What she has)",
+      imageUrl: "/images/sunrise3/stories/unit1_panel3.png",
+      correct: "I have a yo-yo.",
+      isSpeaking: true,
+      type: "speak",
+      spokenText: "I have a yo-yo.",
+    },
+    order: order++,
+  });
+
+  // 7. Panel 4 — What is Nabaz's reaction? (Wow!)
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "کاردانەوە و سەرسامی نەبەز چییە؟ (What is his reaction?)",
+    distractors: ["Goodbye!", "Sorry!"],
+    solutionData: {
+      subtype: "image_mcq",
+      instruction: "دەربڕینی سەرسوڕمان (Reaction / Emotion)",
+      imageUrl: "/images/sunrise3/stories/unit1_panel4.png",
+      correct: "Wow!",
+      isSpeaking: true,
+      type: "speak",
+      spokenText: "Wow!",
+    },
+    order: order++,
+  });
+
+  // 8. Panel 4 — Echo Mic (Wow!)
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "وەک نەبەز سەرسامی خۆت دەربڕە: Wow!",
+    distractors: [],
+    solutionData: {
+      subtype: "echo_mic",
+      instruction: "ڕاهێنانی وتار (Echo Mic: Wow!)",
+      correct: "Wow!",
+      spokenText: "Wow!",
+      imageUrl: "/images/sunrise3/stories/unit1_panel4.png",
+      subTextGuide: "واو!",
+      visualScaffold: "Wow! — سەرسامی",
+    },
+    order: order++,
+  });
+
+  // -------------------------------------------------------------------------
+  // Part 2: Sunrise 3 SB Page 5, Activity 2: Choose objects. Point and say.
+  // -------------------------------------------------------------------------
+
+  // 9. Activity 2 — Boy with cat: What does he have?
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "کوڕەکە چی پێیە؟ (What does he have?)",
+    distractors: ["She has a cat.", "I have a cat."],
+    solutionData: {
+      subtype: "image_mcq",
+      instruction: "دەستنیشانکردنی شتەکان (Point and say)",
+      imageUrl: "/images/sunrise3/stories/unit1_act2_cat.png",
+      correct: "He has a cat.",
+      isSpeaking: true,
+      type: "speak",
+      spokenText: "He has a cat.",
+    },
+    order: order++,
+  });
+
+  // 10. Activity 2 — Girl with apple: What does she have?
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "کچەکە چی پێیە؟ (What does she have?)",
+    distractors: ["He has an apple.", "I have an apple."],
+    solutionData: {
+      subtype: "image_mcq",
+      instruction: "دەستنیشانکردنی شتەکان (Point and say)",
+      imageUrl: "/images/sunrise3/stories/unit1_act2_apple.png",
+      correct: "She has an apple.",
+      isSpeaking: true,
+      type: "speak",
+      spokenText: "She has an apple.",
+    },
+    order: order++,
+  });
+
+  // 11. Activity 2 — Child with car: What do you have?
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "ئەو منداڵە بە خۆی دەڵێت چی پێیە؟ (What do you have?)",
+    distractors: ["She has a car.", "He has a car."],
+    solutionData: {
+      subtype: "image_mcq",
+      instruction: "دەستنیشانکردنی شتەکان (Point and say)",
+      imageUrl: "/images/sunrise3/stories/unit1_act2_car.png",
+      correct: "I have a car.",
+      isSpeaking: true,
+      type: "speak",
+      spokenText: "I have a car.",
+    },
+    order: order++,
+  });
+
+  // 12. Activity 2 — Slot filler: He has a [ cat ].
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "وشەی گونجاو دابنێ بەپێی وێنەکە",
+    distractors: [],
+    solutionData: {
+      subtype: "slot_filler",
+      instruction: "پڕکردنەوەی بۆشایی (Slot Filler)",
+      frameText: "He has a [ ___ ].",
+      options: ["cat", "car", "apple", "pen"],
+      correct: "cat",
+      correctWord: "cat",
+      imageUrl: "/images/sunrise3/stories/unit1_act2_cat.png",
+    },
+    order: order++,
+  });
+
+  // 13. Activity 2 — Slot filler: She has an [ apple ].
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "وشەی گونجاو دابنێ بەپێی وێنەکە",
+    distractors: [],
+    solutionData: {
+      subtype: "slot_filler",
+      instruction: "پڕکردنەوەی بۆشایی (Slot Filler)",
+      frameText: "She has an [ ___ ].",
+      options: ["apple", "cat", "car", "yo-yo"],
+      correct: "apple",
+      correctWord: "apple",
+      imageUrl: "/images/sunrise3/stories/unit1_act2_apple.png",
+    },
+    order: order++,
+  });
+
+  // 14. Activity 2 — Slot filler: I have a [ car ].
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "وشەی گونجاو دابنێ بەپێی وێنەکە",
+    distractors: [],
+    solutionData: {
+      subtype: "slot_filler",
+      instruction: "پڕکردنەوەی بۆشایی (Slot Filler)",
+      frameText: "I have a [ ___ ].",
+      options: ["car", "cat", "apple", "pen"],
+      correct: "car",
+      correctWord: "car",
+      imageUrl: "/images/sunrise3/stories/unit1_act2_car.png",
+    },
+    order: order++,
+  });
+
+  // 15. Activity 2 — Timed Mic: He has a cat.
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "بە دەنگی خۆت بڵێ: He has a cat.",
+    distractors: [],
+    solutionData: {
+      subtype: "timed_mic",
+      instruction: "قسەکردن (Point & Say)",
+      spokenText: "He has a cat.",
+      correct: "He has a cat.",
+      promptAudio: "He has a cat.",
+      visualCue: "🐱",
+      imageUrl: "/images/sunrise3/stories/unit1_act2_cat.png",
+      scaffoldText: "He has a cat.",
+      promptLabel: "دووبارەی بکەرەوە",
+      timerSeconds: 6,
+    },
+    order: order++,
+  });
+
+  // 16. Activity 2 — Pair Match: Match the 3 sentences to the 3 pictures
+  exercises.push({
+    type: "multiple_choice",
+    promptText: "ڕستەکان ببەستەوە بە وێنە دروستەکان",
+    distractors: [],
+    solutionData: {
+      subtype: "pair_match",
+      instruction: "جووتبەندکردن (Point & Say Matching)",
+      correct: "matched",
+      pairs: [
+        {
+          id: "He has a cat.",
+          word: "He has a cat.",
+          imageUrl: "/images/sunrise3/stories/unit1_act2_cat.png",
+        },
+        {
+          id: "She has an apple.",
+          word: "She has an apple.",
+          imageUrl: "/images/sunrise3/stories/unit1_act2_apple.png",
+        },
+        {
+          id: "I have a car.",
+          word: "I have a car.",
+          imageUrl: "/images/sunrise3/stories/unit1_act2_car.png",
+        },
+      ],
+    },
+    order: order++,
   });
 
   return exercises;
@@ -654,17 +1018,28 @@ export function buildPractice1Exercises(words: Word[]): ExerciseInput[] {
 //   3. Scaffolded mic response (timed_mic)
 //   4. Word ↔ image prop binding (pair_match)
 // ===========================================================================
-export function buildPractice2Exercises(unit: UnitData): ExerciseInput[] {
+export function buildPractice2Exercises(unit: UnitData, unitOrder?: number): ExerciseInput[] {
+  if (unitOrder === 1) {
+    return buildUnit1Practice2Exercises();
+  }
+
   const { story, words } = unit;
   const exercises: ExerciseInput[] = [];
   let order = 1;
 
   // Training 1 — Visual slot-filler: tap the role/thing from visual clues.
-  const frame = unit.topic === "Jobs" ? "He's [ ___ ]." : "It's [ ___ ].";
   chunk(words, 3)
     .filter((group) => group.length >= 2)
     .forEach((group) => {
       const target = group[0];
+      const frame =
+        unit.topic === "Jobs"
+          ? "He's a [ ___ ]."
+          : unit.topic.includes("to have")
+          ? "He has a [ ___ ]."
+          : target.article
+          ? `It's ${target.article} [ ___ ].`
+          : "It's [ ___ ].";
       exercises.push({
         type: "multiple_choice",
         promptText: "وشەکە بخە ناو بۆشاییەکە",
@@ -677,6 +1052,7 @@ export function buildPractice2Exercises(unit: UnitData): ExerciseInput[] {
           correct: target.english,
           correctWord: target.english,
           visualCue: target.emoji,
+          imageUrl: target.image,
         },
         order: order++,
       });
@@ -686,16 +1062,23 @@ export function buildPractice2Exercises(unit: UnitData): ExerciseInput[] {
   for (let i = 0; i < panels; i++) {
     const incoming = story[i];
     const correct = story[i + 1];
+    const decoys = generateStoryDecoys(correct, words);
+    const speaker = (i === 0 || i % 2 === 0) ? "Sirwa (سیروە)" : "Nabaz (نەبەز)";
     exercises.push({
       type: "multiple_choice",
       promptText: "چیرۆکەکە درێژە بدە — گوێ بگرە و وەڵامی دروست هەڵبژێرە",
-      distractors: others(story, correct),
+      distractors: decoys,
       solutionData: {
         subtype: "chat_dialogue",
         instruction: `چیرۆک — پانێلی ${i + 1} (Story Panel ${i + 1})`,
+        speakerName: speaker,
         incomingMessage: incoming,
-        options: [correct, ...others(story, correct).slice(0, 2)],
+        options: [correct, ...decoys],
         correct,
+        imageUrl:
+          unitOrder === 1 || unit.topic.startsWith("Review: Alphabet")
+            ? `/images/sunrise3/stories/unit1_panel${i + 1}.png`
+            : undefined,
       },
       order: order++,
     });
@@ -732,6 +1115,10 @@ export function buildPractice2Exercises(unit: UnitData): ExerciseInput[] {
       correct: micLine,
       promptAudio: micLine,
       visualCue: micLine,
+      imageUrl:
+        unitOrder === 1 || unit.topic.startsWith("Review: Alphabet")
+          ? "/images/sunrise3/stories/unit1_panel2.png"
+          : undefined,
       scaffoldText: micLine,
       promptLabel: "دووبارەی بکەرەوە",
       timerSeconds: 6,
@@ -772,62 +1159,99 @@ export function buildPractice3Exercises(unit: UnitData): ExerciseInput[] {
   const exercises: ExerciseInput[] = [];
   let order = 1;
 
-  // English "Is this X or Y?" questions. The word anchors already appear in
-  // Practice 1, so this practice is Q&A only (no repeated anchor screen).
-  // Leave the last word for the mystery game so it is never asked twice.
-  words.slice(0, Math.min(5, words.length - 1)).forEach((x, i) => {
-    const pool = words.filter((w) => w.english !== x.english);
-    const wrong = pool[i % pool.length];
+  // 1. Target Q&A Comprehension: "What is it? It's a [word]." (Page 4, Activity 1)
+  words.slice(0, 3).forEach((x) => {
+    const decoys = otherWords(words, x.english).slice(0, 2);
     exercises.push({
       type: "multiple_choice",
-      promptText: `Is this ${x.article} ${x.english} or ${wrong.article} ${wrong.english}?`,
-      distractors: [wrong.english],
+      promptText: `What is it? It's ${x.article} ${x.english}.`,
+      distractors: decoys,
       solutionData: {
         subtype: "image_mcq",
-        instruction: "پرسیار و وەڵام (Ask and answer)",
+        instruction: "پرسیار و وەڵام (What is it?)",
         icon: x.emoji,
         imageUrl: x.image,
         correct: x.english,
         isSpeaking: true,
         type: "speak",
-        spokenText: `Is this ${x.article} ${x.english}? Yes, it is.`,
+        spokenText: `What is it? It's ${x.article} ${x.english}.`,
       },
       order: order++,
     });
   });
 
-  const mystery = words[words.length - 1];
-  const wrong = otherWords(words, mystery.english)[0];
-  const mysteryWrong = words.find((w) => w.english === wrong) ?? words[0];
+  // 2. Mystery Deduction Game (Page 4, Activity 2: "Play a game")
+  // Object: The blue polka-dot hat from Page 4
+  const hatWord = words.find((w) => w.english === "hat") ?? words[0];
+  const capWord = words.find((w) => w.english === "cap") ?? words[1];
+
+  // Step 1: Color Check ("What colour is it? It's blue.")
   exercises.push({
     type: "multiple_choice",
-    promptText: `Is this ${mystery.article} ${mystery.english} or ${mysteryWrong.article} ${mysteryWrong.english}?`,
-    distractors: [wrong],
+    promptText: "What colour is it?",
+    distractors: ["red", "green"],
     solutionData: {
       subtype: "image_mcq",
-      instruction: "یاری دۆزینەوە (Mystery game)",
-      icon: mystery.emoji,
-      imageUrl: mystery.image,
-      correct: mystery.english,
+      instruction: "یاری دۆزینەوە — ڕەنگ (Color Check)",
+      icon: hatWord.emoji,
+      imageUrl: hatWord.image,
+      correct: "blue",
       isSpeaking: true,
       type: "speak",
-      spokenText: `Is it ${mystery.article} ${mystery.english}? Yes, it is.`,
+      spokenText: "What colour is it? It's blue.",
     },
     order: order++,
   });
 
+  // Step 2: Negative Verification ("Is it a cap? No, it isn't.")
+  exercises.push({
+    type: "multiple_choice",
+    promptText: `Is it ${capWord.article} ${capWord.english}?`,
+    distractors: ["Yes, it is."],
+    solutionData: {
+      subtype: "image_mcq",
+      instruction: "یاری دۆزینەوە (Mystery Game)",
+      icon: hatWord.emoji,
+      imageUrl: hatWord.image,
+      correct: "No, it isn't.",
+      isSpeaking: true,
+      type: "speak",
+      spokenText: `Is it ${capWord.article} ${capWord.english}? No, it isn't.`,
+    },
+    order: order++,
+  });
+
+  // Step 3: Positive Identification ("Is it a hat? Yes, it is.")
+  exercises.push({
+    type: "multiple_choice",
+    promptText: `Is it ${hatWord.article} ${hatWord.english}?`,
+    distractors: ["No, it isn't."],
+    solutionData: {
+      subtype: "image_mcq",
+      instruction: "یاری دۆزینەوە (Mystery Game)",
+      icon: hatWord.emoji,
+      imageUrl: hatWord.image,
+      correct: "Yes, it is.",
+      isSpeaking: true,
+      type: "speak",
+      spokenText: `Is it ${hatWord.article} ${hatWord.english}? Yes, it is.`,
+    },
+    order: order++,
+  });
+
+  // 3. Roleplay Production (timed_mic)
   exercises.push({
     type: "multiple_choice",
     promptText: "بە دەنگی خۆت وەڵام بدەوە",
     distractors: [],
     solutionData: {
       subtype: "timed_mic",
-      instruction: "ڕۆڵگێڕان (Roleplay)",
-      spokenText: `It's ${mystery.article} ${mystery.english}.`,
-      correct: `It's ${mystery.article} ${mystery.english}.`,
-      promptAudio: `What is it?`,
-      visualCue: `${mystery.emoji}  It's ${mystery.article} [ ___ ].`,
-      scaffoldText: `It's ${mystery.article} ${mystery.english}.`,
+      instruction: "ڕۆڵگێڕان (Roleplay Production)",
+      spokenText: `It's ${hatWord.article} ${hatWord.english}.`,
+      correct: `It's ${hatWord.article} ${hatWord.english}.`,
+      promptAudio: "What is it?",
+      visualCue: `${hatWord.emoji}  It's ${hatWord.article} [ ___ ].`,
+      scaffoldText: `It's ${hatWord.article} ${hatWord.english}.`,
       promptLabel: "وەڵام بدەوە",
       timerSeconds: 6,
     },
@@ -850,13 +1274,15 @@ export function buildPractice4Exercises(unit: UnitData): ExerciseInput[] {
   const exercises: ExerciseInput[] = [];
   let order = 1;
 
-  phonics
-    .filter(
+  uniqBy(
+    phonics.filter(
       (word, i) =>
         phonics.some(
           (other, j) => j !== i && other[0].toLowerCase() !== word[0].toLowerCase(),
         ),
-    )
+    ),
+    (w) => w[0].toLowerCase()
+  )
     .slice(0, 3)
     .forEach((target) => {
       const letter = target[0].toUpperCase();
@@ -1076,30 +1502,61 @@ export function buildPractice6Exercises(unit: UnitData): ExerciseInput[] {
   // real counterpart. tokenize() would split the apostrophe, so use plain
   // word-splitting for the contracted form.
   const CONTRACT: [RegExp, string][] = [
+    [/\bIs not\b/g, "Isn't"],
     [/\bis not\b/g, "isn't"],
+    [/\bAre not\b/g, "Aren't"],
     [/\bare not\b/g, "aren't"],
     [/\bI am\b/g, "I'm"],
+    [/\bHe is\b/g, "He's"],
+    [/\bhe is\b/g, "he's"],
+    [/\bShe is\b/g, "She's"],
+    [/\bshe is\b/g, "she's"],
+    [/\bIt is\b/g, "It's"],
     [/\bit is\b/g, "it's"],
+    [/\bThat is\b/g, "That's"],
     [/\bthat is\b/g, "that's"],
+    [/\bThey are\b/g, "They're"],
     [/\bthey are\b/g, "they're"],
+    [/\bWe are\b/g, "We're"],
     [/\bwe are\b/g, "we're"],
+    [/\bYou are\b/g, "You're"],
     [/\byou are\b/g, "you're"],
+    [/\bCannot\b/g, "Can't"],
     [/\bcannot\b/g, "can't"],
+    [/\bDo not\b/g, "Don't"],
     [/\bdo not\b/g, "don't"],
   ];
   const EXPAND: [RegExp, string][] = [
+    [/\bIsn't\b/g, "Is not"],
     [/\bisn't\b/g, "is not"],
+    [/\bAren't\b/g, "Are not"],
     [/\baren't\b/g, "are not"],
     [/\bI'm\b/g, "I am"],
+    [/\bHe's\b/g, "He is"],
+    [/\bhe's\b/g, "he is"],
+    [/\bShe's\b/g, "She is"],
+    [/\bshe's\b/g, "she is"],
+    [/\bIt's\b/g, "It is"],
     [/\bit's\b/g, "it is"],
+    [/\bThat's\b/g, "That is"],
     [/\bthat's\b/g, "that is"],
+    [/\bThey're\b/g, "They are"],
     [/\bthey're\b/g, "they are"],
+    [/\bWe're\b/g, "We are"],
     [/\bwe're\b/g, "we are"],
+    [/\bYou're\b/g, "You are"],
     [/\byou're\b/g, "you are"],
+    [/\bCan't\b/g, "Can not"],
     [/\bcan't\b/g, "can not"],
+    [/\bDon't\b/g, "Do not"],
     [/\bdon't\b/g, "do not"],
   ];
-  const source = sentences[0];
+  const source =
+    sentences.find((s) => {
+      const c = CONTRACT.reduce((acc, [re, to]) => acc.replace(re, to), s);
+      const e = EXPAND.reduce((acc, [re, to]) => acc.replace(re, to), s);
+      return c !== s || e !== s;
+    }) ?? sentences[0];
   const contracted = CONTRACT.reduce((s, [re, to]) => s.replace(re, to), source);
   const expanded = EXPAND.reduce((s, [re, to]) => s.replace(re, to), source);
   const asContract = contracted !== source;
@@ -1109,8 +1566,8 @@ export function buildPractice6Exercises(unit: UnitData): ExerciseInput[] {
     exercises.push({
       type: "word_bank",
       promptText: asContract
-        ? "ڕستەکە بنووسە بە شێوەی کورتکراوە"
-        : "شێوەی درێژکراوی ڕستەکە بنووسە",
+        ? `ڕستەکە بنووسە بە شێوەی کورتکراوە — «${source}»`
+        : `شێوەی درێژکراوی ڕستەکە بنووسە — «${source}»`,
       distractors: ["not", "is"].filter(
         (d) => !cTokens.some((t) => t.toLowerCase() === d),
       ),
@@ -1124,14 +1581,17 @@ export function buildPractice6Exercises(unit: UnitData): ExerciseInput[] {
   }
 
   // One-Tap Error Hunter: tap the single mis-spelled word.
-  const plainWords = tokenize(sentences[0]).filter((t) => /^[a-zA-Z]{4,}$/.test(t));
+  const allPlainWords = sentences.flatMap((s) =>
+    tokenize(s).filter((t) => /^[a-zA-Z]{3,}$/.test(t))
+  );
+  const plainWords = Array.from(new Set(allPlainWords));
   if (plainWords.length >= 2) {
-    const good = plainWords[0];
+    const good = plainWords.find((w) => w.length >= 4) ?? plainWords[0];
     const broken = good[1] + good[0] + good.slice(2);
     exercises.push({
       type: "multiple_choice",
       promptText: "کام وشە هەڵەیە؟ دەستی لێبدە",
-      distractors: plainWords.slice(1),
+      distractors: plainWords.filter((w) => w !== good).slice(0, 3),
       solutionData: {
         subtype: "image_mcq",
         instruction: "ڕاوکەری هەڵە (One-Tap Error Hunter)",
@@ -1139,7 +1599,7 @@ export function buildPractice6Exercises(unit: UnitData): ExerciseInput[] {
         correct: broken,
         isSpeaking: true,
         type: "speak",
-        spokenText: sentences[0],
+        spokenText: good,
       },
       order: order++,
     });
@@ -1571,7 +2031,7 @@ function buildUnits(): UnitInput[] {
     lessons[0].exercises = buildPractice1Exercises(unit.words);
 
     // Lesson 2 — Practice 2 (story) for every unit.
-    lessons[1].exercises = buildPractice2Exercises(unit);
+    lessons[1].exercises = buildPractice2Exercises(unit, order);
 
     // Lesson 3 — Practice 4 (spelling) + Practice 5 (phonics) + Practice 6 (punctuation).
     lessons[2].exercises = [

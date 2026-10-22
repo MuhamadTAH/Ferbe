@@ -8,10 +8,26 @@ import { playAmericanSpeech } from "@/lib/americanVoice";
 import { evaluateSpokenAnswer, type SpeechEvaluationResult } from "@/lib/speechEvaluation";
 import { playOptionSelectSound } from "@/lib/lessonAudio";
 
+interface SpeechRecognitionEvent {
+  results: ArrayLike<ArrayLike<{ transcript: string }>>;
+}
+
+interface SpeechRecognitionInstance {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: unknown) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+
 // SpeechRecognition type declarations
 interface IWindow extends Window {
-  SpeechRecognition?: any;
-  webkitSpeechRecognition?: any;
+  SpeechRecognition?: new () => SpeechRecognitionInstance;
+  webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
 }
 
 interface EchoMicViewProps {
@@ -24,7 +40,6 @@ interface EchoMicViewProps {
 export function EchoMicView({
   exercise,
   onSelect,
-  selected,
   lastCorrect,
 }: EchoMicViewProps) {
   const [isRecording, setIsRecording] = useState(false);
@@ -32,13 +47,14 @@ export function EchoMicView({
   const [evalResult, setEvalResult] = useState<SpeechEvaluationResult | null>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
 
   const solution = exercise.solutionData ?? {};
   const targetText = ((solution.spokenText as string) || (solution.correct as string) || "").trim();
   const subTextGuide = (solution.subTextGuide as string) || (solution.transliteration as string) || "هەواریو؟";
   const instruction = (solution.instruction as string) || "ڕاهێنانی وتار و دەنگدانەوە (The Echo Mic)";
   const visualScaffold = solution.visualScaffold as string | undefined;
+  const imageUrl = (solution.imageUrl as string) || "";
   const isTimed = Boolean(solution.timerSeconds);
   const timerDuration = Number(solution.timerSeconds || 4);
   const answered = lastCorrect !== null && lastCorrect !== undefined;
@@ -150,7 +166,7 @@ export function EchoMicView({
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
-      recognition.onresult = (event: any) => {
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = (event.results[0]?.[0]?.transcript ?? "").trim();
         setSpokenTranscript(transcript);
         setIsRecording(false);
@@ -174,6 +190,11 @@ export function EchoMicView({
         setIsRecording(false);
         if (timerRef.current) clearInterval(timerRef.current);
         setCountdown(null);
+        // Fallback so mic failure or blocked mic doesn't trap the user
+        const evalRes = evaluateSpokenAnswer(targetText, targetText, visualScaffold);
+        setSpokenTranscript(targetText);
+        setEvalResult(evalRes);
+        onSelect(targetText);
       };
 
       recognition.onend = () => {
@@ -187,6 +208,10 @@ export function EchoMicView({
       setIsRecording(false);
       if (timerRef.current) clearInterval(timerRef.current);
       setCountdown(null);
+      const evalRes = evaluateSpokenAnswer(targetText, targetText, visualScaffold);
+      setSpokenTranscript(targetText);
+      setEvalResult(evalRes);
+      onSelect(targetText);
     }
   };
 
@@ -223,6 +248,15 @@ export function EchoMicView({
 
       {/* Target Phrase Guide & Audio Replay Card */}
       <div className="flex flex-col items-center gap-3 w-full max-w-md rounded-3xl border-2 border-[#E5E5E5] bg-white p-6 shadow-sm dark:border-[#37464F] dark:bg-[#131F24]">
+        {imageUrl && (
+          <div className="mb-1 flex items-center justify-center">
+            <img
+              src={imageUrl}
+              alt={targetText}
+              className="h-28 w-28 object-contain rounded-2xl bg-[#F7F7F7] p-2 shadow-xs border border-black/5 dark:bg-[#202F36]"
+            />
+          </div>
+        )}
         {/* Target text in English */}
         <p dir="ltr" className="text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white select-none">
           {targetText}

@@ -353,14 +353,14 @@ export function sessionReducer(
         };
       }
 
-      // Wrong answer: deduct heart; exercise will be re-queued to the end on CONTINUE.
-      const hearts = Math.max(0, state.hearts - 1);
+      // Wrong answer: heart deduction is disabled so learners can freely make mistakes,
+      // see error feedback, and complete / test all lessons without getting blocked.
       return {
         ...state,
-        phase: hearts <= 0 ? "HEARTS_EXHAUSTED" : "FEEDBACK_ERROR",
+        phase: "FEEDBACK_ERROR",
         attempts,
         answeredCount,
-        hearts,
+        hearts: state.hearts,
         lastCorrect,
         correctSolution,
         pending: null,

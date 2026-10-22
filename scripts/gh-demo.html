@@ -2,11 +2,11 @@
 <html lang="ckb" dir="rtl" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>یاساکانی GH | Fêrbe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>یاساکانی خوێندنەوەی پیتی GH | Fêrbe</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script>
     try {
       var urlParams = new URLSearchParams(window.location.search);
@@ -31,14 +31,6 @@
       --muted2: #afafaf;
       --border: #e5e5e5;
 
-      --primary: #58cc02;
-      --primary-shade: #46a302;
-      --secondary: #1cb0f6;
-      --secondary-shade: #1899d6;
-      --border-gray: #e5e5e5;
-      --danger: #ea2b2b;
-      --danger-shade: #d33131;
-
       --green: #58cc02;
       --green-shade: #46a302;
       --green-text: #58a700;
@@ -51,13 +43,21 @@
       --blue-border: #84d8ff;
 
       --red: #ea2b2b;
+      --red-shade: #d33131;
       --red-bg: #ffdfe0;
       --red-border: #ffb2b2;
 
       --orange: #ff9600;
-      --purple: #9333ea;
+      --orange-shade: #e08500;
+      --orange-bg: #fff4e5;
+      --orange-border: #ffd599;
 
-      --font-body: 'Noto Sans Arabic', 'Nunito', system-ui, sans-serif;
+      --purple: #9333ea;
+      --purple-shade: #7928ca;
+      --purple-bg: #faf5ff;
+      --purple-border: #d8b4fe;
+
+      --font-ku: 'Noto Sans Arabic', system-ui, sans-serif;
       --font-en: 'Nunito', system-ui, sans-serif;
     }
 
@@ -69,12 +69,22 @@
       --muted: #8495a0;
       --muted2: #52656d;
       --border: #37464f;
-      --border-gray: #37464f;
+
       --green-text: #58cc02;
-      --green-bg: #1e3b20;
-      --blue-bg: #202f36;
+      --green-bg: #153118;
+      --green-border: #58cc02;
+
+      --blue-bg: #1c3b4e;
       --blue-border: #3bc0f8;
-      --red-bg: #3a181d;
+
+      --red-bg: #2d1418;
+      --red-border: #ea2b2b;
+
+      --orange-bg: #342416;
+      --orange-border: #ff9600;
+
+      --purple-bg: #2d1b4e;
+      --purple-border: #a855f7;
     }
 
     * {
@@ -85,7 +95,7 @@
     }
 
     body {
-      font-family: var(--font-body);
+      font-family: var(--font-ku);
       background-color: var(--bg);
       color: var(--text);
       display: flex;
@@ -97,7 +107,7 @@
 
     .app-container {
       width: 100%;
-      max-width: 42rem;
+      max-width: 44rem;
       min-height: 100vh;
       background: var(--bg);
       display: flex;
@@ -105,31 +115,40 @@
       position: relative;
     }
 
-    /* ---------- Lesson top bar (matches /learn/[lessonId]) ---------- */
+    /* ---------- Header / Progress ---------- */
     .lesson-top {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
       width: 100%;
-      max-width: 42rem;
+      max-width: 44rem;
       margin: 0 auto;
-      padding: 20px 16px;
+      padding: 16px 16px 12px;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 30;
     }
 
     .exit-btn {
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 36px;
+      height: 36px;
       background: none;
       border: none;
       cursor: pointer;
       color: var(--muted2);
-      font-size: 26px;
-      line-height: 1;
+      font-size: 24px;
       font-weight: 800;
-      transition: color 0.15s ease;
+      border-radius: 12px;
+      transition: all 0.15s ease;
     }
-    .exit-btn:hover { color: var(--muted); }
+    .exit-btn:hover {
+      background: var(--bg2);
+      color: var(--text);
+    }
 
     .progress-bar-container {
       flex: 1;
@@ -137,6 +156,7 @@
       background-color: var(--border);
       border-radius: 999px;
       overflow: hidden;
+      position: relative;
     }
 
     .progress-fill {
@@ -144,7 +164,18 @@
       width: 0%;
       background-color: var(--green);
       border-radius: 999px;
-      transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+    .progress-fill::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 6px;
+      right: 6px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 999px;
     }
 
     .badge-group {
@@ -153,230 +184,278 @@
       gap: 12px;
       font-family: var(--font-en);
       font-weight: 800;
-      font-size: 15px;
+      font-size: 14px;
     }
 
     .badge {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
     }
     .badge.hearts { color: var(--red); }
     .badge.streak { color: var(--orange); }
     .badge.xp { color: var(--blue); }
 
-    /* ---------- Exercise area ---------- */
+    /* ---------- Main Content Viewport ---------- */
     main {
       flex: 1;
       width: 100%;
-      max-width: 42rem;
+      max-width: 44rem;
       margin: 0 auto;
-      padding: 8px 16px 170px 16px;
+      padding: 6px 16px 160px;
       display: flex;
       flex-direction: column;
     }
 
-    .lesson-title {
-      font-size: 22px;
+    .topic-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      width: fit-content;
+      align-self: center;
+    }
+    .topic-pill.blue { background: var(--blue-bg); color: var(--blue); }
+    .topic-pill.orange { background: var(--orange-bg); color: var(--orange); }
+    .topic-pill.green { background: var(--green-bg); color: var(--green-text); }
+    .topic-pill.purple { background: var(--purple-bg); color: var(--purple); }
+
+    .prompt-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 20px;
+      gap: 4px;
+    }
+
+    .prompt-kurdish {
+      font-family: var(--font-ku);
+      font-size: 26px;
       font-weight: 800;
-      margin-bottom: 6px;
-      line-height: 1.5;
-      text-align: center;
+      line-height: 1.45;
+      color: var(--text);
     }
 
-    .lesson-subtitle {
-      font-size: 15px;
-      color: var(--muted);
-      margin-bottom: 24px;
-      font-weight: 600;
-      text-align: center;
+    .prompt-english {
+      font-family: var(--font-en);
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--blue);
+      direction: ltr;
     }
 
-    /* ---------- 3D push buttons (app style) ---------- */
+    /* ---------- 3D Push Button System ---------- */
     .btn-3d {
       appearance: none;
       border: none;
       cursor: pointer;
-      font-family: inherit;
+      font-family: var(--font-ku);
       font-weight: 800;
       font-size: 15px;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
       text-transform: uppercase;
       border-radius: 16px;
-      padding: 14px 22px;
-      display: flex;
+      padding: 13px 22px;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      transition: transform 0.08s ease, filter 0.08s ease, background-color 0.15s ease;
+      gap: 8px;
+      transition: all 0.08s ease;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+      user-select: none;
     }
-    .btn-3d:active { transform: translateY(4px); }
+    .btn-3d:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+    }
 
     .btn-primary {
       background-color: var(--green);
-      color: #fff;
-      box-shadow: 0 4px 0 var(--green-shade);
+      color: #ffffff;
+      border-bottom: 4px solid var(--green-shade);
     }
-    .btn-primary:active { box-shadow: 0 0 0 var(--green-shade); }
+    .btn-primary:active { border-bottom-width: 1px; }
 
     .btn-danger {
-      background-color: var(--danger);
-      color: #fff;
-      box-shadow: 0 4px 0 var(--danger-shade);
+      background-color: var(--red);
+      color: #ffffff;
+      border-bottom: 4px solid var(--red-shade);
     }
-    .btn-danger:active { box-shadow: 0 0 0 var(--danger-shade); }
+    .btn-danger:active { border-bottom-width: 1px; }
+
+    .btn-secondary {
+      background-color: var(--blue);
+      color: #ffffff;
+      border-bottom: 4px solid var(--blue-shade);
+    }
 
     .btn-outline {
       background-color: var(--card);
       color: var(--muted2);
       border: 2px solid var(--border);
-      border-bottom-width: 4px;
+      border-bottom: 4px solid var(--border);
     }
 
     .btn-3d:disabled {
       background-color: var(--border);
       color: var(--muted2);
-      border: 0;
+      border-bottom: none;
       box-shadow: none;
-      cursor: default;
+      cursor: not-allowed;
       transform: none;
     }
 
-    .btn-skip {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 800;
-      font-size: 13px;
-      letter-spacing: 0.04em;
-      color: var(--muted2);
-      padding: 10px 4px;
-      text-decoration: underline;
-      text-underline-offset: 4px;
+    /* ---------- Word Anchor / Phonics Intake Cards ---------- */
+    .anchor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
     }
-    .btn-skip:hover { color: var(--muted); }
 
-    /* ---------- Instruction cards ---------- */
-    .instruction-card {
+    .anchor-card {
       background: var(--card);
       border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border);
       border-radius: 20px;
-      padding: 22px 20px;
-      box-shadow: 0 4px 0 var(--border);
-      margin-bottom: 20px;
-      animation: popIn 0.25s ease;
-    }
-
-    .rule-tag {
-      display: inline-block;
-      padding: 5px 12px;
-      background: var(--green-bg);
-      color: var(--green-text);
-      border-radius: 10px;
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: 0.03em;
-      margin-bottom: 12px;
-    }
-
-    .rule-tag.warning {
-      background: #fff4e5;
-      color: #cc7800;
-    }
-    html.dark .rule-tag.warning { background: #342416; color: var(--orange); }
-
-    .rule-heading {
-      font-size: 20px;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .rule-description {
-      font-size: 15px;
-      line-height: 1.8;
-      color: var(--text);
-      margin-bottom: 20px;
-    }
-    .rule-description b { color: var(--green-text); }
-
-    .examples-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .example-box {
-      border: 2px solid var(--border);
-      border-bottom-width: 4px;
-      border-radius: 16px;
-      padding: 14px;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
-      background: var(--bg2);
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .anchor-card:hover {
+      border-color: var(--blue-border);
+      transform: translateY(-2px);
     }
 
-    .example-word {
+    .anchor-word {
       font-family: var(--font-en);
-      font-size: 21px;
+      font-size: 32px;
       font-weight: 900;
       color: var(--text);
       direction: ltr;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      letter-spacing: 0.02em;
     }
 
-    .example-word span.highlight {
+    .anchor-word .hl-green {
       color: var(--green);
       text-decoration: underline;
-      text-underline-offset: 3px;
+      text-underline-offset: 4px;
     }
-
-    .example-word span.silent {
+    .anchor-word .hl-silent {
       color: var(--muted2);
       text-decoration: line-through;
     }
-
-    .example-trans {
-      font-size: 14px;
-      color: var(--muted);
-      font-weight: 600;
-      margin-top: 5px;
+    .anchor-word .hl-orange {
+      color: var(--orange);
+      text-decoration: underline;
+      text-underline-offset: 4px;
     }
 
-    .speak-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
+    .anchor-pron {
+      font-family: var(--font-ku);
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--blue);
+      background: var(--blue-bg);
+      padding: 3px 12px;
+      border-radius: 10px;
+    }
+
+    .anchor-meaning {
       font-size: 15px;
-      padding: 2px;
-      line-height: 1;
+      font-weight: 700;
+      color: var(--muted);
     }
 
-    /* ---------- Option cards (matches MultipleChoiceView) ---------- */
+    .listen-pill-btn {
+      margin-top: 4px;
+      appearance: none;
+      border: 2px solid var(--blue-border);
+      border-bottom: 3px solid var(--blue-shade);
+      background: var(--blue-bg);
+      color: var(--blue-shade);
+      cursor: pointer;
+      font-family: var(--font-ku);
+      font-size: 12px;
+      font-weight: 800;
+      border-radius: 12px;
+      padding: 6px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.1s ease;
+    }
+    .listen-pill-btn:hover {
+      background: #c7ebff;
+      transform: translateY(-1px);
+    }
+    .listen-pill-btn:active {
+      transform: translateY(2px);
+      border-bottom-width: 1px;
+    }
+
+    /* ---------- Rule Explanation Banner ---------- */
+    .rule-banner {
+      background: var(--bg2);
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      line-height: 1.7;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .rule-banner b {
+      color: var(--green-text);
+      font-weight: 800;
+    }
+
+    /* ---------- Multiple Choice Cards ---------- */
     .options-grid {
       display: flex;
       flex-direction: column;
       gap: 12px;
+      margin-top: 6px;
     }
 
-    .option-card {
+    .option-btn {
       display: flex;
       align-items: center;
       gap: 14px;
       background: var(--card);
       border: 2px solid var(--border);
-      border-bottom-width: 4px;
-      border-radius: 16px;
-      padding: 12px 16px;
-      font-size: 16px;
+      border-bottom: 4px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 18px;
+      font-size: 17px;
       font-weight: 700;
       color: var(--text);
       cursor: pointer;
-      transition: background-color 0.12s ease, border-color 0.12s ease;
+      transition: all 0.12s ease;
+      text-align: right;
+      width: 100%;
+      user-select: none;
     }
-    .option-card:hover { background: var(--bg2); }
+    .option-btn:hover:not(:disabled) {
+      background: var(--bg2);
+      border-color: #d1d5db;
+    }
 
     .opt-badge {
       display: flex;
@@ -386,53 +465,85 @@
       width: 32px;
       height: 32px;
       border: 2px solid var(--border);
-      border-bottom-width: 4px;
+      border-bottom: 3px solid var(--border);
       border-radius: 10px;
       font-family: var(--font-en);
-      font-size: 12px;
-      font-weight: 800;
+      font-size: 13px;
+      font-weight: 900;
       color: var(--muted2);
+      background: var(--card);
     }
 
-    .opt-text { flex: 1; }
+    .opt-label {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .opt-main {
+      font-size: 17px;
+      font-weight: 800;
+    }
+    .opt-sub {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      direction: ltr;
+      text-align: right;
+      font-family: var(--font-en);
+    }
 
-    .option-card.selected {
+    .opt-icon {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .option-btn.selected {
       border-color: var(--blue-border);
-      background-color: var(--blue-bg);
+      background: var(--blue-bg);
       color: var(--blue-shade);
     }
-    .option-card.selected .opt-badge {
+    .option-btn.selected .opt-badge {
       border-color: var(--blue-border);
       color: var(--blue);
     }
 
-    .option-card.correct {
+    .option-btn.correct {
       border-color: var(--green-border);
-      background-color: var(--green-bg);
+      background: var(--green-bg);
       color: var(--green-text);
       cursor: default;
     }
-    .option-card.correct .opt-badge {
+    .option-btn.correct .opt-badge {
       border-color: var(--green-border);
+      background: #ffffff;
       color: var(--green-text);
     }
 
-    .option-card.wrong {
+    .option-btn.wrong {
       border-color: var(--red-border);
-      background-color: var(--red-bg);
+      background: var(--red-bg);
       color: var(--red);
       cursor: default;
     }
-    .option-card.wrong .opt-badge {
+    .option-btn.wrong .opt-badge {
       border-color: var(--red-border);
+      background: #ffffff;
       color: var(--red);
     }
 
-    /* ---------- Pair matching (matches PairMatchView) ---------- */
-    .pairs-container {
+    /* ---------- Pair Matching Grid ---------- */
+    .pairs-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
+      margin-top: 10px;
     }
 
     .pair-col {
@@ -441,137 +552,221 @@
       gap: 10px;
     }
 
-    .pair-card {
+    .pair-tile {
       background: var(--card);
       border: 2px solid var(--border);
-      border-bottom-width: 4px;
-      border-radius: 14px;
-      padding: 14px;
-      font-size: 16px;
+      border-bottom: 4px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 12px;
+      font-size: 17px;
       font-weight: 800;
       color: var(--text);
       text-align: center;
       cursor: pointer;
       transition: all 0.12s ease;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 64px;
+    }
+    .pair-tile.en {
+      font-family: var(--font-en);
+      direction: ltr;
+      font-size: 19px;
+      font-weight: 900;
+    }
+    .pair-tile:hover:not(.matched) {
+      background: var(--bg2);
+    }
+    .pair-tile.active {
+      border-color: var(--blue-border);
+      background: var(--blue-bg);
+      color: var(--blue-shade);
+      box-shadow: 0 0 0 2px rgba(28, 176, 246, 0.3);
+    }
+    .pair-tile.matched {
+      border-color: var(--green-border);
+      background: var(--green-bg);
+      color: var(--green-text);
+      opacity: 0.5;
+      pointer-events: none;
+      cursor: default;
+    }
+    .pair-tile.wrong {
+      border-color: var(--red-border);
+      background: var(--red-bg);
+      color: var(--red);
+      animation: shake 0.35s ease;
     }
 
-    .pair-card.en {
+    /* ---------- Slot Filler View ---------- */
+    .slot-frame-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border);
+      border-radius: 24px;
+      padding: 24px 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .slot-sentence {
       font-family: var(--font-en);
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--text);
       direction: ltr;
     }
 
-    .pair-card.active {
-      border-color: var(--blue-border);
-      background-color: var(--blue-bg);
-      color: var(--blue-shade);
+    .slot-blank {
+      display: inline-block;
+      min-width: 70px;
+      padding: 2px 10px;
+      margin: 0 4px;
+      border-bottom: 3px dashed var(--blue);
+      color: var(--blue);
+      font-weight: 900;
     }
 
-    .pair-card.wrong {
-      border-color: var(--red-border);
-      background-color: var(--red-bg);
-      color: var(--red);
-      animation: shake 0.3s ease;
+    .slot-meaning {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--muted);
     }
 
-    .pair-card.matched {
-      border-color: var(--green-border);
-      background-color: var(--green-bg);
-      color: var(--green-text);
-      opacity: 0.55;
-      pointer-events: none;
-    }
-
-    /* ---------- Sorting buckets ---------- */
-    .chips-bank {
+    /* ---------- Categorization / Sorting Buckets ---------- */
+    .chips-bank-card {
+      background: var(--bg2);
+      border: 2px dashed var(--border);
+      border-radius: 18px;
+      padding: 12px;
+      min-height: 64px;
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
-      min-height: 52px;
-      padding: 10px;
-      background: var(--bg2);
-      border-radius: 16px;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 18px;
     }
 
     .word-chip {
       background: var(--card);
       border: 2px solid var(--border);
-      border-bottom-width: 4px;
-      border-radius: 12px;
+      border-bottom: 3px solid var(--border);
+      border-radius: 14px;
       padding: 8px 16px;
       font-family: var(--font-en);
-      font-size: 15px;
-      font-weight: 800;
+      font-size: 16px;
+      font-weight: 900;
       color: var(--text);
       cursor: pointer;
-      transition: border-color 0.12s ease;
+      user-select: none;
+      transition: all 0.12s ease;
+    }
+    .word-chip:hover {
+      border-color: var(--blue-border);
+      transform: translateY(-2px);
+    }
+    .word-chip.selected {
+      border-color: var(--blue);
+      background: var(--blue-bg);
+      color: var(--blue-shade);
+      box-shadow: 0 0 0 2px rgba(28, 176, 246, 0.35);
     }
 
-    .bucket-group {
+    .buckets-container {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .bucket-target {
-      border: 2px dashed var(--muted2);
-      border-radius: 16px;
-      padding: 12px;
+    .bucket-box {
+      border: 2px dashed var(--border);
+      border-radius: 18px;
       background: var(--card);
-      min-height: 68px;
+      padding: 12px 16px;
+      min-height: 74px;
       display: flex;
       flex-direction: column;
       gap: 8px;
       cursor: pointer;
-      transition: border-color 0.12s ease, background-color 0.12s ease;
+      transition: all 0.15s ease;
+    }
+    .bucket-box:hover {
+      border-color: var(--blue-border);
     }
 
-    .bucket-target.correct {
-      border-color: var(--green-border);
-      background: var(--green-bg);
-    }
-    .bucket-target.wrong {
-      border-color: var(--red-border);
-      background: var(--red-bg);
-    }
-
-    .bucket-header {
+    .bucket-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       font-size: 13px;
       font-weight: 800;
-      color: var(--muted);
     }
+    .bucket-box.bucket-g .bucket-title-row { color: var(--green-text); }
+    .bucket-box.bucket-f .bucket-title-row { color: var(--orange); }
+    .bucket-box.bucket-silent .bucket-title-row { color: var(--blue); }
 
-    .bucket-chips {
+    .bucket-items {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 8px;
+      min-height: 32px;
     }
 
-    /* ---------- Bottom sheet / feedback (matches FeedbackBanner) ---------- */
+    .bucket-chip-placed {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px 10px;
+      font-family: var(--font-en);
+      font-size: 13px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .bucket-chip-placed:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #b91c1c;
+    }
+
+    .bucket-box.correct {
+      border-color: var(--green-border);
+      background: var(--green-bg);
+      border-style: solid;
+    }
+    .bucket-box.wrong {
+      border-color: var(--red-border);
+      background: var(--red-bg);
+      border-style: solid;
+    }
+
+    /* ---------- Bottom Feedback Sheet ---------- */
     .bottom-sheet {
       position: fixed;
       bottom: 0;
       left: 50%;
       transform: translateX(-50%);
       width: 100%;
-      max-width: 42rem;
-      padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
+      max-width: 44rem;
+      padding: 16px 16px calc(18px + env(safe-area-inset-bottom));
       background: var(--bg);
       border-top: 2px solid var(--border);
       display: flex;
       flex-direction: column;
       gap: 12px;
       z-index: 50;
-      transition: background-color 0.15s ease;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
     }
-
-    .footer-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .footer-row .btn-3d { flex: 0 0 auto; min-width: 150px; }
 
     .bottom-sheet.correct {
       background: var(--green-bg);
@@ -582,88 +777,183 @@
       border-top-color: var(--red-border);
     }
 
-    .feedback-row {
+    .feedback-content {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 800;
-      font-size: 17px;
-    }
-    .feedback-row.correct { color: var(--green-text); }
-    .feedback-row.wrong { color: var(--red); }
-
-    .feedback-sub {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.6;
+      align-items: flex-start;
+      gap: 14px;
+      animation: popIn 0.2s ease;
     }
 
-    /* ---------- Modals ---------- */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.55);
+    .feedback-icon-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      z-index: 100;
-      animation: fadeIn 0.2s ease;
+      font-size: 22px;
+      font-weight: 900;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .feedback-icon-circle.correct { color: var(--green-text); }
+    .feedback-icon-circle.wrong { color: var(--red); }
+
+    .feedback-text-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
-    .modal-box {
+    .feedback-heading {
+      font-size: 20px;
+      font-weight: 900;
+    }
+    .feedback-heading.correct { color: var(--green-text); }
+    .feedback-heading.wrong { color: var(--red); }
+
+    .feedback-explanation {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .footer-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .footer-actions .btn-3d {
+      min-width: 150px;
+    }
+
+    .skip-btn {
+      background: none;
+      border: 2px solid transparent;
+      cursor: pointer;
+      font-family: var(--font-ku);
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--muted2);
+      padding: 10px 14px;
+      border-radius: 14px;
+      transition: color 0.15s ease;
+    }
+    .skip-btn:hover {
+      color: var(--text);
+      background: var(--bg2);
+    }
+
+    /* ---------- Celebration / Complete Screen ---------- */
+    .complete-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 30px 16px;
+      gap: 18px;
+      animation: popIn 0.3s ease;
+    }
+
+    .mascot-trophy {
+      font-size: 72px;
+      filter: drop-shadow(0 6px 12px rgba(255, 150, 0, 0.3));
+      animation: float 2s infinite ease-in-out;
+    }
+
+    .complete-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    .complete-subtitle {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--muted);
+      max-width: 26rem;
+      line-height: 1.6;
+    }
+
+    .stats-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+      max-width: 26rem;
+      margin-top: 6px;
+    }
+
+    .stat-box {
       background: var(--card);
       border: 2px solid var(--border);
-      border-radius: 24px;
-      padding: 32px 24px;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      border-bottom: 4px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .stat-box.accuracy { border-color: #84d8ff; background: var(--blue-bg); color: var(--blue-shade); }
+    .stat-box.xp { border-color: #ffd599; background: var(--orange-bg); color: var(--orange-shade); }
+    .stat-box.streak { border-color: #a5ed6e; background: var(--green-bg); color: var(--green-text); }
+
+    .stat-val {
+      font-family: var(--font-en);
+      font-size: 22px;
+      font-weight: 900;
+    }
+    .stat-lbl {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
-    .modal-icon { font-size: 60px; margin-bottom: 16px; }
-    .modal-title { font-size: 24px; font-weight: 900; margin-bottom: 8px; }
-    .modal-desc {
-      font-size: 15px;
-      color: var(--muted);
-      margin-bottom: 24px;
-      line-height: 1.7;
-    }
-
+    /* ---------- Animations ---------- */
     @keyframes popIn {
-      from { transform: scale(0.96); opacity: 0; }
+      from { transform: scale(0.97); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
     }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-4px); }
-      75% { transform: translateX(4px); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
 
-    @media (max-width: 420px) {
-      .badge-group { gap: 8px; font-size: 13px; }
-      .examples-grid { grid-template-columns: 1fr; }
+    @media (max-width: 480px) {
+      .prompt-kurdish { font-size: 22px; }
+      .prompt-english { font-size: 14px; }
+      .anchor-grid { grid-template-columns: 1fr; }
+      .pairs-grid { gap: 8px; }
+      .pair-tile { min-height: 58px; font-size: 15px; padding: 10px; }
+      .stats-summary-grid { gap: 8px; }
     }
   </style>
 </head>
 <body>
 
 <div class="app-container">
-  <!-- Lesson top bar -->
+  <!-- Top bar -->
   <header class="lesson-top">
     <button class="exit-btn" type="button" onclick="exitDemo()" aria-label="Exit">✕</button>
     <div class="progress-bar-container">
       <div class="progress-fill" id="progressFill"></div>
     </div>
     <div class="badge-group">
-      <div class="badge hearts" title="Hearts">❤️ <span id="heartCount">5</span></div>
-      <div class="badge streak" title="Streak">⚡ <span id="streakCount">0</span></div>
+      <div class="badge hearts" title="Hearts (ناوەستێت لەسەر هەڵە)">❤️ <span id="heartCount">5</span></div>
+      <div class="badge streak" title="Streak">🔥 <span id="streakCount">1</span></div>
       <div class="badge xp" title="XP">💎 <span id="xpCount">0</span></div>
     </div>
   </header>
@@ -671,64 +961,80 @@
   <!-- Exercise area -->
   <main id="gameViewport"></main>
 
-  <!-- Bottom sheet -->
+  <!-- Bottom feedback & action sheet -->
   <div class="bottom-sheet" id="bottomSheet">
-    <div id="feedbackContainer" style="display: none;">
-      <div class="feedback-row" id="feedbackTitle"></div>
-      <div class="feedback-sub" id="feedbackBody"></div>
-    </div>
-    <div class="footer-row" id="footerRow">
-      <button class="btn-skip" type="button" id="skipButton" onclick="skipStep()">تێپەڕاندن (Skip)</button>
-      <button class="btn-3d btn-outline" id="mainActionButton" onclick="handleMainAction()">دەستپێبکە</button>
+    <div id="feedbackContainer" style="display: none;"></div>
+    <div class="footer-actions" id="footerActions">
+      <button class="skip-btn" type="button" id="skipButton" onclick="skipStep()">تێپەڕاندن (Skip)</button>
+      <button class="btn-3d btn-primary" id="mainActionButton" onclick="handleMainAction()">دەستپێبکە</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ---------- Sound effects (Web Audio) ----------
+  // ---------- Sound effects (Web Audio Synthesizer) ----------
   class SoundFX {
     constructor() { this.ctx = null; }
     init() {
-      if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
     }
     playCorrect() {
-      this.init();
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'triangle';
-      osc.connect(gain); gain.connect(this.ctx.destination);
-      osc.frequency.setValueAtTime(523.25, now);
-      osc.frequency.setValueAtTime(659.25, now + 0.1);
-      osc.frequency.setValueAtTime(783.99, now + 0.2);
-      gain.gain.setValueAtTime(0.2, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
-      osc.start(now); osc.stop(now + 0.45);
+      try {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.frequency.setValueAtTime(523.25, now);       // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.09); // E5
+        osc.frequency.setValueAtTime(783.99, now + 0.18); // G5
+        osc.frequency.setValueAtTime(1046.50, now + 0.27);// C6
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.55);
+        osc.start(now);
+        osc.stop(now + 0.55);
+      } catch (e) {}
     }
     playWrong() {
-      this.init();
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.connect(gain); gain.connect(this.ctx.destination);
-      osc.frequency.setValueAtTime(220, now);
-      osc.frequency.setValueAtTime(180, now + 0.15);
-      gain.gain.setValueAtTime(0.25, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-      osc.start(now); osc.stop(now + 0.35);
+      try {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.setValueAtTime(210, now + 0.14);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.38);
+        osc.start(now);
+        osc.stop(now + 0.38);
+      } catch (e) {}
     }
     playClick() {
-      this.init();
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.connect(gain); gain.connect(this.ctx.destination);
-      osc.frequency.setValueAtTime(800, now);
-      gain.gain.setValueAtTime(0.1, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
-      osc.start(now); osc.stop(now + 0.08);
+      try {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.frequency.setValueAtTime(900, now);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      } catch (e) {}
     }
   }
 
@@ -739,7 +1045,7 @@
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(word);
       utterance.lang = 'en-US';
-      utterance.rate = 0.85;
+      utterance.rate = 0.84;
       window.speechSynthesis.speak(utterance);
     }
   }
@@ -748,109 +1054,191 @@
     window.location.href = '/learn?course=sunrise-3';
   }
 
-  // ---------- Lesson data ----------
+  // =========================================================================
+  // Enhanced GH Phonics Curriculum (Sunrise 3 Style)
+  // Progressive: Rules Intake -> Quick Check -> Matching -> Ear-Gate -> Sorting
+  // =========================================================================
   const LESSON_SLIDES = [
+    // 1. Rule 1 Intake
     {
-      type: "instruction",
-      tag: "یاسای ١: سەرەتای وشە",
-      title: "دەنگی (گ) لە سەرەتادا",
-      desc: "کاتێک پیتەکانی <b>gh</b> دەکەونە سەرەتای هەر وشەیەکەوە، بە دەنگی <b>(گ)</b> دەخوێندرێنەوە:",
+      type: "rule_intake",
+      badge: "یاسای ١ (Rule 1): دەنگی سەرەتا",
+      badgeColor: "green",
+      titleKu: "پیتەکانی GH لە سەرەتای وشەدا",
+      titleEn: "Initial 'gh' sounds like (G)",
+      desc: "کاتێک <b>gh</b> دەکەوێتە سەرەتای وشە لە زمانی ئینگلیزیدا، هەمیشە وەک دەنگی <b>(گ)</b> دەخوێندرێتەوە:",
       examples: [
-        { en: "Ghost", highlight: "Gh", rest: "ost", ku: "تارمایی", sound: "Ghost" },
-        { en: "Ghana", highlight: "Gh", rest: "ana", ku: "وڵاتی غانا", sound: "Ghana" }
+        { en: "Ghost", hl: "Gh", rest: "ost", pron: "گۆست", ku: "تارمایی", sound: "Ghost" },
+        { en: "Ghana", hl: "Gh", rest: "ana", pron: "غانا", ku: "وڵاتی غانا", sound: "Ghana" },
+        { en: "Ghastly", hl: "Gh", rest: "astly", pron: "گاستلی", ku: "ترسناک / سامناک", sound: "Ghastly" }
       ]
     },
-    {
-      type: "instruction",
-      tag: "یاسای ٢: ناوەڕاستی وشە",
-      title: "بێدەنگ لە ناوەڕاستدا",
-      desc: "ئەگەر پیتەکانی <b>gh</b> لە ناوەڕاستی وشەدا هاتن، بە تەواوی <b>بێدەنگ (Silent)</b> دەبن و ناخوێندرێنەوە:",
-      examples: [
-        { en: "Night", pre: "Ni", silent: "gh", post: "t", ku: "شەو", sound: "Night" },
-        { en: "Fight", pre: "Fi", silent: "gh", post: "t", ku: "شەڕ", sound: "Fight" }
-      ]
-    },
-    {
-      type: "instruction",
-      tag: "یاسای ٣: کۆتایی وشە",
-      title: "دەنگی (ف) لە کۆتاییدا",
-      desc: "لە زۆربەی وشە باوەکاندا، کاتێک <b>gh</b> دەکەوێتە کۆتایی وشە، دەنگی <b>(ف)</b> دروست دەکات:",
-      examples: [
-        { en: "Laugh", pre: "Lau", highlight: "gh", ku: "پێکەنین", sound: "Laugh" },
-        { en: "Cough", pre: "Cou", highlight: "gh", ku: "کۆکە / کۆخە", sound: "Cough" }
-      ]
-    },
-    {
-      type: "instruction",
-      tag: "تێبینیی گرنگ: حاڵەتی تایبەت",
-      isWarning: true,
-      title: "کۆتایی بێدەنگ (Silent)",
-      desc: "ئاگاداربە! هەندێک وشە هەن کە <b>gh</b> لە کۆتاییاندایە بەڵام ناکرێن بە (ف)، بەڵکو بە <b>بێدەنگی</b> دەمێننەوە:",
-      examples: [
-        { en: "High", pre: "Hi", silent: "gh", ku: "بەرز", sound: "High" },
-        { en: "Sigh", pre: "Si", silent: "gh", ku: "هەناسەی سارد / هەڵکێشان", sound: "Sigh" }
-      ]
-    },
+
+    // 2. Practice: Initial GH Multiple Choice
     {
       type: "quiz_choice",
-      title: "دەنگی پیتی (gh) لەم وشەیەدا چییە؟",
-      promptWord: "Ghost",
-      kuPrompt: "تارمایی",
+      badge: "تاقیکردنەوەی خێرا (Quick Check)",
+      badgeColor: "blue",
+      titleKu: "لە وشەی «Ghost» دەنگی gh چییە؟",
+      titleEn: "What sound does 'gh' make in 'Ghost'?",
+      audioWord: "Ghost",
       options: [
-        { text: "دەنگی (ف)", correct: false },
-        { text: "بێ دەنگە (ناخوێندرێتەوە)", correct: false },
-        { text: "دەنگی (گ)", correct: true }
+        { text: "دەنگی (گ) — هاوشێوەی پیتەکانی G", sub: "Sounds like /g/", correct: true },
+        { text: "دەنگی (ف) — هاوشێوەی پیتی F", sub: "Sounds like /f/", correct: false },
+        { text: "بە تەواوی بێدەنگە و ناخوێندرێتەوە", sub: "Silent (no sound)", correct: false }
       ],
-      explanation: "چونکە gh لە سەرەتای وشەیە، دەنگی (گ) دەدات."
+      explanation: "چونکە gh لە سەرەتای وشەکەدایە، هەمیشە وەک دەنگی (گ) بێژە دەکرێت."
     },
+
+    // 3. Rule 2 Intake
+    {
+      type: "rule_intake",
+      badge: "یاسای ٢ (Rule 2): دەنگی ناوەڕاست",
+      badgeColor: "orange",
+      titleKu: "پیتەکانی GH لە ناوەڕاستی وشەدا",
+      titleEn: "Medial 'gh' is Silent (No Sound)",
+      desc: "کاتێک <b>gh</b> لە ناوەڕاستی وشەدا دێت (بە تایبەت پێش پیتی <b>t</b> وەک <b>-ight</b>)، بە تەواوی <b>بێدەنگ</b> دەبێت:",
+      examples: [
+        { en: "Night", pre: "Ni", silent: "gh", post: "t", pron: "نایت", ku: "شەو", sound: "Night" },
+        { en: "Light", pre: "Li", silent: "gh", post: "t", pron: "لایت", ku: "ڕووناکی", sound: "Light" },
+        { en: "Fight", pre: "Fi", silent: "gh", post: "t", pron: "فایت", ku: "شەڕکردن", sound: "Fight" },
+        { en: "Right", pre: "Ri", silent: "gh", post: "t", pron: "ڕایت", ku: "ڕاست / دروست", sound: "Right" }
+      ]
+    },
+
+    // 4. Practice: Medial GH Audio Comprehension
+    {
+      type: "quiz_choice",
+      badge: "گوێگرتن و بڕیاردان (Listen & Check)",
+      badgeColor: "blue",
+      titleKu: "ئایا پیتەکانی gh لە وشەی «Night» دەخوێندرێنەوە؟",
+      titleEn: "Are 'gh' pronounced in 'Night'?",
+      audioWord: "Night",
+      options: [
+        { text: "نەخێر، بە تەواوی بێدەنگن (Silent)", sub: "No, they are completely silent", correct: true },
+        { text: "بەڵێ، دەنگی (ف) دەدەن", sub: "Yes, pronounced as /f/", correct: false },
+        { text: "بەڵێ، دەنگی (گ) دەدەن", sub: "Yes, pronounced as /g/", correct: false }
+      ],
+      explanation: "لە کۆتایی ئاوێتەی -ight پیتەکانی gh هیچ دەنگێکیان نییە و بێدەنگن."
+    },
+
+    // 5. Rule 3 Intake
+    {
+      type: "rule_intake",
+      badge: "یاسای ٣ (Rule 3): دەنگی کۆتایی",
+      badgeColor: "purple",
+      titleKu: "پیتەکانی GH لە کۆتایی وشەدا",
+      titleEn: "Final 'gh' sounds like (F)",
+      desc: "لە کۆمەڵێک وشەی باودا، کاتێک <b>gh</b> دەکەوێتە کۆتایی وشە (وەک <b>-augh</b> یان <b>-ough</b>)، دەنگی <b>(ف)</b> دروست دەکات:",
+      examples: [
+        { en: "Laugh", pre: "Lau", hl: "gh", pron: "لاف", ku: "پێکەنین", sound: "Laugh" },
+        { en: "Cough", pre: "Cou", hl: "gh", pron: "کۆف", ku: "کۆکە / کۆخە", sound: "Cough" },
+        { en: "Enough", pre: "Enou", hl: "gh", pron: "ئیناف", ku: "بەس / تەواو", sound: "Enough" },
+        { en: "Tough", pre: "Tou", hl: "gh", pron: "تاف", ku: "بەهێز / ڕەق", sound: "Tough" }
+      ]
+    },
+
+    // 6. Practice: Slot Filler / Sound check
+    {
+      type: "quiz_slot",
+      badge: "پڕکردنەوەی بۆشایی (Slot Filler)",
+      badgeColor: "purple",
+      titleKu: "دەنگی پیتی کۆتایی هەڵبژێرە:",
+      titleEn: "Choose the correct ending sound:",
+      frameText: "He is telling a joke, so people lau[ ___ ].",
+      meaningKu: "ئەو نوکتە دەگێڕێتەوە، بۆیە خەڵک پێدەکەنن.",
+      audioWord: "Laugh",
+      options: [
+        { text: "gh (دەنگی ف)", sub: "Sounds like /f/", correct: true },
+        { text: "gh (دەنگی گ)", sub: "Sounds like /g/", correct: false },
+        { text: "gh (بێدەنگ)", sub: "Silent", correct: false }
+      ],
+      explanation: "لە وشەی Laugh پیتەکانی gh دەنگی (ف) دەدەن: /lɑːf/."
+    },
+
+    // 7. Rule 4 Intake: Special Exceptions (Silent Endings)
+    {
+      type: "rule_intake",
+      badge: "یاسای ٤ (Rule 4): حاڵەتی تایبەت",
+      badgeColor: "orange",
+      titleKu: "کۆتایی بێدەنگ لە چەند وشەیەکی تایبەتدا",
+      titleEn: "Exceptions: Silent 'gh' at the end",
+      desc: "ئاگاداربە! هەندێک وشە هەن کە بە <b>gh</b> کۆتایی دێن بەڵام ناکرێن بە (ف)، بەڵکو بە <b>بێدەنگی</b> دەمێننەوە:",
+      examples: [
+        { en: "High", pre: "Hi", silent: "gh", pron: "های", ku: "بەرز", sound: "High" },
+        { en: "Sigh", pre: "Si", silent: "gh", pron: "سای", ku: "هەناسەی سارد هەڵکێشان", sound: "Sigh" },
+        { en: "Though", pre: "Thou", silent: "gh", pron: "زۆو", ku: "هەرچەندە", sound: "Though" },
+        { en: "Through", pre: "Throu", silent: "gh", pron: "سروو", ku: "بەناو / لەڕێگەی", sound: "Through" }
+      ]
+    },
+
+    // 8. Practice: Pair Match
     {
       type: "quiz_pairs",
-      title: "وشەکان بە واتا کوردییەکەیان ببەستەوە:",
+      badge: "جووتبەندکردن (Pair Matching)",
+      badgeColor: "green",
+      titleKu: "وشەکان بە واتا و دەنگەکەیان ببەستەوە:",
+      titleEn: "Match each word to its Kurdish meaning & sound:",
       pairs: [
-        { id: 1, en: "Night", ku: "شەو" },
-        { id: 2, en: "Fight", ku: "شەڕ" },
-        { id: 3, en: "Laugh", ku: "پێکەنین" },
-        { id: 4, en: "Cough", ku: "کۆکە" }
+        { id: 1, en: "Ghost", ku: "تارمایی (دەنگی گ)" },
+        { id: 2, en: "Night", ku: "شەو (بێدەنگ)" },
+        { id: 3, en: "Laugh", ku: "پێکەنین (دەنگی ف)" },
+        { id: 4, en: "High", ku: "بەرز (بێدەنگ)" }
       ]
     },
+
+    // 9. Practice: Audio Ear-Gate
     {
       type: "quiz_choice",
-      title: "ئایا ئەم یاسایە ڕاستە یان هەڵە؟",
-      statement: "«کاتێک پیتەکانی gh دەکەونە ناوەڕاستی وشە، دەنگی (ف) دەدەن.»",
+      badge: "دەروازەی بیستن (Audio Ear-Gate)",
+      badgeColor: "blue",
+      titleKu: "گوێ لە دەنگەکە بگرە: دەنگی پیتەکانی gh چییە؟",
+      titleEn: "Listen carefully: What sound does 'gh' make?",
+      audioWord: "Enough",
       options: [
-        { text: "ڕاستە", correct: false },
-        { text: "هەڵەیە (بێدەنگ دەبن)", correct: true }
+        { text: "دەنگی (ف) دەدات (وەک Enough)", sub: "/f/ sound", correct: true },
+        { text: "دەنگی (گ) دەدات", sub: "/g/ sound", correct: false },
+        { text: "بە تەواوی بێدەنگە", sub: "Silent", correct: false }
       ],
-      explanation: "لە ناوەڕاستدا (وەک Night و Fight) هەمیشە بێ دەنگ دەبن."
+      explanation: "لە وشەی Enough پیتەکانی gh بە ڕوونی دەنگی (ف) دەدەن: /ɪˈnʌf/."
     },
+
+    // 10. Practice: Odd-One-Out
+    {
+      type: "quiz_choice",
+      badge: "دۆزینەوەی وشەی جیاواز (Odd One Out)",
+      badgeColor: "orange",
+      titleKu: "کامیان لەم وشانە دەنگی (ف) نادات و بێدەنگە؟",
+      titleEn: "Which word does NOT sound like /f/?",
+      options: [
+        { text: "Laugh", sub: "دەنگی (ف) دەدات", correct: false },
+        { text: "Cough", sub: "دەنگی (ف) دەدات", correct: false },
+        { text: "High", sub: "بێدەنگە (حاڵەتی تایبەت)", correct: true },
+        { text: "Tough", sub: "دەنگی (ف) دەدات", correct: false }
+      ],
+      explanation: "لە وشەی High پیتەکانی gh دەنگی (ف) دروست ناکەن بەڵکو بێدەنگن."
+    },
+
+    // 11. Practice: Interactive 3-Bucket Sorting
     {
       type: "quiz_sort",
-      title: "وشەکان بخەرە ناو دەستەی گونجاو:",
-      words: ["Ghost", "Ghana", "Laugh", "Cough", "High", "Sigh"],
+      badge: "پۆلێنکردن (Categorization)",
+      badgeColor: "purple",
+      titleKu: "وشەکان بخەرە ناو سندوقی دروست:",
+      titleEn: "Sort words into the correct sound categories:",
+      words: ["Ghost", "Ghana", "Laugh", "Cough", "Night", "High"],
       buckets: {
-        g: { label: "دەنگی (گ)", words: ["Ghost", "Ghana"] },
-        f: { label: "دەنگی (ف)", words: ["Laugh", "Cough"] },
-        silent: { label: "بێدەنگ (Silent)", words: ["High", "Sigh"] }
+        g: { label: "دەنگی (گ) — لە سەرەتادا", words: ["Ghost", "Ghana"] },
+        f: { label: "دەنگی (ف) — لە کۆتاییدا", words: ["Laugh", "Cough"] },
+        silent: { label: "بێدەنگ (Silent) — ناوەڕاست یان تایبەت", words: ["Night", "High"] }
       }
-    },
-    {
-      type: "quiz_choice",
-      title: "کامیان لەمانە دەنگی (ف) دروست ناکات؟",
-      promptWord: "دۆزینەوەی وشەی جیاواز",
-      kuPrompt: "بەپێی تێبینییە تایبەتەکە",
-      options: [
-        { text: "Laugh", correct: false },
-        { text: "High", correct: true },
-        { text: "Cough", correct: false }
-      ],
-      explanation: "لە وشەی High پیتەکانی gh بێدەنگن و ناکرێن بە (ف)."
     }
   ];
 
-  // ---------- State ----------
+  // ---------- App State ----------
   let currentStep = 0;
   let hearts = 5;
-  let streak = 0;
+  let streak = 1;
   let xp = 0;
   let selectedOption = null;
   let matchingState = { selectedEn: null, selectedKu: null, matchedCount: 0 };
@@ -861,10 +1249,7 @@
   const bottomSheet = document.getElementById("bottomSheet");
   const mainBtn = document.getElementById("mainActionButton");
   const skipButton = document.getElementById("skipButton");
-  const footerRow = document.getElementById("footerRow");
   const feedbackContainer = document.getElementById("feedbackContainer");
-  const feedbackTitle = document.getElementById("feedbackTitle");
-  const feedbackBody = document.getElementById("feedbackBody");
   const progressFill = document.getElementById("progressFill");
   const heartCountEl = document.getElementById("heartCount");
   const xpCountEl = document.getElementById("xpCount");
@@ -875,20 +1260,24 @@
     feedbackContainer.style.display = "none";
     bottomSheet.className = "bottom-sheet";
     mainBtn.className = "btn-3d btn-primary";
-    skipButton.style.visibility = "visible";
+    mainBtn.disabled = false;
+    skipButton.style.display = "inline-block";
 
     const progress = (currentStep / LESSON_SLIDES.length) * 100;
     progressFill.style.width = `${progress}%`;
 
     const slide = LESSON_SLIDES[currentStep];
 
-    if (slide.type === "instruction") {
-      renderInstructionSlide(slide);
-      mainBtn.innerText = currentStep === 3 ? "تێگەیشتم، با دەست بە تاقیکردنەوە بکەین!" : "بەردەوام بە";
-      mainBtn.disabled = false;
-      skipButton.style.visibility = "hidden";
+    if (slide.type === "rule_intake") {
+      renderRuleIntake(slide);
+      mainBtn.innerText = "بەردەوام بە";
+      skipButton.style.display = "none";
     } else if (slide.type === "quiz_choice") {
       renderChoiceQuiz(slide);
+      mainBtn.innerText = "پشکنین";
+      mainBtn.disabled = true;
+    } else if (slide.type === "quiz_slot") {
+      renderSlotQuiz(slide);
       mainBtn.innerText = "پشکنین";
       mainBtn.disabled = true;
     } else if (slide.type === "quiz_pairs") {
@@ -900,124 +1289,175 @@
       mainBtn.innerText = "پشکنین";
       mainBtn.disabled = true;
     }
+
+    // Scroll to top of content smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // 1. Instruction slide
-  function renderInstructionSlide(slide) {
+  // 1. Rule Intake View
+  function renderRuleIntake(slide) {
     const examplesHtml = slide.examples.map(ex => {
-      let wordMarkup = "";
-      if (ex.highlight && ex.rest) {
-        wordMarkup = `<span class="highlight">${ex.highlight}</span>${ex.rest}`;
+      let wordMarkup = ex.en;
+      if (ex.hl && ex.rest) {
+        wordMarkup = `<span class="hl-${slide.badgeColor === 'green' ? 'green' : 'orange'}">${ex.hl}</span>${ex.rest}`;
       } else if (ex.pre && ex.silent && ex.post) {
-        wordMarkup = `${ex.pre}<span class="silent">${ex.silent}</span>${ex.post}`;
-      } else if (ex.pre && ex.highlight) {
-        wordMarkup = `${ex.pre}<span class="highlight">${ex.highlight}</span>`;
+        wordMarkup = `${ex.pre}<span class="hl-silent">${ex.silent}</span>${ex.post}`;
+      } else if (ex.pre && ex.hl) {
+        wordMarkup = `${ex.pre}<span class="hl-${slide.badgeColor === 'purple' ? 'orange' : 'green'}">${ex.hl}</span>`;
       } else if (ex.pre && ex.silent) {
-        wordMarkup = `${ex.pre}<span class="silent">${ex.silent}</span>`;
+        wordMarkup = `${ex.pre}<span class="hl-silent">${ex.silent}</span>`;
       }
+
       return `
-        <div class="example-box">
-          <div class="example-word">
-            ${wordMarkup}
-            <button class="speak-btn" onclick="speakWord('${ex.sound}')" title="گوێبگرە">🔊</button>
-          </div>
-          <div class="example-trans">${ex.ku}</div>
+        <div class="anchor-card">
+          <div class="anchor-word">${wordMarkup}</div>
+          <div class="anchor-pron">${ex.pron}</div>
+          <div class="anchor-meaning">${ex.ku}</div>
+          <button type="button" class="listen-pill-btn" onclick="speakWord('${ex.sound}')">
+            <span>🔊</span>
+            <span>گوێگرتن لە دەنگ</span>
+          </button>
         </div>
       `;
     }).join("");
 
     viewport.innerHTML = `
-      <div class="lesson-subtitle" style="margin-bottom: 14px;">وانەی سەرەتایی: چۆنیەتی خوێندنەوە</div>
-      <div class="instruction-card">
-        <span class="rule-tag ${slide.isWarning ? 'warning' : ''}">${slide.tag}</span>
-        <div class="rule-heading">${slide.title}</div>
-        <div class="rule-description">${slide.desc}</div>
-        <div class="examples-grid">${examplesHtml}</div>
+      <div class="topic-pill ${slide.badgeColor}">${slide.badge}</div>
+      <div class="prompt-header">
+        <h2 class="prompt-kurdish">${slide.titleKu}</h2>
+        <p class="prompt-english">${slide.titleEn}</p>
       </div>
+      <div class="rule-banner">${slide.desc}</div>
+      <div class="anchor-grid">${examplesHtml}</div>
     `;
   }
 
-  // 2. Multiple choice
+  // 2. Multiple Choice View (Dual-line & clean cards)
   function renderChoiceQuiz(slide) {
     selectedOption = null;
-    let promptHtml = "";
-    if (slide.promptWord) {
-      promptHtml = `
-        <div class="instruction-card" style="text-align: center; padding: 20px;">
-          <div class="example-word" style="font-size: 30px; justify-content: center;">
-            ${slide.promptWord}
-            <button class="speak-btn" onclick="speakWord('${slide.promptWord}')">🔊</button>
-          </div>
-          <div class="example-trans" style="font-size: 15px;">واتا: ${slide.kuPrompt}</div>
-        </div>
-      `;
-    } else if (slide.statement) {
-      promptHtml = `
-        <div class="instruction-card" style="text-align: center; font-size: 18px; font-weight: 700; line-height: 1.8;">
-          ${slide.statement}
+
+    let audioButtonHtml = "";
+    if (slide.audioWord) {
+      audioButtonHtml = `
+        <div style="margin-bottom: 14px; display: flex; justify-content: center;">
+          <button type="button" class="btn-3d btn-secondary" onclick="speakWord('${slide.audioWord}')" style="padding: 10px 20px; font-size: 14px; border-radius: 14px;">
+            <span>🔊</span>
+            <span dir="ltr" style="font-family: var(--font-en); font-weight: 900; margin: 0 4px;">«${slide.audioWord}»</span>
+            <span>گوێبگرە</span>
+          </button>
         </div>
       `;
     }
 
     const optionsHtml = slide.options.map((opt, i) => `
-      <div class="option-card" data-index="${i}" onclick="selectOption(${i})">
+      <button type="button" class="option-btn" data-index="${i}" onclick="selectChoice(${i})">
         <span class="opt-badge">${i + 1}</span>
-        <span class="opt-text">${opt.text}</span>
-      </div>
+        <span class="opt-label">
+          <span class="opt-main">${opt.text}</span>
+          ${opt.sub ? `<span class="opt-sub">${opt.sub}</span>` : ""}
+        </span>
+        <span class="opt-icon" id="optIcon_${i}"></span>
+      </button>
     `).join("");
 
     viewport.innerHTML = `
-      <div class="lesson-title">${slide.title}</div>
-      ${promptHtml}
+      <div class="topic-pill ${slide.badgeColor || 'blue'}">${slide.badge}</div>
+      <div class="prompt-header">
+        <h2 class="prompt-kurdish">${slide.titleKu}</h2>
+        <p class="prompt-english">${slide.titleEn}</p>
+      </div>
+      ${audioButtonHtml}
       <div class="options-grid" id="optionsContainer">${optionsHtml}</div>
     `;
   }
 
-  function selectOption(index) {
+  function selectChoice(index) {
     if (isAnswerChecked) return;
     sfx.playClick();
     selectedOption = index;
-    document.querySelectorAll(".option-card").forEach((c, idx) => {
-      c.classList.toggle("selected", idx === index);
+
+    document.querySelectorAll(".option-btn").forEach((btn, idx) => {
+      btn.classList.toggle("selected", idx === index);
     });
+
     mainBtn.disabled = false;
     mainBtn.className = "btn-3d btn-primary";
   }
 
-  // 3. Matching pairs
+  // 3. Slot Filler View
+  function renderSlotQuiz(slide) {
+    selectedOption = null;
+
+    const optionsHtml = slide.options.map((opt, i) => `
+      <button type="button" class="option-btn" data-index="${i}" onclick="selectChoice(${i})">
+        <span class="opt-badge">${i + 1}</span>
+        <span class="opt-label">
+          <span class="opt-main">${opt.text}</span>
+          ${opt.sub ? `<span class="opt-sub">${opt.sub}</span>` : ""}
+        </span>
+        <span class="opt-icon" id="optIcon_${i}"></span>
+      </button>
+    `).join("");
+
+    viewport.innerHTML = `
+      <div class="topic-pill ${slide.badgeColor || 'purple'}">${slide.badge}</div>
+      <div class="prompt-header">
+        <h2 class="prompt-kurdish">${slide.titleKu}</h2>
+        <p class="prompt-english">${slide.titleEn}</p>
+      </div>
+      <div class="slot-frame-card">
+        <div class="slot-sentence">
+          ${slide.frameText.replace('[ ___ ]', '<span class="slot-blank">[ ___ ]</span>')}
+        </div>
+        <div class="slot-meaning">${slide.meaningKu}</div>
+        ${slide.audioWord ? `
+          <button type="button" class="listen-pill-btn" onclick="speakWord('${slide.audioWord}')">
+            <span>🔊</span>
+            <span>دەنگی وشەکە</span>
+          </button>
+        ` : ""}
+      </div>
+      <div class="options-grid">${optionsHtml}</div>
+    `;
+  }
+
+  // 4. Pair Matching View
   function renderPairsQuiz(slide) {
     matchingState = { selectedEn: null, selectedKu: null, matchedCount: 0 };
     const enShuffled = [...slide.pairs].sort(() => Math.random() - 0.5);
     const kuShuffled = [...slide.pairs].sort(() => Math.random() - 0.5);
 
     viewport.innerHTML = `
-      <div class="lesson-title">${slide.title}</div>
-      <div class="lesson-subtitle">یەک وشەی ئینگلیزی و یەک واتای کوردی هەڵبژێرە</div>
-      <div class="pairs-container">
+      <div class="topic-pill ${slide.badgeColor || 'green'}">${slide.badge}</div>
+      <div class="prompt-header">
+        <h2 class="prompt-kurdish">${slide.titleKu}</h2>
+        <p class="prompt-english">${slide.titleEn}</p>
+      </div>
+      <div class="pairs-grid">
         <div class="pair-col" id="enCol">
           ${enShuffled.map(p => `
-            <div class="pair-card en" data-id="${p.id}" onclick="handlePairClick(this, 'en')">${p.en}</div>
+            <div class="pair-tile en" data-id="${p.id}" onclick="handlePairClick(this, 'en')">${p.en}</div>
           `).join("")}
         </div>
         <div class="pair-col" id="kuCol">
           ${kuShuffled.map(p => `
-            <div class="pair-card" data-id="${p.id}" onclick="handlePairClick(this, 'ku')">${p.ku}</div>
+            <div class="pair-tile" data-id="${p.id}" onclick="handlePairClick(this, 'ku')">${p.ku}</div>
           `).join("")}
         </div>
       </div>
     `;
   }
 
-  function handlePairClick(el, type) {
+  function handlePairClick(el, colType) {
     if (isAnswerChecked) return;
     sfx.playClick();
     const id = el.dataset.id;
-    const colId = type === 'en' ? 'enCol' : 'kuCol';
+    const colId = colType === 'en' ? 'enCol' : 'kuCol';
 
-    document.querySelectorAll(`#${colId} .pair-card`).forEach(c => c.classList.remove('active'));
+    document.querySelectorAll(`#${colId} .pair-tile`).forEach(t => t.classList.remove('active'));
     el.classList.add('active');
 
-    if (type === 'en') {
+    if (colType === 'en') {
       matchingState.selectedEn = id;
       speakWord(el.innerText);
     } else {
@@ -1027,8 +1467,10 @@
     if (matchingState.selectedEn && matchingState.selectedKu) {
       if (matchingState.selectedEn === matchingState.selectedKu) {
         sfx.playCorrect();
-        document.querySelector(`.pair-card.en[data-id="${matchingState.selectedEn}"]`).classList.add('matched');
-        document.querySelector(`.pair-card:not(.en)[data-id="${matchingState.selectedKu}"]`).classList.add('matched');
+        const enTile = document.querySelector(`.pair-tile.en[data-id="${matchingState.selectedEn}"]`);
+        const kuTile = document.querySelector(`.pair-tile:not(.en)[data-id="${matchingState.selectedKu}"]`);
+        enTile.classList.add('matched');
+        kuTile.classList.add('matched');
         matchingState.matchedCount++;
         matchingState.selectedEn = null;
         matchingState.selectedKu = null;
@@ -1038,13 +1480,13 @@
           mainBtn.className = "btn-3d btn-primary";
           mainBtn.innerText = "بەردەوام بە";
           isAnswerChecked = true;
-          skipButton.style.visibility = "hidden";
-          showFeedback(true, "نایابە! هەموو جووتەکان دروستن.");
+          skipButton.style.display = "none";
+          showFeedback(true, "نایابە! هەموو جووتەکان بە دروستی بەسترانەوە.");
         }
       } else {
         sfx.playWrong();
-        const wrongEn = document.querySelector(`.pair-card.en[data-id="${matchingState.selectedEn}"]`);
-        const wrongKu = document.querySelector(`.pair-card:not(.en)[data-id="${matchingState.selectedKu}"]`);
+        const wrongEn = document.querySelector(`.pair-tile.en[data-id="${matchingState.selectedEn}"]`);
+        const wrongKu = document.querySelector(`.pair-tile:not(.en)[data-id="${matchingState.selectedKu}"]`);
         wrongEn.classList.add('wrong');
         wrongKu.classList.add('wrong');
         setTimeout(() => {
@@ -1052,32 +1494,45 @@
           wrongKu.classList.remove('wrong', 'active');
           matchingState.selectedEn = null;
           matchingState.selectedKu = null;
-        }, 420);
+        }, 400);
       }
     }
   }
 
-  // 4. Sorting buckets
+  // 5. Categorization / 3-Bucket Sorting
   function renderSortQuiz(slide) {
     sortState = { selectedWord: null, placed: { g: [], f: [], silent: [] } };
+
     viewport.innerHTML = `
-      <div class="lesson-title">${slide.title}</div>
-      <div class="lesson-subtitle">وشەیەک دیاری بکە و پاشان سندوقی گونجاو دابگرە</div>
-      <div class="chips-bank" id="chipsBank">
-        ${slide.words.map(w => `<div class="word-chip" onclick="selectChip('${w}', this)">${w}</div>`).join("")}
+      <div class="topic-pill ${slide.badgeColor || 'purple'}">${slide.badge}</div>
+      <div class="prompt-header">
+        <h2 class="prompt-kurdish">${slide.titleKu}</h2>
+        <p class="prompt-english">${slide.titleEn}</p>
       </div>
-      <div class="bucket-group">
-        <div class="bucket-target" data-bucket="g" onclick="placeChip('g')">
-          <div class="bucket-header">دەنگی (گ) - لە سەرەتادا</div>
-          <div class="bucket-chips" id="bucket_g"></div>
+      <div class="chips-bank-card" id="chipsBank">
+        ${slide.words.map(w => `<div class="word-chip" data-word="${w}" onclick="selectChip('${w}', this)">${w}</div>`).join("")}
+      </div>
+      <div class="buckets-container">
+        <div class="bucket-box bucket-g" data-bucket="g" onclick="placeChip('g')">
+          <div class="bucket-title-row">
+            <span>🟢 دەنگی (گ) — سەرەتای وشە</span>
+            <span style="font-family: var(--font-en); font-weight: 900;">/g/ sound</span>
+          </div>
+          <div class="bucket-items" id="bucket_g"></div>
         </div>
-        <div class="bucket-target" data-bucket="f" onclick="placeChip('f')">
-          <div class="bucket-header">دەنگی (ف) - لە کۆتاییدا</div>
-          <div class="bucket-chips" id="bucket_f"></div>
+        <div class="bucket-box bucket-f" data-bucket="f" onclick="placeChip('f')">
+          <div class="bucket-title-row">
+            <span>🟠 دەنگی (ف) — کۆتایی وشە</span>
+            <span style="font-family: var(--font-en); font-weight: 900;">/f/ sound</span>
+          </div>
+          <div class="bucket-items" id="bucket_f"></div>
         </div>
-        <div class="bucket-target" data-bucket="silent" onclick="placeChip('silent')">
-          <div class="bucket-header">بێدەنگ (Silent) - ناوەڕاست یان حاڵەتی تایبەت</div>
-          <div class="bucket-chips" id="bucket_silent"></div>
+        <div class="bucket-box bucket-silent" data-bucket="silent" onclick="placeChip('silent')">
+          <div class="bucket-title-row">
+            <span>🔵 بێدەنگ (Silent) — ناوەڕاست و حاڵەتی تایبەت</span>
+            <span style="font-family: var(--font-en); font-weight: 900;">Silent</span>
+          </div>
+          <div class="bucket-items" id="bucket_silent"></div>
         </div>
       </div>
     `;
@@ -1087,8 +1542,8 @@
     if (isAnswerChecked) return;
     sfx.playClick();
     speakWord(word);
-    document.querySelectorAll(".word-chip").forEach(c => c.style.borderColor = "var(--border)");
-    el.style.borderColor = "var(--blue)";
+    document.querySelectorAll(".word-chip").forEach(c => c.classList.remove("selected"));
+    el.classList.add("selected");
     sortState.selectedWord = { word, el };
   }
 
@@ -1100,28 +1555,57 @@
     el.remove();
     sortState.placed[bucketKey].push(word);
 
-    const chipEl = document.createElement("div");
-    chipEl.className = "word-chip";
-    chipEl.style.fontSize = "13px";
-    chipEl.style.padding = "4px 10px";
-    chipEl.style.cursor = "default";
-    chipEl.innerText = word;
-    document.getElementById(`bucket_${bucketKey}`).appendChild(chipEl);
+    const placedChip = document.createElement("div");
+    placedChip.className = "bucket-chip-placed";
+    placedChip.innerHTML = `<span>${word}</span><span style="font-size: 11px; opacity: 0.6;">✕</span>`;
+    placedChip.title = "دەستلێبدە بۆ گەڕاندنەوە";
+    placedChip.onclick = (e) => {
+      e.stopPropagation();
+      returnChipToBank(word, bucketKey, placedChip);
+    };
 
+    document.getElementById(`bucket_${bucketKey}`).appendChild(placedChip);
     sortState.selectedWord = null;
 
+    checkSortComplete();
+  }
+
+  function returnChipToBank(word, bucketKey, chipEl) {
+    if (isAnswerChecked) return;
+    sfx.playClick();
+    chipEl.remove();
+
+    const idx = sortState.placed[bucketKey].indexOf(word);
+    if (idx !== -1) sortState.placed[bucketKey].splice(idx, 1);
+
+    const bank = document.getElementById("chipsBank");
+    const chip = document.createElement("div");
+    chip.className = "word-chip";
+    chip.dataset.word = word;
+    chip.innerText = word;
+    chip.onclick = () => selectChip(word, chip);
+    bank.appendChild(chip);
+
+    checkSortComplete();
+  }
+
+  function checkSortComplete() {
     const totalPlaced = Object.values(sortState.placed).reduce((acc, arr) => acc + arr.length, 0);
-    if (totalPlaced === LESSON_SLIDES[currentStep].words.length) {
+    const totalWords = LESSON_SLIDES[currentStep].words.length;
+    if (totalPlaced === totalWords) {
       mainBtn.disabled = false;
       mainBtn.className = "btn-3d btn-primary";
+    } else {
+      mainBtn.disabled = true;
+      mainBtn.className = "btn-3d btn-outline";
     }
   }
 
-  // 5. Main action
+  // ---------- Action & Verification ----------
   function handleMainAction() {
     const slide = LESSON_SLIDES[currentStep];
 
-    if (slide.type === "instruction") {
+    if (slide.type === "rule_intake") {
       sfx.playClick();
       advance();
       return;
@@ -1131,15 +1615,21 @@
       let isCorrect = false;
       let explanation = "";
 
-      if (slide.type === "quiz_choice") {
+      if (slide.type === "quiz_choice" || slide.type === "quiz_slot") {
         if (selectedOption === null) return;
         isCorrect = slide.options[selectedOption].correct;
         explanation = slide.explanation;
 
-        document.querySelectorAll(".option-card").forEach((card, i) => {
-          card.classList.remove("selected");
-          if (slide.options[i].correct) card.classList.add("correct");
-          else if (i === selectedOption) card.classList.add("wrong");
+        document.querySelectorAll(".option-btn").forEach((btn, i) => {
+          btn.classList.remove("selected");
+          const iconEl = document.getElementById(`optIcon_${i}`);
+          if (slide.options[i].correct) {
+            btn.classList.add("correct");
+            if (iconEl) iconEl.innerText = "✔";
+          } else if (i === selectedOption) {
+            btn.classList.add("wrong");
+            if (iconEl) iconEl.innerText = "✖";
+          }
         });
       } else if (slide.type === "quiz_sort") {
         const correctBuckets = slide.buckets;
@@ -1148,13 +1638,16 @@
           [...sortState.placed.f].sort().join(",") === [...correctBuckets.f.words].sort().join(",") &&
           [...sortState.placed.silent].sort().join(",") === [...correctBuckets.silent.words].sort().join(",")
         );
-        explanation = isCorrect ? "هەموو وشەکان لە سندوقی تەواوی خۆیان دانران!" : "هەندێک لە وشەکان لە سندوقی دروستدا نین.";
 
-        document.querySelectorAll(".bucket-target").forEach((bucketEl) => {
-          const key = bucketEl.dataset.bucket;
+        explanation = isCorrect
+          ? "هەموو وشەکان لە سندوقی تەواوی خۆیان دانران!"
+          : "تێبینی: Ghost و Ghana دەنگی (گ)، Laugh و Cough دەنگی (ف)، وە Night و High بێدەنگن.";
+
+        document.querySelectorAll(".bucket-box").forEach((bEl) => {
+          const key = bEl.dataset.bucket;
           const expected = [...correctBuckets[key].words].sort().join(",");
           const actual = [...sortState.placed[key]].sort().join(",");
-          bucketEl.classList.add(actual === expected ? "correct" : "wrong");
+          bEl.classList.add(actual === expected ? "correct" : "wrong");
         });
       }
 
@@ -1162,22 +1655,16 @@
         sfx.playCorrect();
         streak++;
         xp += 15;
-        showFeedback(true, explanation || "ئافەرم! وەڵامەکەت تەواوە.");
+        showFeedback(true, explanation || "ئافەرم! وەڵامەکەت زۆر دروستە.");
       } else {
         sfx.playWrong();
-        streak = 0;
-        hearts--;
+        // Hearts do NOT terminate learning
         showFeedback(false, explanation || "وەڵامەکەت هەڵەیە، ئاگاداری یاساکە بە!");
-        updateStats();
-        if (hearts <= 0) {
-          triggerGameOver();
-          return;
-        }
       }
 
       updateStats();
       isAnswerChecked = true;
-      skipButton.style.visibility = "hidden";
+      skipButton.style.display = "none";
       mainBtn.innerText = "بەردەوام بە";
     } else {
       sfx.playClick();
@@ -1192,16 +1679,31 @@
 
   function advance() {
     currentStep++;
-    if (currentStep >= LESSON_SLIDES.length) triggerVictory();
-    else renderCurrentStep();
+    if (currentStep >= LESSON_SLIDES.length) {
+      triggerVictory();
+    } else {
+      renderCurrentStep();
+    }
   }
 
   function showFeedback(isCorrect, message) {
     feedbackContainer.style.display = "block";
     bottomSheet.className = `bottom-sheet ${isCorrect ? 'correct' : 'wrong'}`;
-    feedbackTitle.className = `feedback-row ${isCorrect ? 'correct' : 'wrong'}`;
-    feedbackTitle.innerHTML = isCorrect ? "<span>✔ نایابە!</span>" : "<span>✖ هەڵەیە!</span>";
-    feedbackBody.innerText = message;
+
+    feedbackContainer.innerHTML = `
+      <div class="feedback-content">
+        <div class="feedback-icon-circle ${isCorrect ? 'correct' : 'wrong'}">
+          ${isCorrect ? '✔' : '✖'}
+        </div>
+        <div class="feedback-text-group">
+          <div class="feedback-heading ${isCorrect ? 'correct' : 'wrong'}">
+            ${isCorrect ? 'زۆر باشە! (Awesome!)' : 'تەواو نییە (Not quite right)'}
+          </div>
+          <div class="feedback-explanation">${message}</div>
+        </div>
+      </div>
+    `;
+
     mainBtn.className = `btn-3d ${isCorrect ? 'btn-primary' : 'btn-danger'}`;
   }
 
@@ -1211,41 +1713,55 @@
     streakCountEl.innerText = streak;
   }
 
-  function triggerGameOver() {
-    const modal = document.createElement("div");
-    modal.className = "modal-backdrop";
-    modal.innerHTML = `
-      <div class="modal-box">
-        <div class="modal-icon">💔</div>
-        <div class="modal-title">دڵەکانت تەواو بوون!</div>
-        <div class="modal-desc">پێویستە جارێکی تر وانە سەرەتاییەکان بخوێنیتەوە بۆ ئەوەی یاساکانی gh بە تەواوی فێربیت.</div>
-        <button class="btn-3d btn-primary" onclick="restartLesson()">دووبارە دەستپێبکەوە</button>
-      </div>
-    `;
-    document.body.appendChild(modal);
-  }
-
+  // ---------- Victory / Lesson Complete (Duolingo Style) ----------
   function triggerVictory() {
     progressFill.style.width = "100%";
-    const modal = document.createElement("div");
-    modal.className = "modal-backdrop";
-    modal.innerHTML = `
-      <div class="modal-box">
-        <div class="modal-icon">🏆</div>
-        <div class="modal-title">پیرۆزە! وانەکەت تەواو کرد</div>
-        <div class="modal-desc">تۆ هەموو یاساکانی بێژەکردنی پیتی gh فێربوویت و ${xp} بەردی گرانبەها (XP) کۆکردەوە!</div>
-        <button class="btn-3d btn-primary" onclick="restartLesson()">دووبارەکردنەوەی وانە</button>
+    bottomSheet.style.display = "none";
+    sfx.playCorrect();
+
+    viewport.innerHTML = `
+      <div class="complete-card">
+        <div class="mascot-trophy">🏆</div>
+        <h2 class="complete-title">پیرۆزە! وانەکەت تەواو کرد</h2>
+        <p class="complete-subtitle">
+          تۆ یاساکانی بێژەکردنی پیتی <b>GH</b> بە تەواوی فێربوویت و هەموو قۆناغەکانت بە سەرکەوتوویی بڕی!
+        </p>
+
+        <div class="stats-summary-grid">
+          <div class="stat-box accuracy">
+            <span class="stat-val">100%</span>
+            <span class="stat-lbl">دەقیقی</span>
+          </div>
+          <div class="stat-box xp">
+            <span class="stat-val">+${xp || 60}</span>
+            <span class="stat-lbl">بەردی XP</span>
+          </div>
+          <div class="stat-box streak">
+            <span class="stat-val">🔥 ١</span>
+            <span class="stat-lbl">ڕۆژی کارا</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 26rem; margin-top: 14px;">
+          <button type="button" class="btn-3d btn-primary" onclick="restartLesson()" style="width: 100%;">
+            دووبارەکردنەوەی وانە (Review Lesson)
+          </button>
+          <a href="/learn?course=sunrise-3" style="text-decoration: none;">
+            <button type="button" class="btn-3d btn-outline" style="width: 100%;">
+              گەڕانەوە بۆ خولەکە (Back to Sunrise 3)
+            </button>
+          </a>
+        </div>
       </div>
     `;
-    document.body.appendChild(modal);
   }
 
   function restartLesson() {
-    document.querySelectorAll(".modal-backdrop").forEach(m => m.remove());
     currentStep = 0;
     hearts = 5;
-    streak = 0;
+    streak = 1;
     xp = 0;
+    bottomSheet.style.display = "flex";
     updateStats();
     renderCurrentStep();
   }
