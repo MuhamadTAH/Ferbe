@@ -23,68 +23,43 @@
   </script>
   <style>
     :root {
-      --bg: #ffffff;
-      --bg2: #f7f7f7;
-      --card: #ffffff;
-      --text: #4b4b4b;
-      --muted: #777777;
-      --muted2: #afafaf;
-      --border: #e5e5e5;
+      --bg: #131F24;
+      --card: #131F24;
+      --card-inner: #1A262C;
+      --card-hover: #202F36;
+      --border: #37464F;
+      --text: #FFFFFF;
+      --muted: #8495A0;
+      --muted2: #52656D;
 
-      --green: #58cc02;
-      --green-shade: #46a302;
-      --green-text: #58a700;
-      --green-bg: #d7ffb8;
-      --green-border: #a5ed6e;
+      --green: #58CC02;
+      --green-shade: #46A302;
+      --green-text: #58CC02;
+      --green-bg: #153118;
+      --green-border: #58CC02;
 
-      --blue: #1cb0f6;
-      --blue-shade: #1899d6;
-      --blue-bg: #ddf4ff;
-      --blue-border: #84d8ff;
+      --blue: #1CB0F6;
+      --blue-shade: #1899D6;
+      --blue-bg: #1C3342;
+      --blue-border: #3BC0F8;
 
-      --red: #ea2b2b;
-      --red-shade: #d33131;
-      --red-bg: #ffdfe0;
-      --red-border: #ffb2b2;
+      --red: #EA2B2B;
+      --red-shade: #D33131;
+      --red-bg: #2D1418;
+      --red-border: #EA2B2B;
 
-      --orange: #ff9600;
-      --orange-shade: #e08500;
-      --orange-bg: #fff4e5;
-      --orange-border: #ffd599;
+      --orange: #FF9600;
+      --orange-shade: #E08500;
+      --orange-bg: #342416;
+      --orange-border: #FF9600;
 
-      --purple: #9333ea;
-      --purple-shade: #7928ca;
-      --purple-bg: #faf5ff;
-      --purple-border: #d8b4fe;
+      --purple: #A855F7;
+      --purple-shade: #7928CA;
+      --purple-bg: #2D1B4E;
+      --purple-border: #A855F7;
 
       --font-ku: 'Noto Sans Arabic', system-ui, sans-serif;
-      --font-en: 'Nunito', system-ui, sans-serif;
-    }
-
-    html.dark {
-      --bg: #131f24;
-      --bg2: #202f36;
-      --card: #131f24;
-      --text: #ffffff;
-      --muted: #8495a0;
-      --muted2: #52656d;
-      --border: #37464f;
-
-      --green-text: #58cc02;
-      --green-bg: #153118;
-      --green-border: #58cc02;
-
-      --blue-bg: #1c3b4e;
-      --blue-border: #3bc0f8;
-
-      --red-bg: #2d1418;
-      --red-border: #ea2b2b;
-
-      --orange-bg: #342416;
-      --orange-border: #ff9600;
-
-      --purple-bg: #2d1b4e;
-      --purple-border: #a855f7;
+      --font-en: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     * {
@@ -102,28 +77,29 @@
       justify-content: center;
       min-height: 100vh;
       overflow-x: hidden;
-      transition: background-color 0.2s ease, color 0.2s ease;
+      margin: 0;
+      padding: 0;
     }
 
-    .app-container {
+    .lesson-wrapper {
       width: 100%;
-      max-width: 44rem;
       min-height: 100vh;
-      background: var(--bg);
       display: flex;
       flex-direction: column;
+      background: var(--bg);
       position: relative;
     }
 
-    /* ---------- Header / Progress ---------- */
-    .lesson-top {
+    /* ---------- Exact Sunrise 3 Top Bar (Strictly LTR for Icon Left & Hearts Right) ---------- */
+    .lesson-header-top {
+      direction: ltr;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
       width: 100%;
-      max-width: 44rem;
+      max-width: 42rem;
       margin: 0 auto;
-      padding: 16px 16px 12px;
+      padding: 20px 16px 12px;
       position: sticky;
       top: 0;
       background: var(--bg);
@@ -134,27 +110,25 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       background: none;
       border: none;
       cursor: pointer;
-      color: var(--muted2);
-      font-size: 24px;
-      font-weight: 800;
+      color: var(--muted);
       border-radius: 12px;
-      transition: all 0.15s ease;
+      transition: color 0.15s ease;
+      text-decoration: none;
     }
     .exit-btn:hover {
-      background: var(--bg2);
-      color: var(--text);
+      color: #ffffff;
     }
 
-    .progress-bar-container {
+    .progress-track {
       flex: 1;
       height: 16px;
       background-color: var(--border);
-      border-radius: 999px;
+      border-radius: 9999px;
       overflow: hidden;
       position: relative;
     }
@@ -163,7 +137,7 @@
       height: 100%;
       width: 0%;
       background-color: var(--green);
-      border-radius: 999px;
+      border-radius: 9999px;
       transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
       position: relative;
     }
@@ -174,63 +148,33 @@
       left: 6px;
       right: 6px;
       height: 4px;
-      background: rgba(255, 255, 255, 0.4);
-      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.45);
+      border-radius: 9999px;
     }
 
-    .badge-group {
+    .hearts-indicator {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 6px;
       font-family: var(--font-en);
       font-weight: 800;
-      font-size: 14px;
+      font-size: 15px;
+      color: #FF4B4B;
     }
 
-    .badge {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 8px;
-      border-radius: 12px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-    }
-    .badge.hearts { color: var(--red); }
-    .badge.streak { color: var(--orange); }
-    .badge.xp { color: var(--blue); }
-
-    /* ---------- Main Content Viewport ---------- */
-    main {
+    /* ---------- Main Exercise Area ---------- */
+    main.lesson-main {
       flex: 1;
       width: 100%;
-      max-width: 44rem;
+      max-width: 42rem;
       margin: 0 auto;
-      padding: 6px 16px 160px;
+      padding: 8px 16px 160px;
       display: flex;
       flex-direction: column;
     }
 
-    .topic-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-weight: 900;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 8px;
-      width: fit-content;
-      align-self: center;
-    }
-    .topic-pill.blue { background: var(--blue-bg); color: var(--blue); }
-    .topic-pill.orange { background: var(--orange-bg); color: var(--orange); }
-    .topic-pill.green { background: var(--green-bg); color: var(--green-text); }
-    .topic-pill.purple { background: var(--purple-bg); color: var(--purple); }
-
-    .prompt-header {
+    /* Header Instruction Block (Matches WordAnchorsView & MultipleChoiceView) */
+    .header-instructions {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -239,370 +183,391 @@
       gap: 4px;
     }
 
-    .prompt-kurdish {
-      font-family: var(--font-ku);
-      font-size: 26px;
-      font-weight: 800;
-      line-height: 1.45;
-      color: var(--text);
-    }
-
-    .prompt-english {
-      font-family: var(--font-en);
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--blue);
-      direction: ltr;
-    }
-
-    /* ---------- 3D Push Button System ---------- */
-    .btn-3d {
-      appearance: none;
-      border: none;
-      cursor: pointer;
-      font-family: var(--font-ku);
-      font-weight: 800;
-      font-size: 15px;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      border-radius: 16px;
-      padding: 13px 22px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.08s ease;
-      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
-      user-select: none;
-    }
-    .btn-3d:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
-    }
-
-    .btn-primary {
-      background-color: var(--green);
-      color: #ffffff;
-      border-bottom: 4px solid var(--green-shade);
-    }
-    .btn-primary:active { border-bottom-width: 1px; }
-
-    .btn-danger {
-      background-color: var(--red);
-      color: #ffffff;
-      border-bottom: 4px solid var(--red-shade);
-    }
-    .btn-danger:active { border-bottom-width: 1px; }
-
-    .btn-secondary {
-      background-color: var(--blue);
-      color: #ffffff;
-      border-bottom: 4px solid var(--blue-shade);
-    }
-
-    .btn-outline {
-      background-color: var(--card);
-      color: var(--muted2);
-      border: 2px solid var(--border);
-      border-bottom: 4px solid var(--border);
-    }
-
-    .btn-3d:disabled {
-      background-color: var(--border);
-      color: var(--muted2);
-      border-bottom: none;
-      box-shadow: none;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* ---------- Word Anchor / Phonics Intake Cards ---------- */
-    .anchor-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-
-    .anchor-card {
-      background: var(--card);
-      border: 2px solid var(--border);
-      border-bottom: 4px solid var(--border);
-      border-radius: 20px;
-      padding: 18px 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-      transition: transform 0.15s ease, border-color 0.15s ease;
-    }
-    .anchor-card:hover {
-      border-color: var(--blue-border);
-      transform: translateY(-2px);
-    }
-
-    .anchor-word {
-      font-family: var(--font-en);
-      font-size: 32px;
-      font-weight: 900;
-      color: var(--text);
-      direction: ltr;
-      letter-spacing: 0.02em;
-    }
-
-    .anchor-word .hl-green {
-      color: var(--green);
-      text-decoration: underline;
-      text-underline-offset: 4px;
-    }
-    .anchor-word .hl-silent {
-      color: var(--muted2);
-      text-decoration: line-through;
-    }
-    .anchor-word .hl-orange {
-      color: var(--orange);
-      text-decoration: underline;
-      text-underline-offset: 4px;
-    }
-
-    .anchor-pron {
-      font-family: var(--font-ku);
-      font-size: 17px;
-      font-weight: 800;
-      color: var(--blue);
-      background: var(--blue-bg);
-      padding: 3px 12px;
-      border-radius: 10px;
-    }
-
-    .anchor-meaning {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--muted);
-    }
-
-    .listen-pill-btn {
-      margin-top: 4px;
-      appearance: none;
-      border: 2px solid var(--blue-border);
-      border-bottom: 3px solid var(--blue-shade);
-      background: var(--blue-bg);
-      color: var(--blue-shade);
-      cursor: pointer;
-      font-family: var(--font-ku);
-      font-size: 12px;
-      font-weight: 800;
-      border-radius: 12px;
-      padding: 6px 14px;
+    .instruction-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.1s ease;
+      border-radius: 12px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
     }
-    .listen-pill-btn:hover {
-      background: #c7ebff;
-      transform: translateY(-1px);
+    .instruction-badge.green {
+      background: #1E3B20;
+      color: #58CC02;
+      border: 1px solid rgba(88, 204, 2, 0.3);
     }
-    .listen-pill-btn:active {
-      transform: translateY(2px);
-      border-bottom-width: 1px;
+    .instruction-badge.blue {
+      background: #1C3342;
+      color: #3BC0F8;
+      border: 1px solid rgba(59, 192, 248, 0.3);
+    }
+    .instruction-badge.purple {
+      background: #2D1B4E;
+      color: #C084FC;
+      border: 1px solid rgba(192, 132, 252, 0.3);
+    }
+    .instruction-badge.orange {
+      background: #342416;
+      color: #FF9600;
+      border: 1px solid rgba(255, 150, 0, 0.3);
     }
 
-    /* ---------- Rule Explanation Banner ---------- */
-    .rule-banner {
-      background: var(--bg2);
-      border: 2px solid var(--border);
-      border-radius: 18px;
-      padding: 16px 18px;
-      margin-bottom: 18px;
-      line-height: 1.7;
-      font-size: 15px;
-      font-weight: 600;
-    }
-    .rule-banner b {
-      color: var(--green-text);
+    .instruction-title {
+      font-family: var(--font-ku);
+      font-size: 26px;
       font-weight: 800;
+      line-height: 1.4;
+      color: #ffffff;
+      margin: 0;
     }
 
-    /* ---------- Multiple Choice Cards ---------- */
-    .options-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 6px;
-    }
-
-    .option-btn {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: var(--card);
-      border: 2px solid var(--border);
-      border-bottom: 4px solid var(--border);
-      border-radius: 18px;
-      padding: 14px 18px;
-      font-size: 17px;
+    .instruction-subtitle {
+      font-family: var(--font-ku);
+      font-size: 13px;
       font-weight: 700;
-      color: var(--text);
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .instruction-subtitle-en {
+      font-family: var(--font-en);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+      direction: ltr;
+      margin-top: 2px;
+    }
+
+    /* Audio Speaker Button (Header Prompts) */
+    .audio-prompt-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+    .btn-audio-listen {
+      appearance: none;
+      border: 2px solid #1899D6;
+      border-bottom: 4px solid #1899D6;
+      background: #1CB0F6;
+      color: #ffffff;
       cursor: pointer;
-      transition: all 0.12s ease;
-      text-align: right;
-      width: 100%;
+      font-family: var(--font-ku);
+      font-size: 14px;
+      font-weight: 800;
+      border-radius: 16px;
+      padding: 10px 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.1s ease;
       user-select: none;
     }
-    .option-btn:hover:not(:disabled) {
-      background: var(--bg2);
-      border-color: #d1d5db;
+    .btn-audio-listen:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
     }
 
-    .opt-badge {
+    /* ---------- Exact Sunrise 3 WordAnchorsView Cards ---------- */
+    .word-anchors-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .word-anchor-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 24px;
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border);
+      background-color: var(--card);
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+    .word-anchor-card:hover {
+      border-color: #1CB0F6;
+    }
+    .word-anchor-card.heard {
+      border-color: #58CC02;
+      background-color: #132817;
+    }
+
+    /* Top Visual Area (Image/Graphic Box) */
+    .anchor-visual-top {
+      height: 170px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(180deg, #1B262C 0%, #131F24 100%);
+      padding: 16px;
+      position: relative;
+    }
+
+    .anchor-phonics-badge {
+      font-family: var(--font-en);
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      color: #ffffff;
+      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      direction: ltr;
+    }
+    .anchor-phonics-badge .hl-g {
+      color: #58CC02;
+      text-decoration: underline;
+      text-underline-offset: 6px;
+    }
+    .anchor-phonics-badge .hl-f {
+      color: #FF9600;
+      text-decoration: underline;
+      text-underline-offset: 6px;
+    }
+    .anchor-phonics-badge .hl-silent {
+      color: var(--muted);
+      text-decoration: line-through;
+      opacity: 0.75;
+    }
+
+    /* Bottom Metadata Row */
+    .anchor-bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .anchor-left-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .anchor-speaker-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: none;
+      border-bottom: 2px solid #1899D6;
+      background: #1CB0F6;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+    .anchor-speaker-btn.heard {
+      border-bottom-color: #46A302;
+      background: #58CC02;
+    }
+
+    .anchor-word-group {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      min-width: 0;
+    }
+    .anchor-word-title {
+      font-family: var(--font-en);
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      color: #ffffff;
+      line-height: 1.1;
+      direction: ltr;
+    }
+    .anchor-word-note {
+      font-family: var(--font-ku);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      direction: rtl;
+      margin-top: 3px;
+    }
+
+    /* Kurdish Gloss Badges (2-row strict alignment) */
+    .kurdish-gloss-badges {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 6px 8px;
+      text-align: right;
+      flex-shrink: 0;
+      direction: rtl;
+    }
+    .gloss-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .gloss-pill {
+      border-radius: 8px;
+      padding: 2px 10px;
+      font-family: var(--font-ku);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .gloss-pill.pron {
+      background: #1C3342;
+      color: #3BC0F8;
+    }
+    .gloss-pill.mean {
+      background: #202F36;
+      color: #DCE6EC;
+    }
+
+    /* Heard checkmark corner badge */
+    .heard-badge-corner {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #58CC02;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .all-heard-notice {
+      border-radius: 16px;
+      border: 1px solid rgba(88, 204, 2, 0.4);
+      background: #1E3B20;
+      padding: 12px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: #58CC02;
+      margin-top: 14px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    /* ---------- Exact Sunrise 3 MultipleChoiceView ---------- */
+    .duo-options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .duo-choice-btn {
+      appearance: none;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-radius: 18px;
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border);
+      background-color: var(--card);
+      padding: 16px 18px;
+      font-weight: 700;
+      color: #DCE6EC;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      text-align: right;
+      width: 100%;
+      user-select: none;
+    }
+    .duo-choice-btn:hover:not(:disabled) {
+      background-color: var(--card-hover);
+    }
+
+    .duo-choice-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 32px;
       height: 32px;
-      border: 2px solid var(--border);
-      border-bottom: 3px solid var(--border);
       border-radius: 10px;
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border);
+      background-color: #202F36;
+      color: var(--muted);
       font-family: var(--font-en);
       font-size: 13px;
       font-weight: 900;
-      color: var(--muted2);
-      background: var(--card);
+      flex-shrink: 0;
     }
 
-    .opt-label {
+    .duo-choice-texts {
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
-    .opt-main {
-      font-size: 17px;
+    .duo-choice-main {
+      font-size: 18px;
       font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
     }
-    .opt-sub {
+    .duo-choice-sub {
+      font-family: var(--font-en);
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--muted);
       direction: ltr;
       text-align: right;
-      font-family: var(--font-en);
     }
 
-    .opt-icon {
-      flex-shrink: 0;
-      width: 22px;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      font-weight: 900;
+    .duo-choice-btn.selected {
+      border-color: #3BC0F8;
+      background-color: #202F36;
+      color: #3BC0F8;
+    }
+    .duo-choice-btn.selected .duo-choice-num {
+      border-color: #3BC0F8;
+      background-color: #131F24;
+      color: #3BC0F8;
     }
 
-    .option-btn.selected {
-      border-color: var(--blue-border);
-      background: var(--blue-bg);
-      color: var(--blue-shade);
-    }
-    .option-btn.selected .opt-badge {
-      border-color: var(--blue-border);
-      color: var(--blue);
-    }
-
-    .option-btn.correct {
-      border-color: var(--green-border);
-      background: var(--green-bg);
-      color: var(--green-text);
+    .duo-choice-btn.correct {
+      border-color: #58CC02;
+      background-color: #1B351B;
+      color: #58CC02;
       cursor: default;
     }
-    .option-btn.correct .opt-badge {
-      border-color: var(--green-border);
-      background: #ffffff;
-      color: var(--green-text);
+    .duo-choice-btn.correct .duo-choice-num {
+      border-color: #58CC02;
+      background-color: #131F24;
+      color: #58CC02;
     }
 
-    .option-btn.wrong {
-      border-color: var(--red-border);
-      background: var(--red-bg);
-      color: var(--red);
+    .duo-choice-btn.wrong {
+      border-color: #EA2B2B;
+      background-color: #3A181D;
+      color: #FF6666;
       cursor: default;
     }
-    .option-btn.wrong .opt-badge {
-      border-color: var(--red-border);
-      background: #ffffff;
-      color: var(--red);
-    }
-
-    /* ---------- Pair Matching Grid ---------- */
-    .pairs-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 10px;
-    }
-
-    .pair-col {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .pair-tile {
-      background: var(--card);
-      border: 2px solid var(--border);
-      border-bottom: 4px solid var(--border);
-      border-radius: 16px;
-      padding: 16px 12px;
-      font-size: 17px;
-      font-weight: 800;
-      color: var(--text);
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.12s ease;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 64px;
-    }
-    .pair-tile.en {
-      font-family: var(--font-en);
-      direction: ltr;
-      font-size: 19px;
-      font-weight: 900;
-    }
-    .pair-tile:hover:not(.matched) {
-      background: var(--bg2);
-    }
-    .pair-tile.active {
-      border-color: var(--blue-border);
-      background: var(--blue-bg);
-      color: var(--blue-shade);
-      box-shadow: 0 0 0 2px rgba(28, 176, 246, 0.3);
-    }
-    .pair-tile.matched {
-      border-color: var(--green-border);
-      background: var(--green-bg);
-      color: var(--green-text);
-      opacity: 0.5;
-      pointer-events: none;
-      cursor: default;
-    }
-    .pair-tile.wrong {
-      border-color: var(--red-border);
-      background: var(--red-bg);
-      color: var(--red);
-      animation: shake 0.35s ease;
+    .duo-choice-btn.wrong .duo-choice-num {
+      border-color: #EA2B2B;
+      background-color: #131F24;
+      color: #FF6666;
     }
 
     /* ---------- Slot Filler View ---------- */
     .slot-frame-card {
-      background: var(--card);
+      background: #1A262C;
       border: 2px solid var(--border);
       border-bottom: 4px solid var(--border);
       border-radius: 24px;
@@ -614,36 +579,91 @@
       gap: 12px;
       margin-bottom: 20px;
     }
-
     .slot-sentence {
       font-family: var(--font-en);
       font-size: 26px;
       font-weight: 900;
-      color: var(--text);
+      color: #ffffff;
       direction: ltr;
     }
-
     .slot-blank {
       display: inline-block;
-      min-width: 70px;
+      min-width: 60px;
       padding: 2px 10px;
       margin: 0 4px;
-      border-bottom: 3px dashed var(--blue);
-      color: var(--blue);
+      border-bottom: 3px dashed #3BC0F8;
+      color: #3BC0F8;
       font-weight: 900;
     }
-
     .slot-meaning {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--muted);
     }
 
-    /* ---------- Categorization / Sorting Buckets ---------- */
-    .chips-bank-card {
-      background: var(--bg2);
-      border: 2px dashed var(--border);
+    /* ---------- Pair Matching View ---------- */
+    .pairs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .pair-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .pair-tile {
+      background: #202F36;
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border);
       border-radius: 18px;
+      padding: 16px 12px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 64px;
+    }
+    .pair-tile.en {
+      font-family: var(--font-en);
+      direction: ltr;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .pair-tile:hover:not(.matched) {
+      background: #2A3E48;
+    }
+    .pair-tile.active {
+      border-color: #3BC0F8;
+      background: #1C3342;
+      color: #3BC0F8;
+    }
+    .pair-tile.matched {
+      border-color: #58CC02;
+      background: #153118;
+      color: #58CC02;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .pair-tile.wrong {
+      border-color: #EA2B2B;
+      background: #2D1418;
+      color: #EA2B2B;
+      animation: shake 0.35s ease;
+    }
+
+    /* ---------- 3-Bucket Categorization ---------- */
+    .chips-bank-card {
+      background: #1A262C;
+      border: 2px dashed var(--border);
+      border-radius: 20px;
       padding: 12px;
       min-height: 64px;
       display: flex;
@@ -651,32 +671,30 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
-
     .word-chip {
-      background: var(--card);
+      background: #202F36;
       border: 2px solid var(--border);
-      border-bottom: 3px solid var(--border);
+      border-bottom: 4px solid var(--border);
       border-radius: 14px;
       padding: 8px 16px;
       font-family: var(--font-en);
       font-size: 16px;
       font-weight: 900;
-      color: var(--text);
+      color: #ffffff;
       cursor: pointer;
       user-select: none;
-      transition: all 0.12s ease;
+      transition: all 0.1s ease;
     }
     .word-chip:hover {
-      border-color: var(--blue-border);
+      border-color: #3BC0F8;
       transform: translateY(-2px);
     }
     .word-chip.selected {
-      border-color: var(--blue);
-      background: var(--blue-bg);
-      color: var(--blue-shade);
-      box-shadow: 0 0 0 2px rgba(28, 176, 246, 0.35);
+      border-color: #3BC0F8;
+      background: #1C3342;
+      color: #3BC0F8;
     }
 
     .buckets-container {
@@ -684,23 +702,21 @@
       flex-direction: column;
       gap: 12px;
     }
-
     .bucket-box {
       border: 2px dashed var(--border);
-      border-radius: 18px;
-      background: var(--card);
-      padding: 12px 16px;
-      min-height: 74px;
+      border-radius: 20px;
+      background: #131F24;
+      padding: 14px 16px;
+      min-height: 78px;
       display: flex;
       flex-direction: column;
       gap: 8px;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.12s ease;
     }
     .bucket-box:hover {
-      border-color: var(--blue-border);
+      border-color: #3BC0F8;
     }
-
     .bucket-title-row {
       display: flex;
       align-items: center;
@@ -708,9 +724,9 @@
       font-size: 13px;
       font-weight: 800;
     }
-    .bucket-box.bucket-g .bucket-title-row { color: var(--green-text); }
-    .bucket-box.bucket-f .bucket-title-row { color: var(--orange); }
-    .bucket-box.bucket-silent .bucket-title-row { color: var(--blue); }
+    .bucket-box.bucket-g .bucket-title-row { color: #58CC02; }
+    .bucket-box.bucket-f .bucket-title-row { color: #FF9600; }
+    .bucket-box.bucket-silent .bucket-title-row { color: #3BC0F8; }
 
     .bucket-items {
       display: flex;
@@ -718,261 +734,323 @@
       gap: 8px;
       min-height: 32px;
     }
-
     .bucket-chip-placed {
-      background: var(--card);
+      background: #202F36;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 4px 10px;
+      padding: 5px 12px;
       font-family: var(--font-en);
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 800;
+      color: #ffffff;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       cursor: pointer;
     }
     .bucket-chip-placed:hover {
-      background: #fee2e2;
-      border-color: #fca5a5;
-      color: #b91c1c;
+      background: #3A181D;
+      border-color: #EA2B2B;
+      color: #FF6666;
     }
-
     .bucket-box.correct {
-      border-color: var(--green-border);
-      background: var(--green-bg);
+      border-color: #58CC02;
+      background: #153118;
       border-style: solid;
     }
     .bucket-box.wrong {
-      border-color: var(--red-border);
-      background: var(--red-bg);
+      border-color: #EA2B2B;
+      background: #2D1418;
       border-style: solid;
     }
 
-    /* ---------- Bottom Feedback Sheet ---------- */
-    .bottom-sheet {
+    /* ---------- Exact Sunrise 3 Bottom Footer & Duolingo PushButton ---------- */
+    .lesson-footer-bar {
       position: fixed;
+      inset-x: 0;
       bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 44rem;
-      padding: 16px 16px calc(18px + env(safe-area-inset-bottom));
-      background: var(--bg);
+      z-index: 40;
       border-top: 2px solid var(--border);
+      background-color: var(--bg);
+    }
+    .footer-inner {
+      max-width: 42rem;
+      margin: 0 auto;
       display: flex;
-      flex-direction: column;
-      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .btn-skip-duo {
+      appearance: none;
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border);
+      background-color: var(--bg);
+      color: var(--muted);
+      border-radius: 16px;
+      padding: 10px 24px;
+      font-family: var(--font-en);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+    .btn-skip-duo:hover {
+      background-color: var(--card-hover);
+      color: #ffffff;
+    }
+    .btn-skip-duo:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    /* Duolingo 3D PushButton */
+    .btn-push {
+      appearance: none;
+      border: none;
+      border-radius: 16px;
+      border-bottom: 4px solid transparent;
+      font-family: var(--font-ku);
+      font-size: 15px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 12px 36px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.08s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-push:active {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+    .btn-push.green {
+      background-color: #58CC02;
+      border-bottom-color: #46A302;
+      color: #ffffff;
+    }
+    .btn-push.green:hover {
+      background-color: #61E002;
+    }
+    .btn-push.red {
+      background-color: #FF4B4B;
+      border-bottom-color: #EA2B2B;
+      color: #ffffff;
+    }
+    .btn-push.outline {
+      background-color: #131F24;
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border);
+      color: var(--muted);
+    }
+    .btn-push:disabled {
+      opacity: 0.45;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+
+    /* ---------- Exact Sunrise 3 FeedbackBanner (Duolingo Style) ---------- */
+    .feedback-banner-duo {
+      position: fixed;
+      inset-x: 0;
+      bottom: 0;
       z-index: 50;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+      border-top: 2px solid transparent;
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.4);
+      animation: slideUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .feedback-banner-duo.correct {
+      border-top-color: #58CC02;
+      background-color: #153118;
+    }
+    .feedback-banner-duo.wrong {
+      border-top-color: #EA2B2B;
+      background-color: #2D1418;
     }
 
-    .bottom-sheet.correct {
-      background: var(--green-bg);
-      border-top-color: var(--green-border);
-    }
-    .bottom-sheet.wrong {
-      background: var(--red-bg);
-      border-top-color: var(--red-border);
-    }
-
-    .feedback-content {
+    .feedback-banner-inner {
+      max-width: 42rem;
+      margin: 0 auto;
       display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      animation: popIn 0.2s ease;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
     }
 
-    .feedback-icon-circle {
-      width: 44px;
-      height: 44px;
+    .feedback-mascot-circle {
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
-      background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
+      color: #ffffff;
       font-size: 22px;
       font-weight: 900;
-      flex-shrink: 0;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
-    .feedback-icon-circle.correct { color: var(--green-text); }
-    .feedback-icon-circle.wrong { color: var(--red); }
+    .feedback-banner-duo.correct .feedback-mascot-circle {
+      background-color: #58CC02;
+    }
+    .feedback-banner-duo.wrong .feedback-mascot-circle {
+      background-color: #EA2B2B;
+    }
 
-    .feedback-text-group {
+    .feedback-text-col {
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 2px;
+      min-width: 0;
     }
-
-    .feedback-heading {
-      font-size: 20px;
+    .feedback-title-text {
+      font-size: 18px;
       font-weight: 900;
     }
-    .feedback-heading.correct { color: var(--green-text); }
-    .feedback-heading.wrong { color: var(--red); }
-
-    .feedback-explanation {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.5;
+    .feedback-banner-duo.correct .feedback-title-text {
+      color: #58CC02;
+    }
+    .feedback-banner-duo.wrong .feedback-title-text {
+      color: #FF5252;
     }
 
-    .footer-actions {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .footer-actions .btn-3d {
-      min-width: 150px;
-    }
-
-    .skip-btn {
-      background: none;
-      border: 2px solid transparent;
-      cursor: pointer;
-      font-family: var(--font-ku);
-      font-weight: 800;
-      font-size: 14px;
-      color: var(--muted2);
-      padding: 10px 14px;
-      border-radius: 14px;
-      transition: color 0.15s ease;
-    }
-    .skip-btn:hover {
-      color: var(--text);
-      background: var(--bg2);
+    .feedback-desc-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      opacity: 0.9;
+      line-height: 1.4;
     }
 
     /* ---------- Celebration / Complete Screen ---------- */
-    .complete-card {
+    .celebrate-screen {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 30px 16px;
-      gap: 18px;
-      animation: popIn 0.3s ease;
+      padding: 32px 16px;
+      gap: 20px;
+      animation: fadeIn 0.3s ease;
     }
-
-    .mascot-trophy {
+    .trophy-emoji {
       font-size: 72px;
-      filter: drop-shadow(0 6px 12px rgba(255, 150, 0, 0.3));
-      animation: float 2s infinite ease-in-out;
+      filter: drop-shadow(0 8px 16px rgba(255, 150, 0, 0.4));
     }
-
-    .complete-title {
+    .celebrate-title {
       font-size: 28px;
       font-weight: 900;
-      color: var(--text);
+      color: #ffffff;
     }
-
-    .complete-subtitle {
+    .celebrate-desc {
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--muted);
-      max-width: 26rem;
+      max-width: 24rem;
       line-height: 1.6;
     }
-
-    .stats-summary-grid {
+    .stats-card-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
       width: 100%;
       max-width: 26rem;
-      margin-top: 6px;
+      margin-top: 10px;
     }
-
-    .stat-box {
-      background: var(--card);
+    .stat-pill {
+      background: #1A262C;
       border: 2px solid var(--border);
       border-bottom: 4px solid var(--border);
       border-radius: 18px;
-      padding: 14px 8px;
+      padding: 12px 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
     }
-    .stat-box.accuracy { border-color: #84d8ff; background: var(--blue-bg); color: var(--blue-shade); }
-    .stat-box.xp { border-color: #ffd599; background: var(--orange-bg); color: var(--orange-shade); }
-    .stat-box.streak { border-color: #a5ed6e; background: var(--green-bg); color: var(--green-text); }
-
-    .stat-val {
+    .stat-value {
       font-family: var(--font-en);
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 900;
+      color: #ffffff;
     }
-    .stat-lbl {
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+    .stat-value.xp { color: #3BC0F8; }
+    .stat-value.green { color: #58CC02; }
+    .stat-value.orange { color: #FF9600; }
+    .stat-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
     }
 
-    /* ---------- Animations ---------- */
-    @keyframes popIn {
-      from { transform: scale(0.97); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
     }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-6px); }
-      40% { transform: translateX(6px); }
-      60% { transform: translateX(-4px); }
-      80% { transform: translateX(4px); }
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    @media (max-width: 480px) {
-      .prompt-kurdish { font-size: 22px; }
-      .prompt-english { font-size: 14px; }
-      .anchor-grid { grid-template-columns: 1fr; }
-      .pairs-grid { gap: 8px; }
-      .pair-tile { min-height: 58px; font-size: 15px; padding: 10px; }
-      .stats-summary-grid { gap: 8px; }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
     }
   </style>
 </head>
 <body>
 
-<div class="app-container">
-  <!-- Top bar -->
-  <header class="lesson-top">
-    <button class="exit-btn" type="button" onclick="exitDemo()" aria-label="Exit">✕</button>
-    <div class="progress-bar-container">
+<div class="lesson-wrapper">
+  <!-- Exact Sunrise 3 Top Bar: X on Left, Progress Bar Center, Hearts on Right -->
+  <header class="lesson-header-top">
+    <a href="/learn?course=sunrise-3" class="exit-btn" aria-label="Exit lesson">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </a>
+    <div class="progress-track">
       <div class="progress-fill" id="progressFill"></div>
     </div>
-    <div class="badge-group">
-      <div class="badge hearts" title="Hearts (ناوەستێت لەسەر هەڵە)">❤️ <span id="heartCount">5</span></div>
-      <div class="badge streak" title="Streak">🔥 <span id="streakCount">1</span></div>
-      <div class="badge xp" title="XP">💎 <span id="xpCount">0</span></div>
+    <div class="hearts-indicator">
+      <span>❤️</span>
+      <span id="heartCount">5</span>
     </div>
   </header>
 
   <!-- Exercise area -->
-  <main id="gameViewport"></main>
+  <main class="lesson-main" id="lessonMain"></main>
 
-  <!-- Bottom feedback & action sheet -->
-  <div class="bottom-sheet" id="bottomSheet">
-    <div id="feedbackContainer" style="display: none;"></div>
-    <div class="footer-actions" id="footerActions">
-      <button class="skip-btn" type="button" id="skipButton" onclick="skipStep()">تێپەڕاندن (Skip)</button>
-      <button class="btn-3d btn-primary" id="mainActionButton" onclick="handleMainAction()">دەستپێبکە</button>
+  <!-- Default Bottom Footer Bar -->
+  <div class="lesson-footer-bar" id="defaultFooter">
+    <div class="footer-inner">
+      <button class="btn-skip-duo" type="button" id="skipButton" onclick="skipStep()">SKIP</button>
+      <button class="btn-push green" type="button" id="mainCheckButton" onclick="handleFooterAction()">CHECK</button>
+    </div>
+  </div>
+
+  <!-- Duolingo Feedback Banner (Replaces Footer when answered) -->
+  <div class="feedback-banner-duo" id="feedbackBanner" style="display: none;">
+    <div class="feedback-banner-inner">
+      <div class="feedback-mascot-circle" id="feedbackIcon">✓</div>
+      <div class="feedback-text-col">
+        <div class="feedback-title-text" id="feedbackTitle">Awesome! / بژیت!</div>
+        <div class="feedback-desc-text" id="feedbackDesc">وەڵامەکەت تەواوە</div>
+      </div>
+      <button class="btn-push green" type="button" id="continueButton" onclick="advanceStep()">CONTINUE</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ---------- Sound effects (Web Audio Synthesizer) ----------
+  // ---------- Sound Synthesis FX ----------
   class SoundFX {
     constructor() { this.ctx = null; }
     init() {
@@ -991,10 +1069,10 @@
         osc.type = 'triangle';
         osc.connect(gain);
         gain.connect(this.ctx.destination);
-        osc.frequency.setValueAtTime(523.25, now);       // C5
-        osc.frequency.setValueAtTime(659.25, now + 0.09); // E5
-        osc.frequency.setValueAtTime(783.99, now + 0.18); // G5
-        osc.frequency.setValueAtTime(1046.50, now + 0.27);// C6
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.09);
+        osc.frequency.setValueAtTime(783.99, now + 0.18);
+        osc.frequency.setValueAtTime(1046.50, now + 0.27);
         gain.gain.setValueAtTime(0.25, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.55);
         osc.start(now);
@@ -1045,71 +1123,61 @@
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(word);
       utterance.lang = 'en-US';
-      utterance.rate = 0.84;
+      utterance.rate = 0.85;
       window.speechSynthesis.speak(utterance);
     }
   }
 
-  function exitDemo() {
-    window.location.href = '/learn?course=sunrise-3';
-  }
-
   // =========================================================================
-  // Enhanced GH Phonics Curriculum (Sunrise 3 Style)
-  // Progressive: Rules Intake -> Quick Check -> Matching -> Ear-Gate -> Sorting
+  // 11-Step Phonics Curriculum (Initial GH -> Medial GH -> Final GH -> Exceptions -> Ear-gate -> Sort)
   // =========================================================================
   const LESSON_SLIDES = [
-    // 1. Rule 1 Intake
+    // 1. Rule 1 Intake: Word Anchors
     {
       type: "rule_intake",
       badge: "یاسای ١ (Rule 1): دەنگی سەرەتا",
       badgeColor: "green",
       titleKu: "پیتەکانی GH لە سەرەتای وشەدا",
-      titleEn: "Initial 'gh' sounds like (G)",
-      desc: "کاتێک <b>gh</b> دەکەوێتە سەرەتای وشە لە زمانی ئینگلیزیدا، هەمیشە وەک دەنگی <b>(گ)</b> دەخوێندرێتەوە:",
+      titleEn: "Initial 'gh' sounds like /g/ (وەک گ)",
       examples: [
-        { en: "Ghost", hl: "Gh", rest: "ost", pron: "گۆست", ku: "تارمایی", sound: "Ghost" },
-        { en: "Ghana", hl: "Gh", rest: "ana", pron: "غانا", ku: "وڵاتی غانا", sound: "Ghana" },
-        { en: "Ghastly", hl: "Gh", rest: "astly", pron: "گاستلی", ku: "ترسناک / سامناک", sound: "Ghastly" }
+        { en: "Ghost", hlType: "g", hlText: "Gh", rest: "ost", pron: "گۆست", ku: "تارمایی", ruleNote: "یاسای سەرەتا: GH دەبێتە گ", sound: "Ghost" },
+        { en: "Ghana", hlType: "g", hlText: "Gh", rest: "ana", pron: "غانا", ku: "وڵاتی غانا", ruleNote: "یاسای سەرەتا: GH دەبێتە گ", sound: "Ghana" }
       ]
     },
 
-    // 2. Practice: Initial GH Multiple Choice
+    // 2. Practice: Multiple Choice Check
     {
       type: "quiz_choice",
-      badge: "تاقیکردنەوەی خێرا (Quick Check)",
+      badge: "تاقیکردنەوەی خێرا (Practice)",
       badgeColor: "blue",
-      titleKu: "لە وشەی «Ghost» دەنگی gh چییە؟",
+      titleKu: "لە وشەی «Ghost» دەنگی gh چۆن دەخوێندرێتەوە؟",
       titleEn: "What sound does 'gh' make in 'Ghost'?",
       audioWord: "Ghost",
       options: [
-        { text: "دەنگی (گ) — هاوشێوەی پیتەکانی G", sub: "Sounds like /g/", correct: true },
+        { text: "دەنگی (گ) — هاوشێوەی پیتی G", sub: "Sounds like /g/", correct: true },
         { text: "دەنگی (ف) — هاوشێوەی پیتی F", sub: "Sounds like /f/", correct: false },
         { text: "بە تەواوی بێدەنگە و ناخوێندرێتەوە", sub: "Silent (no sound)", correct: false }
       ],
-      explanation: "چونکە gh لە سەرەتای وشەکەدایە، هەمیشە وەک دەنگی (گ) بێژە دەکرێت."
+      explanation: "چونکە gh لە سەرەتای وشەدایە، هەمیشە وەک دەنگی (گ) دەخوێندرێتەوە."
     },
 
-    // 3. Rule 2 Intake
+    // 3. Rule 2 Intake: Medial GH (Silent)
     {
       type: "rule_intake",
       badge: "یاسای ٢ (Rule 2): دەنگی ناوەڕاست",
       badgeColor: "orange",
       titleKu: "پیتەکانی GH لە ناوەڕاستی وشەدا",
-      titleEn: "Medial 'gh' is Silent (No Sound)",
-      desc: "کاتێک <b>gh</b> لە ناوەڕاستی وشەدا دێت (بە تایبەت پێش پیتی <b>t</b> وەک <b>-ight</b>)، بە تەواوی <b>بێدەنگ</b> دەبێت:",
+      titleEn: "Medial 'gh' is Silent (بێدەنگ)",
       examples: [
-        { en: "Night", pre: "Ni", silent: "gh", post: "t", pron: "نایت", ku: "شەو", sound: "Night" },
-        { en: "Light", pre: "Li", silent: "gh", post: "t", pron: "لایت", ku: "ڕووناکی", sound: "Light" },
-        { en: "Fight", pre: "Fi", silent: "gh", post: "t", pron: "فایت", ku: "شەڕکردن", sound: "Fight" },
-        { en: "Right", pre: "Ri", silent: "gh", post: "t", pron: "ڕایت", ku: "ڕاست / دروست", sound: "Right" }
+        { en: "Night", hlType: "silent", pre: "Ni", silent: "gh", post: "t", pron: "نایت", ku: "شەو", ruleNote: "ناوەڕاست: GH بێدەنگە", sound: "Night" },
+        { en: "Light", hlType: "silent", pre: "Li", silent: "gh", post: "t", pron: "لایت", ku: "ڕووناکی", ruleNote: "ناوەڕاست: GH بێدەنگە", sound: "Light" }
       ]
     },
 
-    // 4. Practice: Medial GH Audio Comprehension
+    // 4. Practice: Medial Audio Comprehension
     {
       type: "quiz_choice",
-      badge: "گوێگرتن و بڕیاردان (Listen & Check)",
+      badge: "گوێگرتن و بڕیاردان (Audio Check)",
       badgeColor: "blue",
       titleKu: "ئایا پیتەکانی gh لە وشەی «Night» دەخوێندرێنەوە؟",
       titleEn: "Are 'gh' pronounced in 'Night'?",
@@ -1119,26 +1187,23 @@
         { text: "بەڵێ، دەنگی (ف) دەدەن", sub: "Yes, pronounced as /f/", correct: false },
         { text: "بەڵێ، دەنگی (گ) دەدەن", sub: "Yes, pronounced as /g/", correct: false }
       ],
-      explanation: "لە کۆتایی ئاوێتەی -ight پیتەکانی gh هیچ دەنگێکیان نییە و بێدەنگن."
+      explanation: "لە پێکهاتەی -ight پیتەکانی gh بە تەواوی بێدەنگن."
     },
 
-    // 5. Rule 3 Intake
+    // 5. Rule 3 Intake: Final GH = (F)
     {
       type: "rule_intake",
       badge: "یاسای ٣ (Rule 3): دەنگی کۆتایی",
       badgeColor: "purple",
       titleKu: "پیتەکانی GH لە کۆتایی وشەدا",
-      titleEn: "Final 'gh' sounds like (F)",
-      desc: "لە کۆمەڵێک وشەی باودا، کاتێک <b>gh</b> دەکەوێتە کۆتایی وشە (وەک <b>-augh</b> یان <b>-ough</b>)، دەنگی <b>(ف)</b> دروست دەکات:",
+      titleEn: "Final 'gh' sounds like /f/ (وەک ف)",
       examples: [
-        { en: "Laugh", pre: "Lau", hl: "gh", pron: "لاف", ku: "پێکەنین", sound: "Laugh" },
-        { en: "Cough", pre: "Cou", hl: "gh", pron: "کۆف", ku: "کۆکە / کۆخە", sound: "Cough" },
-        { en: "Enough", pre: "Enou", hl: "gh", pron: "ئیناف", ku: "بەس / تەواو", sound: "Enough" },
-        { en: "Tough", pre: "Tou", hl: "gh", pron: "تاف", ku: "بەهێز / ڕەق", sound: "Tough" }
+        { en: "Laugh", hlType: "f", pre: "Lau", hlText: "gh", pron: "لاف", ku: "پێکەنین", ruleNote: "کۆتایی: GH دەبێتە ف", sound: "Laugh" },
+        { en: "Cough", hlType: "f", pre: "Cou", hlText: "gh", pron: "کۆف", ku: "کۆکە / کۆخە", ruleNote: "کۆتایی: GH دەبێتە ف", sound: "Cough" }
       ]
     },
 
-    // 6. Practice: Slot Filler / Sound check
+    // 6. Practice: Slot Filler
     {
       type: "quiz_slot",
       badge: "پڕکردنەوەی بۆشایی (Slot Filler)",
@@ -1153,22 +1218,19 @@
         { text: "gh (دەنگی گ)", sub: "Sounds like /g/", correct: false },
         { text: "gh (بێدەنگ)", sub: "Silent", correct: false }
       ],
-      explanation: "لە وشەی Laugh پیتەکانی gh دەنگی (ف) دەدەن: /lɑːf/."
+      explanation: "لە وشەی Laugh پیتەکانی gh دەنگی (ف) دروست دەکەن."
     },
 
-    // 7. Rule 4 Intake: Special Exceptions (Silent Endings)
+    // 7. Rule 4 Intake: Exceptions (High, Sigh)
     {
       type: "rule_intake",
       badge: "یاسای ٤ (Rule 4): حاڵەتی تایبەت",
       badgeColor: "orange",
       titleKu: "کۆتایی بێدەنگ لە چەند وشەیەکی تایبەتدا",
       titleEn: "Exceptions: Silent 'gh' at the end",
-      desc: "ئاگاداربە! هەندێک وشە هەن کە بە <b>gh</b> کۆتایی دێن بەڵام ناکرێن بە (ف)، بەڵکو بە <b>بێدەنگی</b> دەمێننەوە:",
       examples: [
-        { en: "High", pre: "Hi", silent: "gh", pron: "های", ku: "بەرز", sound: "High" },
-        { en: "Sigh", pre: "Si", silent: "gh", pron: "سای", ku: "هەناسەی سارد هەڵکێشان", sound: "Sigh" },
-        { en: "Though", pre: "Thou", silent: "gh", pron: "زۆو", ku: "هەرچەندە", sound: "Though" },
-        { en: "Through", pre: "Throu", silent: "gh", pron: "سروو", ku: "بەناو / لەڕێگەی", sound: "Through" }
+        { en: "High", hlType: "silent", pre: "Hi", silent: "gh", pron: "های", ku: "بەرز", ruleNote: "حاڵەتی تایبەت: GH بێدەنگە", sound: "High" },
+        { en: "Sigh", hlType: "silent", pre: "Si", silent: "gh", pron: "سای", ku: "هەناسەی سارد", ruleNote: "حاڵەتی تایبەت: GH بێدەنگە", sound: "Sigh" }
       ]
     },
 
@@ -1177,7 +1239,7 @@
       type: "quiz_pairs",
       badge: "جووتبەندکردن (Pair Matching)",
       badgeColor: "green",
-      titleKu: "وشەکان بە واتا و دەنگەکەیان ببەستەوە:",
+      titleKu: "وشەکان بە دەنگ و واتا بەستەوە:",
       titleEn: "Match each word to its Kurdish meaning & sound:",
       pairs: [
         { id: 1, en: "Ghost", ku: "تارمایی (دەنگی گ)" },
@@ -1187,7 +1249,7 @@
       ]
     },
 
-    // 9. Practice: Audio Ear-Gate
+    // 9. Practice: Ear Gate
     {
       type: "quiz_choice",
       badge: "دەروازەی بیستن (Audio Ear-Gate)",
@@ -1200,7 +1262,7 @@
         { text: "دەنگی (گ) دەدات", sub: "/g/ sound", correct: false },
         { text: "بە تەواوی بێدەنگە", sub: "Silent", correct: false }
       ],
-      explanation: "لە وشەی Enough پیتەکانی gh بە ڕوونی دەنگی (ف) دەدەن: /ɪˈnʌf/."
+      explanation: "لە وشەی Enough پیتەکانی gh دەنگی (ف) دەدەن: /ɪˈnʌf/."
     },
 
     // 10. Practice: Odd-One-Out
@@ -1216,10 +1278,10 @@
         { text: "High", sub: "بێدەنگە (حاڵەتی تایبەت)", correct: true },
         { text: "Tough", sub: "دەنگی (ف) دەدات", correct: false }
       ],
-      explanation: "لە وشەی High پیتەکانی gh دەنگی (ف) دروست ناکەن بەڵکو بێدەنگن."
+      explanation: "لە وشەی High پیتەکانی gh بێدەنگن و دەنگی (ف) نادەن."
     },
 
-    // 11. Practice: Interactive 3-Bucket Sorting
+    // 11. Practice: 3-Bucket Sorting
     {
       type: "quiz_sort",
       badge: "پۆلێنکردن (Categorization)",
@@ -1228,40 +1290,34 @@
       titleEn: "Sort words into the correct sound categories:",
       words: ["Ghost", "Ghana", "Laugh", "Cough", "Night", "High"],
       buckets: {
-        g: { label: "دەنگی (گ) — لە سەرەتادا", words: ["Ghost", "Ghana"] },
-        f: { label: "دەنگی (ف) — لە کۆتاییدا", words: ["Laugh", "Cough"] },
+        g: { label: "دەنگی (گ) — سەرەتای وشە", words: ["Ghost", "Ghana"] },
+        f: { label: "دەنگی (ف) — کۆتایی وشە", words: ["Laugh", "Cough"] },
         silent: { label: "بێدەنگ (Silent) — ناوەڕاست یان تایبەت", words: ["Night", "High"] }
       }
     }
   ];
 
-  // ---------- App State ----------
+  // ---------- Application State ----------
   let currentStep = 0;
   let hearts = 5;
-  let streak = 1;
-  let xp = 0;
+  let listenedWords = new Set();
   let selectedOption = null;
   let matchingState = { selectedEn: null, selectedKu: null, matchedCount: 0 };
   let sortState = { selectedWord: null, placed: { g: [], f: [], silent: [] } };
-  let isAnswerChecked = false;
 
-  const viewport = document.getElementById("gameViewport");
-  const bottomSheet = document.getElementById("bottomSheet");
-  const mainBtn = document.getElementById("mainActionButton");
-  const skipButton = document.getElementById("skipButton");
-  const feedbackContainer = document.getElementById("feedbackContainer");
+  const lessonMain = document.getElementById("lessonMain");
   const progressFill = document.getElementById("progressFill");
-  const heartCountEl = document.getElementById("heartCount");
-  const xpCountEl = document.getElementById("xpCount");
-  const streakCountEl = document.getElementById("streakCount");
+  const heartCount = document.getElementById("heartCount");
+  const defaultFooter = document.getElementById("defaultFooter");
+  const feedbackBanner = document.getElementById("feedbackBanner");
+  const mainCheckButton = document.getElementById("mainCheckButton");
+  const skipButton = document.getElementById("skipButton");
 
-  function renderCurrentStep() {
-    isAnswerChecked = false;
-    feedbackContainer.style.display = "none";
-    bottomSheet.className = "bottom-sheet";
-    mainBtn.className = "btn-3d btn-primary";
-    mainBtn.disabled = false;
+  function renderStep() {
+    feedbackBanner.style.display = "none";
+    defaultFooter.style.display = "block";
     skipButton.style.display = "inline-block";
+    selectedOption = null;
 
     const progress = (currentStep / LESSON_SLIDES.length) * 100;
     progressFill.style.width = `${progress}%`;
@@ -1269,141 +1325,202 @@
     const slide = LESSON_SLIDES[currentStep];
 
     if (slide.type === "rule_intake") {
-      renderRuleIntake(slide);
-      mainBtn.innerText = "بەردەوام بە";
+      listenedWords = new Set();
+      renderWordAnchors(slide);
+      mainCheckButton.innerText = "بەردەوام بە";
+      mainCheckButton.disabled = true;
       skipButton.style.display = "none";
     } else if (slide.type === "quiz_choice") {
-      renderChoiceQuiz(slide);
-      mainBtn.innerText = "پشکنین";
-      mainBtn.disabled = true;
+      renderChoiceExercise(slide);
+      mainCheckButton.innerText = "پشکنین";
+      mainCheckButton.disabled = true;
     } else if (slide.type === "quiz_slot") {
-      renderSlotQuiz(slide);
-      mainBtn.innerText = "پشکنین";
-      mainBtn.disabled = true;
+      renderSlotExercise(slide);
+      mainCheckButton.innerText = "پشکنین";
+      mainCheckButton.disabled = true;
     } else if (slide.type === "quiz_pairs") {
-      renderPairsQuiz(slide);
-      mainBtn.innerText = "پشکنین";
-      mainBtn.disabled = true;
+      renderPairsExercise(slide);
+      mainCheckButton.innerText = "پشکنین";
+      mainCheckButton.disabled = true;
     } else if (slide.type === "quiz_sort") {
-      renderSortQuiz(slide);
-      mainBtn.innerText = "پشکنین";
-      mainBtn.disabled = true;
+      renderSortExercise(slide);
+      mainCheckButton.innerText = "پشکنین";
+      mainCheckButton.disabled = true;
     }
 
-    // Scroll to top of content smoothly
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // 1. Rule Intake View
-  function renderRuleIntake(slide) {
-    const examplesHtml = slide.examples.map(ex => {
-      let wordMarkup = ex.en;
-      if (ex.hl && ex.rest) {
-        wordMarkup = `<span class="hl-${slide.badgeColor === 'green' ? 'green' : 'orange'}">${ex.hl}</span>${ex.rest}`;
-      } else if (ex.pre && ex.silent && ex.post) {
-        wordMarkup = `${ex.pre}<span class="hl-silent">${ex.silent}</span>${ex.post}`;
-      } else if (ex.pre && ex.hl) {
-        wordMarkup = `${ex.pre}<span class="hl-${slide.badgeColor === 'purple' ? 'orange' : 'green'}">${ex.hl}</span>`;
-      } else if (ex.pre && ex.silent) {
-        wordMarkup = `${ex.pre}<span class="hl-silent">${ex.silent}</span>`;
+  // 1. Render Word Anchors View (Sunrise 3 1:1)
+  function renderWordAnchors(slide) {
+    const cardsHtml = slide.examples.map(ex => {
+      let highlightedHtml = ex.en;
+      if (ex.hlType === "g") {
+        highlightedHtml = `<span class="hl-g">${ex.hlText}</span>${ex.rest}`;
+      } else if (ex.hlType === "f") {
+        highlightedHtml = `${ex.pre}<span class="hl-f">${ex.hlText}</span>`;
+      } else if (ex.hlType === "silent") {
+        if (ex.post) {
+          highlightedHtml = `${ex.pre}<span class="hl-silent">${ex.silent}</span>${ex.post}`;
+        } else {
+          highlightedHtml = `${ex.pre}<span class="hl-silent">${ex.silent}</span>`;
+        }
       }
 
       return `
-        <div class="anchor-card">
-          <div class="anchor-word">${wordMarkup}</div>
-          <div class="anchor-pron">${ex.pron}</div>
-          <div class="anchor-meaning">${ex.ku}</div>
-          <button type="button" class="listen-pill-btn" onclick="speakWord('${ex.sound}')">
-            <span>🔊</span>
-            <span>گوێگرتن لە دەنگ</span>
-          </button>
+        <div class="word-anchor-card" id="anchorCard_${ex.en}" onclick="handleWordClick('${ex.en}', '${ex.sound}')">
+          <div class="anchor-visual-top">
+            <div class="anchor-phonics-badge">${highlightedHtml}</div>
+          </div>
+          <div class="anchor-bottom-row">
+            <div class="anchor-left-meta">
+              <button type="button" class="anchor-speaker-btn" id="speakerBtn_${ex.en}" aria-label="Listen to ${ex.en}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                </svg>
+              </button>
+              <div class="anchor-word-group">
+                <span class="anchor-word-title">${ex.en}</span>
+                <span class="anchor-word-note">${ex.ruleNote}</span>
+              </div>
+            </div>
+            <div class="kurdish-gloss-badges">
+              <span class="gloss-label">خوێندنەوە:</span>
+              <span class="gloss-pill pron">${ex.pron}</span>
+              <span class="gloss-label">مانا:</span>
+              <span class="gloss-pill mean">${ex.ku}</span>
+            </div>
+          </div>
+          <div class="heard-badge-corner" id="heardCorner_${ex.en}" style="display: none;">✓</div>
         </div>
       `;
     }).join("");
 
-    viewport.innerHTML = `
-      <div class="topic-pill ${slide.badgeColor}">${slide.badge}</div>
-      <div class="prompt-header">
-        <h2 class="prompt-kurdish">${slide.titleKu}</h2>
-        <p class="prompt-english">${slide.titleEn}</p>
+    lessonMain.innerHTML = `
+      <div class="header-instructions">
+        <span class="instruction-badge ${slide.badgeColor}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/>
+          </svg>
+          <span>${slide.badge}</span>
+        </span>
+        <h2 class="instruction-title">${slide.titleKu}</h2>
+        <p class="instruction-subtitle" id="anchorSubtitle">
+          گوێ لە هەموو دەنگەکان بگرە بۆ بەردەوامبوون (0 لە ${slide.examples.length})
+        </p>
       </div>
-      <div class="rule-banner">${slide.desc}</div>
-      <div class="anchor-grid">${examplesHtml}</div>
+      <div class="word-anchors-list">${cardsHtml}</div>
+      <div class="all-heard-notice" id="allHeardNotice" style="display: none;">
+        هەموو وشەکانت بیست! کلیک لەسەر دوگمەی خوارەوە بکە بۆ بەردەوامبوون.
+      </div>
     `;
   }
 
-  // 2. Multiple Choice View (Dual-line & clean cards)
-  function renderChoiceQuiz(slide) {
-    selectedOption = null;
+  function handleWordClick(word, sound) {
+    sfx.playClick();
+    speakWord(sound);
 
-    let audioButtonHtml = "";
+    listenedWords.add(word);
+    const card = document.getElementById(`anchorCard_${word}`);
+    const speaker = document.getElementById(`speakerBtn_${word}`);
+    const corner = document.getElementById(`heardCorner_${word}`);
+
+    if (card) card.classList.add("heard");
+    if (speaker) speaker.classList.add("heard");
+    if (corner) corner.style.display = "flex";
+
+    const slide = LESSON_SLIDES[currentStep];
+    const subtitle = document.getElementById("anchorSubtitle");
+    if (subtitle) {
+      subtitle.innerText = `گوێ لە هەموو دەنگەکان بگرە بۆ بەردەوامبوون (${listenedWords.size} لە ${slide.examples.length})`;
+    }
+
+    if (listenedWords.size >= slide.examples.length) {
+      mainCheckButton.disabled = false;
+      const notice = document.getElementById("allHeardNotice");
+      if (notice) notice.style.display = "block";
+    }
+  }
+
+  // 2. Render Multiple Choice View (Sunrise 3 1:1)
+  function renderChoiceExercise(slide) {
+    let audioPromptHtml = "";
     if (slide.audioWord) {
-      audioButtonHtml = `
-        <div style="margin-bottom: 14px; display: flex; justify-content: center;">
-          <button type="button" class="btn-3d btn-secondary" onclick="speakWord('${slide.audioWord}')" style="padding: 10px 20px; font-size: 14px; border-radius: 14px;">
-            <span>🔊</span>
-            <span dir="ltr" style="font-family: var(--font-en); font-weight: 900; margin: 0 4px;">«${slide.audioWord}»</span>
-            <span>گوێبگرە</span>
+      audioPromptHtml = `
+        <div class="audio-prompt-row">
+          <button type="button" class="btn-audio-listen" onclick="speakWord('${slide.audioWord}')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+            <span>Listen / «${slide.audioWord}» گوێبگرە</span>
           </button>
         </div>
       `;
     }
 
     const optionsHtml = slide.options.map((opt, i) => `
-      <button type="button" class="option-btn" data-index="${i}" onclick="selectChoice(${i})">
-        <span class="opt-badge">${i + 1}</span>
-        <span class="opt-label">
-          <span class="opt-main">${opt.text}</span>
-          ${opt.sub ? `<span class="opt-sub">${opt.sub}</span>` : ""}
-        </span>
-        <span class="opt-icon" id="optIcon_${i}"></span>
+      <button type="button" class="duo-choice-btn" data-index="${i}" onclick="selectChoiceOption(${i})">
+        <span class="duo-choice-num">${i + 1}</span>
+        <div class="duo-choice-texts">
+          <span class="duo-choice-main">${opt.text}</span>
+          ${opt.sub ? `<span class="duo-choice-sub">${opt.sub}</span>` : ""}
+        </div>
       </button>
     `).join("");
 
-    viewport.innerHTML = `
-      <div class="topic-pill ${slide.badgeColor || 'blue'}">${slide.badge}</div>
-      <div class="prompt-header">
-        <h2 class="prompt-kurdish">${slide.titleKu}</h2>
-        <p class="prompt-english">${slide.titleEn}</p>
+    lessonMain.innerHTML = `
+      <div class="header-instructions">
+        <span class="instruction-badge ${slide.badgeColor || 'blue'}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/>
+          </svg>
+          <span>${slide.badge}</span>
+        </span>
+        <h2 class="instruction-title">${slide.titleKu}</h2>
+        <p class="instruction-subtitle-en">${slide.titleEn}</p>
       </div>
-      ${audioButtonHtml}
-      <div class="options-grid" id="optionsContainer">${optionsHtml}</div>
+      ${audioPromptHtml}
+      <div class="duo-options-grid">${optionsHtml}</div>
     `;
   }
 
-  function selectChoice(index) {
-    if (isAnswerChecked) return;
+  function selectChoiceOption(idx) {
     sfx.playClick();
-    selectedOption = index;
+    selectedOption = idx;
 
-    document.querySelectorAll(".option-btn").forEach((btn, idx) => {
-      btn.classList.toggle("selected", idx === index);
+    document.querySelectorAll(".duo-choice-btn").forEach((btn, i) => {
+      btn.classList.toggle("selected", i === idx);
     });
 
-    mainBtn.disabled = false;
-    mainBtn.className = "btn-3d btn-primary";
+    mainCheckButton.disabled = false;
   }
 
-  // 3. Slot Filler View
-  function renderSlotQuiz(slide) {
-    selectedOption = null;
-
+  // 3. Render Slot Filler View
+  function renderSlotExercise(slide) {
     const optionsHtml = slide.options.map((opt, i) => `
-      <button type="button" class="option-btn" data-index="${i}" onclick="selectChoice(${i})">
-        <span class="opt-badge">${i + 1}</span>
-        <span class="opt-label">
-          <span class="opt-main">${opt.text}</span>
-          ${opt.sub ? `<span class="opt-sub">${opt.sub}</span>` : ""}
-        </span>
-        <span class="opt-icon" id="optIcon_${i}"></span>
+      <button type="button" class="duo-choice-btn" data-index="${i}" onclick="selectChoiceOption(${i})">
+        <span class="duo-choice-num">${i + 1}</span>
+        <div class="duo-choice-texts">
+          <span class="duo-choice-main">${opt.text}</span>
+          ${opt.sub ? `<span class="duo-choice-sub">${opt.sub}</span>` : ""}
+        </div>
       </button>
     `).join("");
 
-    viewport.innerHTML = `
-      <div class="topic-pill ${slide.badgeColor || 'purple'}">${slide.badge}</div>
-      <div class="prompt-header">
-        <h2 class="prompt-kurdish">${slide.titleKu}</h2>
-        <p class="prompt-english">${slide.titleEn}</p>
+    lessonMain.innerHTML = `
+      <div class="header-instructions">
+        <span class="instruction-badge ${slide.badgeColor || 'purple'}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/>
+          </svg>
+          <span>${slide.badge}</span>
+        </span>
+        <h2 class="instruction-title">${slide.titleKu}</h2>
+        <p class="instruction-subtitle-en">${slide.titleEn}</p>
       </div>
       <div class="slot-frame-card">
         <div class="slot-sentence">
@@ -1411,45 +1528,45 @@
         </div>
         <div class="slot-meaning">${slide.meaningKu}</div>
         ${slide.audioWord ? `
-          <button type="button" class="listen-pill-btn" onclick="speakWord('${slide.audioWord}')">
-            <span>🔊</span>
-            <span>دەنگی وشەکە</span>
+          <button type="button" class="btn-audio-listen" onclick="speakWord('${slide.audioWord}')" style="margin-top: 6px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            <span>گوێگرتن لە دەنگ</span>
           </button>
-        ` : ""}
+        ` : ''}
       </div>
-      <div class="options-grid">${optionsHtml}</div>
+      <div class="duo-options-grid">${optionsHtml}</div>
     `;
   }
 
-  // 4. Pair Matching View
-  function renderPairsQuiz(slide) {
+  // 4. Render Pair Matching View
+  function renderPairsExercise(slide) {
     matchingState = { selectedEn: null, selectedKu: null, matchedCount: 0 };
     const enShuffled = [...slide.pairs].sort(() => Math.random() - 0.5);
     const kuShuffled = [...slide.pairs].sort(() => Math.random() - 0.5);
 
-    viewport.innerHTML = `
-      <div class="topic-pill ${slide.badgeColor || 'green'}">${slide.badge}</div>
-      <div class="prompt-header">
-        <h2 class="prompt-kurdish">${slide.titleKu}</h2>
-        <p class="prompt-english">${slide.titleEn}</p>
+    lessonMain.innerHTML = `
+      <div class="header-instructions">
+        <span class="instruction-badge ${slide.badgeColor || 'green'}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/>
+          </svg>
+          <span>${slide.badge}</span>
+        </span>
+        <h2 class="instruction-title">${slide.titleKu}</h2>
+        <p class="instruction-subtitle-en">${slide.titleEn}</p>
       </div>
       <div class="pairs-grid">
         <div class="pair-col" id="enCol">
-          ${enShuffled.map(p => `
-            <div class="pair-tile en" data-id="${p.id}" onclick="handlePairClick(this, 'en')">${p.en}</div>
-          `).join("")}
+          ${enShuffled.map(p => `<div class="pair-tile en" data-id="${p.id}" onclick="handlePairClick(this, 'en')">${p.en}</div>`).join("")}
         </div>
         <div class="pair-col" id="kuCol">
-          ${kuShuffled.map(p => `
-            <div class="pair-tile" data-id="${p.id}" onclick="handlePairClick(this, 'ku')">${p.ku}</div>
-          `).join("")}
+          ${kuShuffled.map(p => `<div class="pair-tile" data-id="${p.id}" onclick="handlePairClick(this, 'ku')">${p.ku}</div>`).join("")}
         </div>
       </div>
     `;
   }
 
   function handlePairClick(el, colType) {
-    if (isAnswerChecked) return;
     sfx.playClick();
     const id = el.dataset.id;
     const colId = colType === 'en' ? 'enCol' : 'kuCol';
@@ -1469,29 +1586,24 @@
         sfx.playCorrect();
         const enTile = document.querySelector(`.pair-tile.en[data-id="${matchingState.selectedEn}"]`);
         const kuTile = document.querySelector(`.pair-tile:not(.en)[data-id="${matchingState.selectedKu}"]`);
-        enTile.classList.add('matched');
-        kuTile.classList.add('matched');
+        if (enTile) enTile.classList.add('matched');
+        if (kuTile) kuTile.classList.add('matched');
         matchingState.matchedCount++;
         matchingState.selectedEn = null;
         matchingState.selectedKu = null;
 
         if (matchingState.matchedCount === 4) {
-          mainBtn.disabled = false;
-          mainBtn.className = "btn-3d btn-primary";
-          mainBtn.innerText = "بەردەوام بە";
-          isAnswerChecked = true;
-          skipButton.style.display = "none";
-          showFeedback(true, "نایابە! هەموو جووتەکان بە دروستی بەسترانەوە.");
+          triggerFeedbackBanner(true, "نایابە! هەموو وشەکان بە دروستی بەسترانەوە.");
         }
       } else {
         sfx.playWrong();
         const wrongEn = document.querySelector(`.pair-tile.en[data-id="${matchingState.selectedEn}"]`);
         const wrongKu = document.querySelector(`.pair-tile:not(.en)[data-id="${matchingState.selectedKu}"]`);
-        wrongEn.classList.add('wrong');
-        wrongKu.classList.add('wrong');
+        if (wrongEn) wrongEn.classList.add('wrong');
+        if (wrongKu) wrongKu.classList.add('wrong');
         setTimeout(() => {
-          wrongEn.classList.remove('wrong', 'active');
-          wrongKu.classList.remove('wrong', 'active');
+          if (wrongEn) wrongEn.classList.remove('wrong', 'active');
+          if (wrongKu) wrongKu.classList.remove('wrong', 'active');
           matchingState.selectedEn = null;
           matchingState.selectedKu = null;
         }, 400);
@@ -1499,38 +1611,43 @@
     }
   }
 
-  // 5. Categorization / 3-Bucket Sorting
-  function renderSortQuiz(slide) {
+  // 5. Render 3-Bucket Categorization View
+  function renderSortExercise(slide) {
     sortState = { selectedWord: null, placed: { g: [], f: [], silent: [] } };
 
-    viewport.innerHTML = `
-      <div class="topic-pill ${slide.badgeColor || 'purple'}">${slide.badge}</div>
-      <div class="prompt-header">
-        <h2 class="prompt-kurdish">${slide.titleKu}</h2>
-        <p class="prompt-english">${slide.titleEn}</p>
+    lessonMain.innerHTML = `
+      <div class="header-instructions">
+        <span class="instruction-badge ${slide.badgeColor || 'purple'}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"/>
+          </svg>
+          <span>${slide.badge}</span>
+        </span>
+        <h2 class="instruction-title">${slide.titleKu}</h2>
+        <p class="instruction-subtitle-en">${slide.titleEn}</p>
       </div>
       <div class="chips-bank-card" id="chipsBank">
-        ${slide.words.map(w => `<div class="word-chip" data-word="${w}" onclick="selectChip('${w}', this)">${w}</div>`).join("")}
+        ${slide.words.map(w => `<div class="word-chip" data-word="${w}" onclick="selectSortChip('${w}', this)">${w}</div>`).join("")}
       </div>
       <div class="buckets-container">
-        <div class="bucket-box bucket-g" data-bucket="g" onclick="placeChip('g')">
+        <div class="bucket-box bucket-g" data-bucket="g" onclick="placeSortChip('g')">
           <div class="bucket-title-row">
             <span>🟢 دەنگی (گ) — سەرەتای وشە</span>
-            <span style="font-family: var(--font-en); font-weight: 900;">/g/ sound</span>
+            <span dir="ltr" style="font-family: var(--font-en); font-weight: 900;">/g/ sound</span>
           </div>
           <div class="bucket-items" id="bucket_g"></div>
         </div>
-        <div class="bucket-box bucket-f" data-bucket="f" onclick="placeChip('f')">
+        <div class="bucket-box bucket-f" data-bucket="f" onclick="placeSortChip('f')">
           <div class="bucket-title-row">
             <span>🟠 دەنگی (ف) — کۆتایی وشە</span>
-            <span style="font-family: var(--font-en); font-weight: 900;">/f/ sound</span>
+            <span dir="ltr" style="font-family: var(--font-en); font-weight: 900;">/f/ sound</span>
           </div>
           <div class="bucket-items" id="bucket_f"></div>
         </div>
-        <div class="bucket-box bucket-silent" data-bucket="silent" onclick="placeChip('silent')">
+        <div class="bucket-box bucket-silent" data-bucket="silent" onclick="placeSortChip('silent')">
           <div class="bucket-title-row">
             <span>🔵 بێدەنگ (Silent) — ناوەڕاست و حاڵەتی تایبەت</span>
-            <span style="font-family: var(--font-en); font-weight: 900;">Silent</span>
+            <span dir="ltr" style="font-family: var(--font-en); font-weight: 900;">Silent</span>
           </div>
           <div class="bucket-items" id="bucket_silent"></div>
         </div>
@@ -1538,8 +1655,7 @@
     `;
   }
 
-  function selectChip(word, el) {
-    if (isAnswerChecked) return;
+  function selectSortChip(word, el) {
     sfx.playClick();
     speakWord(word);
     document.querySelectorAll(".word-chip").forEach(c => c.classList.remove("selected"));
@@ -1547,8 +1663,8 @@
     sortState.selectedWord = { word, el };
   }
 
-  function placeChip(bucketKey) {
-    if (!sortState.selectedWord || isAnswerChecked) return;
+  function placeSortChip(bucketKey) {
+    if (!sortState.selectedWord) return;
     sfx.playClick();
     const { word, el } = sortState.selectedWord;
 
@@ -1561,17 +1677,17 @@
     placedChip.title = "دەستلێبدە بۆ گەڕاندنەوە";
     placedChip.onclick = (e) => {
       e.stopPropagation();
-      returnChipToBank(word, bucketKey, placedChip);
+      returnSortChip(word, bucketKey, placedChip);
     };
 
     document.getElementById(`bucket_${bucketKey}`).appendChild(placedChip);
     sortState.selectedWord = null;
 
-    checkSortComplete();
+    const totalPlaced = Object.values(sortState.placed).reduce((acc, arr) => acc + arr.length, 0);
+    mainCheckButton.disabled = totalPlaced < LESSON_SLIDES[currentStep].words.length;
   }
 
-  function returnChipToBank(word, bucketKey, chipEl) {
-    if (isAnswerChecked) return;
+  function returnSortChip(word, bucketKey, chipEl) {
     sfx.playClick();
     chipEl.remove();
 
@@ -1583,171 +1699,134 @@
     chip.className = "word-chip";
     chip.dataset.word = word;
     chip.innerText = word;
-    chip.onclick = () => selectChip(word, chip);
+    chip.onclick = () => selectSortChip(word, chip);
     bank.appendChild(chip);
 
-    checkSortComplete();
-  }
-
-  function checkSortComplete() {
     const totalPlaced = Object.values(sortState.placed).reduce((acc, arr) => acc + arr.length, 0);
-    const totalWords = LESSON_SLIDES[currentStep].words.length;
-    if (totalPlaced === totalWords) {
-      mainBtn.disabled = false;
-      mainBtn.className = "btn-3d btn-primary";
-    } else {
-      mainBtn.disabled = true;
-      mainBtn.className = "btn-3d btn-outline";
-    }
+    mainCheckButton.disabled = totalPlaced < LESSON_SLIDES[currentStep].words.length;
   }
 
-  // ---------- Action & Verification ----------
-  function handleMainAction() {
+  // ---------- Action Handlers ----------
+  function handleFooterAction() {
     const slide = LESSON_SLIDES[currentStep];
 
     if (slide.type === "rule_intake") {
       sfx.playClick();
-      advance();
+      advanceStep();
       return;
     }
 
-    if (!isAnswerChecked) {
-      let isCorrect = false;
-      let explanation = "";
+    let isCorrect = false;
+    let message = "";
 
-      if (slide.type === "quiz_choice" || slide.type === "quiz_slot") {
-        if (selectedOption === null) return;
-        isCorrect = slide.options[selectedOption].correct;
-        explanation = slide.explanation;
+    if (slide.type === "quiz_choice" || slide.type === "quiz_slot") {
+      if (selectedOption === null) return;
+      isCorrect = slide.options[selectedOption].correct;
+      message = slide.explanation;
 
-        document.querySelectorAll(".option-btn").forEach((btn, i) => {
-          btn.classList.remove("selected");
-          const iconEl = document.getElementById(`optIcon_${i}`);
-          if (slide.options[i].correct) {
-            btn.classList.add("correct");
-            if (iconEl) iconEl.innerText = "✔";
-          } else if (i === selectedOption) {
-            btn.classList.add("wrong");
-            if (iconEl) iconEl.innerText = "✖";
-          }
-        });
-      } else if (slide.type === "quiz_sort") {
-        const correctBuckets = slide.buckets;
-        isCorrect = (
-          [...sortState.placed.g].sort().join(",") === [...correctBuckets.g.words].sort().join(",") &&
-          [...sortState.placed.f].sort().join(",") === [...correctBuckets.f.words].sort().join(",") &&
-          [...sortState.placed.silent].sort().join(",") === [...correctBuckets.silent.words].sort().join(",")
-        );
+      document.querySelectorAll(".duo-choice-btn").forEach((btn, i) => {
+        btn.classList.remove("selected");
+        if (slide.options[i].correct) {
+          btn.classList.add("correct");
+        } else if (i === selectedOption) {
+          btn.classList.add("wrong");
+        }
+      });
+    } else if (slide.type === "quiz_sort") {
+      const correctBuckets = slide.buckets;
+      isCorrect = (
+        [...sortState.placed.g].sort().join(",") === [...correctBuckets.g.words].sort().join(",") &&
+        [...sortState.placed.f].sort().join(",") === [...correctBuckets.f.words].sort().join(",") &&
+        [...sortState.placed.silent].sort().join(",") === [...correctBuckets.silent.words].sort().join(",")
+      );
 
-        explanation = isCorrect
-          ? "هەموو وشەکان لە سندوقی تەواوی خۆیان دانران!"
-          : "تێبینی: Ghost و Ghana دەنگی (گ)، Laugh و Cough دەنگی (ف)، وە Night و High بێدەنگن.";
+      message = isCorrect
+        ? "هەموو وشەکان لە سندوقی تەواوی خۆیان دانران!"
+        : "تێبینی: Ghost و Ghana دەنگی (گ)، Laugh و Cough دەنگی (ف)، وە Night و High بێدەنگن.";
 
-        document.querySelectorAll(".bucket-box").forEach((bEl) => {
-          const key = bEl.dataset.bucket;
-          const expected = [...correctBuckets[key].words].sort().join(",");
-          const actual = [...sortState.placed[key]].sort().join(",");
-          bEl.classList.add(actual === expected ? "correct" : "wrong");
-        });
-      }
-
-      if (isCorrect) {
-        sfx.playCorrect();
-        streak++;
-        xp += 15;
-        showFeedback(true, explanation || "ئافەرم! وەڵامەکەت زۆر دروستە.");
-      } else {
-        sfx.playWrong();
-        // Hearts do NOT terminate learning
-        showFeedback(false, explanation || "وەڵامەکەت هەڵەیە، ئاگاداری یاساکە بە!");
-      }
-
-      updateStats();
-      isAnswerChecked = true;
-      skipButton.style.display = "none";
-      mainBtn.innerText = "بەردەوام بە";
-    } else {
-      sfx.playClick();
-      advance();
+      document.querySelectorAll(".bucket-box").forEach(bEl => {
+        const key = bEl.dataset.bucket;
+        const expected = [...correctBuckets[key].words].sort().join(",");
+        const actual = [...sortState.placed[key]].sort().join(",");
+        bEl.classList.add(actual === expected ? "correct" : "wrong");
+      });
     }
+
+    triggerFeedbackBanner(isCorrect, message);
+  }
+
+  function triggerFeedbackBanner(isCorrect, message) {
+    if (isCorrect) {
+      sfx.playCorrect();
+    } else {
+      sfx.playWrong();
+    }
+
+    defaultFooter.style.display = "none";
+    feedbackBanner.className = `feedback-banner-duo ${isCorrect ? 'correct' : 'wrong'}`;
+    feedbackBanner.style.display = "block";
+
+    const feedbackIcon = document.getElementById("feedbackIcon");
+    const feedbackTitle = document.getElementById("feedbackTitle");
+    const feedbackDesc = document.getElementById("feedbackDesc");
+    const continueBtn = document.getElementById("continueButton");
+
+    feedbackIcon.innerText = isCorrect ? "✓" : "✕";
+    feedbackTitle.innerText = isCorrect ? "Awesome! / بژیت!" : "Correct solution: / وەڵامی ڕاست:";
+    feedbackDesc.innerText = message || (isCorrect ? "وەڵامەکەت تەواوە!" : "ئاگاداری یاساکە بە لە کاتی خوێندنەوەدا.");
+    continueBtn.className = `btn-push ${isCorrect ? 'green' : 'red'}`;
   }
 
   function skipStep() {
     sfx.playClick();
-    advance();
+    advanceStep();
   }
 
-  function advance() {
+  function advanceStep() {
     currentStep++;
     if (currentStep >= LESSON_SLIDES.length) {
-      triggerVictory();
+      showVictoryScreen();
     } else {
-      renderCurrentStep();
+      renderStep();
     }
   }
 
-  function showFeedback(isCorrect, message) {
-    feedbackContainer.style.display = "block";
-    bottomSheet.className = `bottom-sheet ${isCorrect ? 'correct' : 'wrong'}`;
-
-    feedbackContainer.innerHTML = `
-      <div class="feedback-content">
-        <div class="feedback-icon-circle ${isCorrect ? 'correct' : 'wrong'}">
-          ${isCorrect ? '✔' : '✖'}
-        </div>
-        <div class="feedback-text-group">
-          <div class="feedback-heading ${isCorrect ? 'correct' : 'wrong'}">
-            ${isCorrect ? 'زۆر باشە! (Awesome!)' : 'تەواو نییە (Not quite right)'}
-          </div>
-          <div class="feedback-explanation">${message}</div>
-        </div>
-      </div>
-    `;
-
-    mainBtn.className = `btn-3d ${isCorrect ? 'btn-primary' : 'btn-danger'}`;
-  }
-
-  function updateStats() {
-    heartCountEl.innerText = hearts;
-    xpCountEl.innerText = xp;
-    streakCountEl.innerText = streak;
-  }
-
-  // ---------- Victory / Lesson Complete (Duolingo Style) ----------
-  function triggerVictory() {
+  // ---------- Complete Screen (Matches LessonComplete.tsx) ----------
+  function showVictoryScreen() {
     progressFill.style.width = "100%";
-    bottomSheet.style.display = "none";
+    defaultFooter.style.display = "none";
+    feedbackBanner.style.display = "none";
     sfx.playCorrect();
 
-    viewport.innerHTML = `
-      <div class="complete-card">
-        <div class="mascot-trophy">🏆</div>
-        <h2 class="complete-title">پیرۆزە! وانەکەت تەواو کرد</h2>
-        <p class="complete-subtitle">
-          تۆ یاساکانی بێژەکردنی پیتی <b>GH</b> بە تەواوی فێربوویت و هەموو قۆناغەکانت بە سەرکەوتوویی بڕی!
+    lessonMain.innerHTML = `
+      <div class="celebrate-screen">
+        <div class="trophy-emoji">🏆</div>
+        <h2 class="celebrate-title">وانەکە تەواو بوو! (Lesson Complete!)</h2>
+        <p class="celebrate-desc">
+          پیرۆزە! هەموو یاساکانی بێژەکردنی پیتی <b>GH</b> ـت لە زمانی ئینگلیزیدا بە سەرکەوتوویی بڕی.
         </p>
 
-        <div class="stats-summary-grid">
-          <div class="stat-box accuracy">
-            <span class="stat-val">100%</span>
-            <span class="stat-lbl">دەقیقی</span>
+        <div class="stats-card-grid">
+          <div class="stat-pill">
+            <span class="stat-value green">100%</span>
+            <span class="stat-label">وردبینی</span>
           </div>
-          <div class="stat-box xp">
-            <span class="stat-val">+${xp || 60}</span>
-            <span class="stat-lbl">بەردی XP</span>
+          <div class="stat-pill">
+            <span class="stat-value xp">+60</span>
+            <span class="stat-label">بەردی XP</span>
           </div>
-          <div class="stat-box streak">
-            <span class="stat-val">🔥 ١</span>
-            <span class="stat-lbl">ڕۆژی کارا</span>
+          <div class="stat-pill">
+            <span class="stat-value orange">🔥 ١</span>
+            <span class="stat-label">ڕۆژی کارا</span>
           </div>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 26rem; margin-top: 14px;">
-          <button type="button" class="btn-3d btn-primary" onclick="restartLesson()" style="width: 100%;">
-            دووبارەکردنەوەی وانە (Review Lesson)
+        <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 26rem; margin-top: 20px;">
+          <button type="button" class="btn-push green" onclick="restartLesson()" style="width: 100%;">
+            دووبارەکردنەوەی وانە (Review)
           </button>
           <a href="/learn?course=sunrise-3" style="text-decoration: none;">
-            <button type="button" class="btn-3d btn-outline" style="width: 100%;">
+            <button type="button" class="btn-push outline" style="width: 100%;">
               گەڕانەوە بۆ خولەکە (Back to Sunrise 3)
             </button>
           </a>
@@ -1758,16 +1837,11 @@
 
   function restartLesson() {
     currentStep = 0;
-    hearts = 5;
-    streak = 1;
-    xp = 0;
-    bottomSheet.style.display = "flex";
-    updateStats();
-    renderCurrentStep();
+    renderStep();
   }
 
-  // Initialize
-  renderCurrentStep();
+  // Initial Boot
+  renderStep();
 </script>
 </body>
 </html>
