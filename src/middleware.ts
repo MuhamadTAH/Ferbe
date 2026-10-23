@@ -19,8 +19,8 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/gh-demo", req.url));
   }
 
-  // 3. Allow the GH phonics demo page
-  if (pathname === "/gh-demo") {
+  // 3. Allow showcase demo pages (GH Phonics Demo & Lesson 1 Conversation Demo)
+  if (pathname === "/gh-demo" || pathname === "/lesson-1") {
     return NextResponse.next();
   }
 

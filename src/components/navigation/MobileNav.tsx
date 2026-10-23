@@ -24,7 +24,12 @@ export function MobileNav() {
   const pathname = usePathname();
 
   // Hide mobile bottom nav during full-screen lesson sessions
-  if (pathname.startsWith("/lesson/") || pathname.startsWith("/learn/") || pathname === "/gh-demo") {
+  if (
+    pathname.startsWith("/lesson/") ||
+    pathname.startsWith("/learn/") ||
+    pathname === "/gh-demo" ||
+    pathname === "/lesson-1"
+  ) {
     return null;
   }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
+import Link from "next/link";
 import {
   Volume2,
   Sparkles,
@@ -802,13 +803,14 @@ export default function GhDemoPage() {
               <RotateCcw className="h-4 w-4 mr-2 inline" />
               دووبارەکردنەوەی وانە (Review Lesson)
             </PushButton>
-            <PushButton
-              variant="blue"
-              onClick={() => setShowNoMoreLessonsModal(true)}
-              className="w-full py-3.5 text-sm"
-            >
-              وانەی داهاتوو (Next Lesson)
-            </PushButton>
+            <Link href="/lesson-1" className="w-full">
+              <PushButton
+                variant="blue"
+                className="w-full py-3.5 text-sm"
+              >
+                وانەی داهاتوو (Next Lesson: وانەی یەکەم)
+              </PushButton>
+            </Link>
           </div>
 
           {/* Modal when user clicks Next Lesson */}
