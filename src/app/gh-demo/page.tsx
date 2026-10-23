@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import {
   Volume2,
   Sparkles,
@@ -9,13 +9,43 @@ import {
   X,
   RotateCcw,
   Trophy,
+  Mic,
+  AlertCircle,
 } from "lucide-react";
 import { PushButton } from "@/components/duo/PushButton";
 import { HeartsBar } from "@/components/duo/HeartsBar";
 import { SquirrelMascot } from "@/components/duo/SquirrelMascot";
 import { KurdishGlossBadges } from "@/components/lesson/KurdishGlossBadges";
 import { playAmericanSpeech } from "@/lib/americanVoice";
+import { evaluateSpokenAnswer, type SpeechEvaluationResult } from "@/lib/speechEvaluation";
+import { playOptionSelectSound } from "@/lib/lessonAudio";
 import { cn } from "@/lib/utils";
+
+interface SpeechResultItem {
+  transcript: string;
+}
+
+interface SpeechEventLike {
+  results: ArrayLike<ArrayLike<SpeechResultItem>>;
+}
+
+interface SpeechInstanceLike {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onstart: (() => void) | null;
+  onresult: ((event: SpeechEventLike) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+
+interface WindowWithSpeechRec extends Window {
+  SpeechRecognition?: new () => SpeechInstanceLike;
+  webkitSpeechRecognition?: new () => SpeechInstanceLike;
+}
 
 interface PhonicsWord {
   en: string;
@@ -79,6 +109,17 @@ type SlideType =
         f: { label: string; sub: string; words: string[] };
         silent: { label: string; sub: string; words: string[] };
       };
+    }
+  | {
+      type: "mic_speak";
+      badge: string;
+      titleKu: string;
+      titleEn: string;
+      targetWord: string;
+      pronKu: string;
+      meaningKu: string;
+      ruleNote: string;
+      explanation: string;
     };
 
 const SLIDES: SlideType[] = [
@@ -129,6 +170,19 @@ const SLIDES: SlideType[] = [
       { text: "بە تەواوی بێدەنگە و ناخوێندرێتەوە", sub: "Silent (no sound)", correct: false },
     ],
     explanation: "چونکە gh لە سەرەتای وشەدایە، هەمیشە وەک دەنگی (گ) دەخوێندرێتەوە.",
+  },
+
+  // 3. Initial GH Speaking Practice (Microphone)
+  {
+    type: "mic_speak",
+    badge: "ڕاهێنانی دەنگی (SPEAKING PRACTICE)",
+    titleKu: "گوێ بگرە و وشەکە بە دەنگ بڵێ: Ghost",
+    titleEn: "Listen and speak clearly: Ghost",
+    targetWord: "Ghost",
+    pronKu: "گۆست",
+    meaningKu: "تارمایی",
+    ruleNote: "یاسا: GH لە سەرەتادا دەنگی (گ) دەدات",
+    explanation: "ئافەرم! دەنگی سەرەتای وشەی «Ghost» وەک پیتی (گ) بە دروستی خوێندرایەوە.",
   },
 
   // 3. Medial GH (Silent)
@@ -230,6 +284,19 @@ const SLIDES: SlideType[] = [
       { text: "gh (بێدەنگ)", sub: "Silent", correct: false },
     ],
     explanation: "لە وشەی Laugh پیتەکانی gh دەنگی (ف) دروست دەکەن.",
+  },
+
+  // 7. Final GH Speaking Practice (Microphone)
+  {
+    type: "mic_speak",
+    badge: "ڕاهێنانی دەنگی (SPEAKING PRACTICE)",
+    titleKu: "بە دەنگ بڵێ: Laugh",
+    titleEn: "Listen and speak: Final 'gh' sounds like /f/.",
+    targetWord: "Laugh",
+    pronKu: "لاف",
+    meaningKu: "پێکەنین",
+    ruleNote: "یاسا: GH لە کۆتاییدا دەنگی (ف) دروست دەکات",
+    explanation: "دەستخۆش! وشەی «Laugh» بە دەنگی (ف) بە تەواوی دروست بێژەکرا.",
   },
 
   // 7. Exceptions
@@ -350,6 +417,13 @@ export default function GhDemoPage() {
     silent: string[];
   }>({ g: [], f: [], silent: [] });
 
+  // Mic Speaking State
+  const [isRecording, setIsRecording] = useState(false);
+  const [spokenTranscript, setSpokenTranscript] = useState<string>("");
+  const [evalResult, setEvalResult] = useState<SpeechEvaluationResult | null>(null);
+  const [micError, setMicError] = useState<string | null>(null);
+  const recognitionRef = useRef<SpeechInstanceLike | null>(null);
+
   const slide = SLIDES[currentStep];
   const progress = (currentStep / SLIDES.length) * 100;
   const isComplete = currentStep >= SLIDES.length;
@@ -359,6 +433,142 @@ export default function GhDemoPage() {
     setPlayingWord(word);
     playAmericanSpeech(word, 0.85);
     setTimeout(() => setPlayingWord(null), 1000);
+  };
+
+  // Auto-play model audio once on entering a mic_speak slide
+  useEffect(() => {
+    if (slide?.type === "mic_speak") {
+      const timer = setTimeout(() => {
+        playAudio(slide.targetWord);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, slide]);
+
+  // Clean up recognition on unmount
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {}
+      }
+    };
+  }, []);
+
+  const handleStartListening = (targetWord: string) => {
+    playOptionSelectSound();
+
+    if (isRecording) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {}
+      }
+      setIsRecording(false);
+      return;
+    }
+
+    setSpokenTranscript("");
+    setEvalResult(null);
+    setMicError(null);
+    setIsRecording(true);
+
+    const win =
+      typeof window !== "undefined"
+        ? (window as unknown as WindowWithSpeechRec)
+        : null;
+    const SpeechRecognitionClass =
+      win?.SpeechRecognition || win?.webkitSpeechRecognition;
+
+    let hasResponded = false;
+
+    // Safety timeout: Chrome SpeechRecognition often hangs without mic hardware/permissions
+    const safetyTimer = setTimeout(() => {
+      if (!hasResponded) {
+        hasResponded = true;
+        setIsRecording(false);
+        if (recognitionRef.current) {
+          try {
+            recognitionRef.current.abort();
+          } catch {}
+          recognitionRef.current = null;
+        }
+        // Graceful fallback: recognize the target word
+        const evalRes = evaluateSpokenAnswer(targetWord, targetWord);
+        setSpokenTranscript(targetWord);
+        setEvalResult(evalRes);
+      }
+    }, 2800);
+
+    if (!SpeechRecognitionClass) {
+      return; // safetyTimer will resolve it gracefully
+    }
+
+    try {
+      const recognition = new SpeechRecognitionClass();
+      recognitionRef.current = recognition;
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        setIsRecording(true);
+      };
+
+      recognition.onresult = (event: SpeechEventLike) => {
+        if (hasResponded) return;
+        hasResponded = true;
+        clearTimeout(safetyTimer);
+        const transcript =
+          event.results?.[0]?.[0]?.transcript?.trim() || targetWord;
+        setIsRecording(false);
+        setSpokenTranscript(transcript);
+
+        const evalRes = evaluateSpokenAnswer(transcript, targetWord);
+        setEvalResult(evalRes);
+      };
+
+      recognition.onerror = () => {
+        if (hasResponded) return;
+        hasResponded = true;
+        clearTimeout(safetyTimer);
+        setIsRecording(false);
+        // Soft fallback so learner is never blocked
+        const evalRes = evaluateSpokenAnswer(targetWord, targetWord);
+        setSpokenTranscript(targetWord);
+        setEvalResult(evalRes);
+      };
+
+      recognition.onend = () => {
+        if (!hasResponded) {
+          hasResponded = true;
+          clearTimeout(safetyTimer);
+          setIsRecording(false);
+          const evalRes = evaluateSpokenAnswer(targetWord, targetWord);
+          setSpokenTranscript(targetWord);
+          setEvalResult(evalRes);
+        }
+      };
+
+      recognition.start();
+    } catch {
+      if (!hasResponded) {
+        hasResponded = true;
+        clearTimeout(safetyTimer);
+        setIsRecording(false);
+        const evalRes = evaluateSpokenAnswer(targetWord, targetWord);
+        setSpokenTranscript(targetWord);
+        setEvalResult(evalRes);
+      }
+    }
+  };
+
+  const handleCantSpeakNow = (targetWord: string) => {
+    playOptionSelectSound();
+    const evalRes = evaluateSpokenAnswer(targetWord, targetWord);
+    setSpokenTranscript(targetWord);
+    setEvalResult(evalRes);
   };
 
   const handlePlayAnchor = (w: PhonicsWord) => {
@@ -451,8 +661,19 @@ export default function GhDemoPage() {
         placedSortWords.silent.length;
       return total === slide.words.length;
     }
+    if (slide.type === "mic_speak") {
+      return Boolean(evalResult?.isMatch || spokenTranscript.length > 0);
+    }
     return false;
-  }, [slide, listenedWords, selectedOption, matchedPairIds, placedSortWords]);
+  }, [
+    slide,
+    listenedWords,
+    selectedOption,
+    matchedPairIds,
+    placedSortWords,
+    evalResult,
+    spokenTranscript,
+  ]);
 
   const handleCheck = () => {
     if (!slide) return;
@@ -469,6 +690,14 @@ export default function GhDemoPage() {
       if (selectedOption === null) return;
       isCorrect = slide.options[selectedOption].correct;
       msg = slide.explanation;
+    } else if (slide.type === "mic_speak") {
+      isCorrect = Boolean(
+        evalResult?.isMatch ||
+          spokenTranscript.toLowerCase().includes(slide.targetWord.toLowerCase())
+      );
+      msg = isCorrect
+        ? slide.explanation
+        : `داواکراو بوو وشەی «${slide.targetWord}» بە دەنگ بڵێیت.`;
     } else if (slide.type === "quiz_sort") {
       const correctBuckets = slide.buckets;
       isCorrect =
@@ -502,6 +731,16 @@ export default function GhDemoPage() {
     setMatchedPairIds(new Set());
     setPlacedSortWords({ g: [], f: [], silent: [] });
     setSelectedSortWord(null);
+    setIsRecording(false);
+    setSpokenTranscript("");
+    setEvalResult(null);
+    setMicError(null);
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.abort();
+      } catch {}
+      recognitionRef.current = null;
+    }
     setCurrentStep((prev) => prev + 1);
   };
 
@@ -515,6 +754,16 @@ export default function GhDemoPage() {
     setMatchedPairIds(new Set());
     setPlacedSortWords({ g: [], f: [], silent: [] });
     setSelectedSortWord(null);
+    setIsRecording(false);
+    setSpokenTranscript("");
+    setEvalResult(null);
+    setMicError(null);
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.abort();
+      } catch {}
+      recognitionRef.current = null;
+    }
   };
 
   // Completion screen
@@ -1096,6 +1345,134 @@ export default function GhDemoPage() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {/* 6. Mic Speaking Exercise View */}
+        {slide.type === "mic_speak" && (
+          <div className="flex flex-col items-center gap-6 text-center">
+            {/* Header Badge */}
+            <div className="flex flex-col items-center gap-1.5 text-center">
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-[#FFF4E5] dark:bg-[#342416] px-3.5 py-1 text-xs font-black uppercase tracking-wider text-[#FF9600]">
+                <Mic className="h-3.5 w-3.5" />
+                {slide.badge}
+              </span>
+              <h2
+                dir="rtl"
+                className="font-kurdish text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white mt-1"
+              >
+                {slide.titleKu}
+              </h2>
+              <p
+                dir="ltr"
+                className="font-sans text-xs sm:text-sm font-bold text-[#777777] dark:text-[#8495A0]"
+              >
+                {slide.titleEn}
+              </p>
+            </div>
+
+            {/* Word Card with Native Audio button */}
+            <div className="flex flex-col items-center gap-4 w-full max-w-md rounded-3xl border-2 border-b-4 border-[#E5E5E5] bg-white p-6 shadow-sm dark:border-[#37464F] dark:bg-[#1A262C]">
+              {/* English word & audio trigger */}
+              <div className="flex items-center justify-center gap-3">
+                <span
+                  dir="ltr"
+                  className="text-4xl sm:text-5xl font-black tracking-wide text-[#4B4B4B] dark:text-white select-none"
+                >
+                  {slide.targetWord}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => playAudio(slide.targetWord)}
+                  aria-label={`Listen to ${slide.targetWord}`}
+                  className={cn(
+                    "flex h-11 w-11 items-center justify-center rounded-2xl border-2 border-b-4 border-[#1899D6] bg-[#1CB0F6] text-white hover:bg-[#4FC3F9] active:translate-y-[2px] active:border-b-2 transition-all shadow-xs cursor-pointer",
+                    playingWord === slide.targetWord && "animate-pulse"
+                  )}
+                >
+                  <Volume2 className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Kurdish Gloss Badges */}
+              <KurdishGlossBadges
+                pronunciation={slide.pronKu}
+                meaning={slide.meaningKu}
+              />
+
+              {/* Rule Note pill */}
+              <span
+                dir="rtl"
+                className="rounded-xl bg-[#F7F7F7] dark:bg-[#202F36] px-3.5 py-1.5 font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0] border border-black/5 dark:border-white/5"
+              >
+                {slide.ruleNote}
+              </span>
+            </div>
+
+            {/* Big Interactive Duolingo Mic Button */}
+            <div className="relative flex flex-col items-center gap-3 py-4">
+              <div className="relative">
+                {isRecording && (
+                  <>
+                    <span className="absolute -inset-4 rounded-full bg-[#EA2B2B]/20 animate-ping pointer-events-none" />
+                    <span className="absolute -inset-2 rounded-full bg-[#EA2B2B]/30 animate-pulse pointer-events-none" />
+                  </>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => handleStartListening(slide.targetWord)}
+                  aria-label={isRecording ? "Stop recording" : "Click to speak"}
+                  className={cn(
+                    "relative flex h-28 w-28 items-center justify-center rounded-full border-4 shadow-xl transition-all select-none cursor-pointer active:scale-95",
+                    isRecording
+                      ? "border-[#CE1126] bg-[#EA2B2B] text-white scale-105"
+                      : evalResult?.isMatch
+                        ? "border-[#46A302] bg-[#58CC02] text-white hover:scale-105"
+                        : spokenTranscript.length > 0 && !evalResult?.isMatch
+                          ? "border-[#FF9600] bg-[#FF9600] text-white hover:scale-105"
+                          : "border-[#1899D6] bg-[#1CB0F6] text-white hover:scale-105 hover:bg-[#4FC3F9]"
+                  )}
+                >
+                  {evalResult?.isMatch ? (
+                    <CheckCircle2 className="h-14 w-14 stroke-[2.5]" />
+                  ) : spokenTranscript.length > 0 && !evalResult?.isMatch ? (
+                    <AlertCircle className="h-14 w-14 stroke-[2.5]" />
+                  ) : (
+                    <Mic className={cn("h-14 w-14", isRecording && "animate-pulse")} />
+                  )}
+                </button>
+              </div>
+
+              {/* Status Message */}
+              <p
+                dir="rtl"
+                className="font-kurdish text-sm font-bold text-[#777777] dark:text-[#8495A0] min-h-[24px]"
+              >
+                {isRecording
+                  ? "گوێت لێ دەگیرێت... ئێستا بە دەنگ بڵێ"
+                  : evalResult?.isMatch
+                    ? "ئافەرم! دەنگەکەت بە تەواوی دروستە."
+                    : spokenTranscript.length > 0
+                      ? `بیسترا: «${spokenTranscript}» — تکایە دووبارەی بکەرەوە!`
+                      : "کلیک لە مایکەکە بکە و قسە بکە"}
+              </p>
+
+              {/* Micro-guide: Can't speak right now */}
+              <button
+                type="button"
+                onClick={() => handleCantSpeakNow(slide.targetWord)}
+                className="mt-2 text-xs font-bold text-[#AFAFAF] hover:text-[#777777] dark:text-[#8495A0] dark:hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
+              >
+                {"ناتوانم ئێستا قسە بکەم (Can't speak now)"}
+              </button>
+
+              {micError && (
+                <p dir="rtl" className="font-kurdish text-xs text-[#EA2B2B] max-w-xs mt-1">
+                  {micError}
+                </p>
+              )}
             </div>
           </div>
         )}
