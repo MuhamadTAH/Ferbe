@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
 import {
   Volume2,
   Sparkles,
@@ -335,6 +334,7 @@ export default function GhDemoPage() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [isLastCorrect, setIsLastCorrect] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [showNoMoreLessonsModal, setShowNoMoreLessonsModal] = useState(false);
 
   // Pair Matching state
   const [selectedPairEn, setSelectedPairEn] = useState<number | null>(null);
@@ -551,14 +551,55 @@ export default function GhDemoPage() {
           <div className="mt-10 flex w-full max-w-md flex-col gap-3">
             <PushButton variant="green" onClick={handleRestart} className="w-full py-3.5 text-sm">
               <RotateCcw className="h-4 w-4 mr-2 inline" />
-              دووبارەکردنەوەی وانە (Review)
+              دووبارەکردنەوەی وانە (Review Lesson)
             </PushButton>
-            <Link href="/learn?course=sunrise-3" className="w-full">
-              <PushButton variant="white" className="w-full py-3 text-sm">
-                گەڕانەوە بۆ ڕێڕەوی Sunrise 3
-              </PushButton>
-            </Link>
+            <PushButton
+              variant="blue"
+              onClick={() => setShowNoMoreLessonsModal(true)}
+              className="w-full py-3.5 text-sm"
+            >
+              وانەی داهاتوو (Next Lesson)
+            </PushButton>
           </div>
+
+          {/* Modal when user clicks Next Lesson */}
+          {showNoMoreLessonsModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+              <div className="relative w-full max-w-md rounded-3xl border-2 border-[#E5E5E5] bg-white p-6 text-center shadow-2xl dark:border-[#37464F] dark:bg-[#1A262C]">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#EAF4FF] text-[#1CB0F6] dark:bg-[#1C3342] dark:text-[#3BC0F8]">
+                  <Sparkles className="h-8 w-8" />
+                </div>
+                <h3 className="font-kurdish text-2xl font-black text-[#4B4B4B] dark:text-white">
+                  لە ئێستادا وانەی تر بەردەست نییە
+                </h3>
+                <p className="mt-2 text-sm font-bold text-[#777777] dark:text-[#8495A0]">
+                  We do not have any lesson right now.
+                </p>
+                <p className="mt-1 text-xs text-[#AFAFAF] dark:text-[#6A7B83]">
+                  ئەم پڕۆژەیە بۆ تاقیکردنەوە و نیشاندانی شێوازی فێربوون (Demo) ئامادەکراوە.
+                </p>
+                <div className="mt-6 flex flex-col gap-2">
+                  <PushButton
+                    variant="green"
+                    onClick={() => {
+                      setShowNoMoreLessonsModal(false);
+                      handleRestart();
+                    }}
+                    className="w-full py-3 text-sm font-extrabold"
+                  >
+                    دووبارەکردنەوەی وانە (Review Lesson)
+                  </PushButton>
+                  <PushButton
+                    variant="white"
+                    onClick={() => setShowNoMoreLessonsModal(false)}
+                    className="w-full py-3 text-sm font-extrabold"
+                  >
+                    داخستن (Close)
+                  </PushButton>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     );
@@ -568,13 +609,14 @@ export default function GhDemoPage() {
     <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-white dark:bg-[#131F24]">
       {/* Lesson top bar (Strictly LTR: Exit on Left, Progress Center, Hearts Right) */}
       <div className="mx-auto flex w-full max-w-2xl items-center gap-4 px-4 py-5" style={{ direction: "ltr" }}>
-        <Link
-          href="/learn?course=sunrise-3"
-          aria-label="Exit lesson"
+        <button
+          type="button"
+          onClick={handleRestart}
+          aria-label="Restart lesson"
           className="text-[#AFAFAF] transition-colors hover:text-[#777777] dark:text-[#8495A0] dark:hover:text-white"
         >
           <X className="h-8 w-8 stroke-[3]" />
-        </Link>
+        </button>
         <div className="h-4 flex-1 overflow-hidden rounded-full bg-[#E5E5E5] dark:bg-[#37464F]">
           <div
             className="h-full rounded-full bg-[#58CC02] transition-all duration-300"
