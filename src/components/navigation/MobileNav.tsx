@@ -28,7 +28,8 @@ export function MobileNav() {
     pathname.startsWith("/lesson/") ||
     pathname.startsWith("/learn/") ||
     pathname === "/gh-demo" ||
-    pathname === "/lesson-1"
+    pathname === "/lesson-1" ||
+    pathname === "/lesson-2"
   ) {
     return null;
   }

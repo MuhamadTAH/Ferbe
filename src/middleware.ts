@@ -24,7 +24,16 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 4. All other pages return 404 for this job showcase
+  // 4. Draft / Unreleased Lessons (Not available publicly for now; accessible in local dev or with ?preview=dev)
+  if (
+    pathname === "/lesson-2" &&
+    (process.env.NODE_ENV === "development" ||
+      req.nextUrl.searchParams.get("preview") === "dev")
+  ) {
+    return NextResponse.next();
+  }
+
+  // 5. All other pages return 404 for this job showcase
   return NextResponse.rewrite(new URL("/not-found", req.url), { status: 404 });
 }
 
