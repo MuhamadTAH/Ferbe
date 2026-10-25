@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
+import Link from "next/link";
 import {
   Volume2,
   Sparkles,
@@ -12,8 +13,6 @@ import {
   Mic,
   AlertCircle,
   MessageSquare,
-  Turtle,
-  Lightbulb,
 } from "lucide-react";
 import { PushButton } from "@/components/duo/PushButton";
 import { HeartsBar } from "@/components/duo/HeartsBar";
@@ -21,12 +20,7 @@ import { SquirrelMascot } from "@/components/duo/SquirrelMascot";
 import { KurdishGlossBadges } from "@/components/lesson/KurdishGlossBadges";
 import { playAmericanSpeech } from "@/lib/americanVoice";
 import { evaluateSpokenAnswer, type SpeechEvaluationResult } from "@/lib/speechEvaluation";
-import {
-  playOptionSelectSound,
-  playCorrectSound,
-  playIncorrectSound,
-  playLessonCompleteSound,
-} from "@/lib/lessonAudio";
+import { playOptionSelectSound } from "@/lib/lessonAudio";
 import { cn } from "@/lib/utils";
 
 interface SpeechResultItem {
@@ -56,9 +50,8 @@ interface WindowWithSpeechRec extends Window {
 }
 
 interface ChoiceOption {
-  textEn: string;
-  pronKu: string;
-  meaningKu: string;
+  text: string;
+  sub?: string;
   correct: boolean;
 }
 
@@ -68,40 +61,13 @@ type Lesson2Slide =
       badge: string;
       titleKu: string;
       titleEn: string;
-      subtitleKu: string;
       words: {
         en: string;
         pron: string;
         ku: string;
         icon?: string;
-        contextKu: string;
+        note?: string;
       }[];
-    }
-  | {
-      type: "tip_card";
-      badge: string;
-      titleKu: string;
-      titleEn: string;
-      ruleEn: string;
-      rulePron: string;
-      ruleKu: string;
-      tipExplanationKu: string;
-      contrastPairs: {
-        badEn: string;
-        badKu: string;
-        goodEn: string;
-        goodKu: string;
-      }[];
-    }
-  | {
-      type: "listen_pick";
-      badge: string;
-      titleKu: string;
-      titleEn: string;
-      audioTarget: string;
-      promptHintKu: string;
-      options: ChoiceOption[];
-      explanationKu: string;
     }
   | {
       type: "quiz_choice";
@@ -110,14 +76,13 @@ type Lesson2Slide =
       titleEn: string;
       audioWord?: string;
       options: ChoiceOption[];
-      explanationKu: string;
+      explanation: string;
     }
   | {
       type: "analytic_breakdown";
       badge: string;
       titleKu: string;
       titleEn: string;
-      subtitleKu: string;
       rows: {
         en: string;
         pron: string;
@@ -130,15 +95,13 @@ type Lesson2Slide =
       badge: string;
       titleKu: string;
       titleEn: string;
-      subtitleKu: string;
       framePrefix: string;
       frameSuffix: string;
       items: {
-        enWord: string;
-        fullSentenceEn: string;
+        word: string;
         pron: string;
         meaning: string;
-        noteKu: string;
+        note: string;
       }[];
     }
   | {
@@ -149,43 +112,40 @@ type Lesson2Slide =
       targetWord: string;
       pronKu: string;
       meaningKu: string;
-      ruleNoteKu: string;
-      explanationKu: string;
+      ruleNote: string;
+      explanation: string;
     }
   | {
       type: "quiz_pairs";
       badge: string;
       titleKu: string;
       titleEn: string;
-      subtitleKu: string;
-      pairs: { id: number; en: string; pron: string; ku: string }[];
+      pairs: { id: number; en: string; ku: string }[];
     }
   | {
       type: "chat_dialogue";
       badge: string;
       titleKu: string;
       titleEn: string;
-      speakerNameKu: string;
-      speakerRoleEn: string;
-      incomingMessageEn: string;
-      incomingPronKu: string;
-      incomingMeaningKu: string;
+      incomingSender: string;
+      incomingMessage: string;
+      incomingPron: string;
       options: ChoiceOption[];
-      explanationKu: string;
+      explanation: string;
     }
   | {
       type: "agreement_trigger";
       badge: string;
       titleKu: string;
       titleEn: string;
-      promptEn: string;
-      promptPronKu: string;
-      promptMeaningKu: string;
-      replyEn: string;
-      replyPronKu: string;
-      replyMeaningKu: string;
+      promptPhrase: string;
+      promptPron: string;
+      promptKu: string;
+      replyPhrase: string;
+      replyPron: string;
+      replyKu: string;
       options: ChoiceOption[];
-      explanationKu: string;
+      explanation: string;
     }
   | {
       type: "quiz_slot";
@@ -197,523 +157,409 @@ type Lesson2Slide =
       meaningKu: string;
       audioWord?: string;
       options: ChoiceOption[];
-      explanationKu: string;
+      explanation: string;
     }
   | {
       type: "tile_assembly";
       badge: string;
       titleKu: string;
       titleEn: string;
-      subtitleKu: string;
       tiles: string[];
       correctOrder: string[];
-      fullPronKu: string;
-      fullMeaningKu: string;
+      fullPron: string;
+      fullMeaning: string;
     };
 
 const LESSON_SLIDES: Lesson2Slide[] = [
-  // 1. Essential Drinks Anchors
+  // 1. Time-of-Day Greetings Anchors
   {
     type: "word_anchors",
-    badge: "خواردنەوە سەرەکییەکان (ESSENTIAL DRINKS)",
-    titleKu: "خواردنەوە باوەکان و بێژەکردنیان بە ئینگلیزی",
-    titleEn: "Essential drinks: accurate American pronunciation & Kurdish gloss",
-    subtitleKu: "گوێ لە هەردوو خێرایی ئاسایی و لەسەرخۆ (🐢) بگرە:",
+    badge: "سڵاو بەپێی کاتەکانی ڕۆژ (TIME-OF-DAY GREETINGS)",
+    titleKu: "سڵاوکردن بەپێی کاتەکانی بەیانی، دوانێوەڕۆ، ئێوارە و شەو",
+    titleEn: "Greetings throughout the day in English",
     words: [
       {
-        en: "Water",
-        pron: "واتەر / واڕەر",
-        ku: "ئاو",
-        icon: "💧",
-        contextKu: "پێویستی و خواردنەوەی سەرەکی ژیان",
+        en: "Good morning",
+        pron: "گود مۆرنینگ",
+        ku: "بەیانی باش",
+        icon: "🌅",
+        note: "لە کاتی هەستان تا ١٢ی نیوەڕۆ",
       },
       {
-        en: "Tea",
-        pron: "تی",
-        ku: "چای",
-        icon: "🍵",
-        contextKu: "خواردنەوەی گەرمی دڵخوازی ڕۆژانە",
+        en: "Good afternoon",
+        pron: "گود ئافتەرنوون",
+        ku: "دوانێوەڕۆ باش",
+        icon: "☀️",
+        note: "لە ١٢ی نیوەڕۆ تا ئێوارە",
       },
       {
-        en: "Coffee",
-        pron: "کۆفی",
-        ku: "قاوە",
-        icon: "☕",
-        contextKu: "بۆ کاتی کارکردن و بەئاگاهاتنەوە",
+        en: "Good evening",
+        pron: "گود ئیڤنینگ",
+        ku: "ئێوارە باش",
+        icon: "🌇",
+        note: "لە سەرەتای ئێوارەوە بۆ شەو",
       },
       {
-        en: "Milk",
-        pron: "میڵک",
-        ku: "شیر",
-        icon: "🥛",
-        contextKu: "بۆ نانی بەیانی و تەندروستی",
+        en: "Good night",
+        pron: "گود نایت",
+        ku: "شەو باش",
+        icon: "🌙",
+        note: "کاتی ماڵئاوایی شەوانە یان خەوتن",
       },
     ],
   },
 
-  // 2. Food Staples Anchors
+  // 2. Time Context Quiz
   {
-    type: "word_anchors",
-    badge: "خواردنە سەرەکییەکان (FOOD ESSENTIALS)",
-    titleKu: "ناوی خواردنە بنەڕەتییەکان بە ئینگلیزی",
-    titleEn: "Food staples with Kurdish phonetic and meaning badges",
-    subtitleKu: "گوێ لە وشەکان بگرە و بێژەکردنیان دووبارە بکەرەوە:",
-    words: [
+    type: "quiz_choice",
+    badge: "هەڵبژاردنی کاتی سڵاو (GREETING CONTEXT)",
+    titleKu: "کاتژمێر ٩ی سەرلەبەیانی دەچیتە سەر کار یان قوتابخانە، چۆن سڵاو دەکەیت؟",
+    titleEn: "How do you greet someone at 9:00 AM?",
+    audioWord: "Good morning!",
+    options: [
       {
-        en: "Bread",
-        pron: "برێد",
-        ku: "نان",
-        icon: "🍞",
-        contextKu: "بنەمای سەرەکی هەموو ژەمێکی خواردن",
+        text: "Good morning!",
+        sub: "گود مۆرنینگ! — بەیانی باش! (وەڵامی دروست بۆ بەیانیان)",
+        correct: true,
       },
       {
-        en: "Apple",
-        pron: "ئەپڵ",
-        ku: "سێو",
-        icon: "🍎",
-        contextKu: "میوەیەکی تەندروست و بەتام",
+        text: "Good night!",
+        sub: "گود نایت! — شەو باش! (تەنها پێش خەوتن بەکاردێت)",
+        correct: false,
       },
       {
-        en: "Rice",
-        pron: "ڕایس",
-        ku: "برنج / پڵاو",
-        icon: "🍚",
-        contextKu: "ژەمی سەرەکی و دڵخوازی ڕۆژهەڵاتی",
-      },
-      {
-        en: "Pizza",
-        pron: "پیتزا",
-        ku: "پیتزا",
-        icon: "🍕",
-        contextKu: "خواردنێکی خێرای بەناوبانگ و جیهانی",
+        text: "See you tomorrow.",
+        sub: "سی یو تومۆرۆو — سبەی دەتبینمەوە",
+        correct: false,
       },
     ],
+    explanation: "بۆ بەیانیان پێش نیوەڕۆ هەمیشە دەڵێین «Good morning!».",
   },
 
-  // 3. Politeness Magic Words
+  // 3. Introductions: Meeting for the first time
   {
     type: "word_anchors",
-    badge: "وشە سیحراوییەکان (POLITENESS MAGIC WORDS)",
-    titleKu: "٤ کلیلە وشەی گرنگ بۆ ڕێزگرتن و بەڕێزانە قسەکردن",
-    titleEn: "The 4 core polite expressions in everyday English",
-    subtitleKu: "ئەم دەستەواژانە بەکاربهێنە بۆ ئەوەی قسەکردنت هەمیشە شیرین و ڕێزدار بێت:",
+    badge: "خۆناساندن و چاوپێکەوتن (INTRODUCTIONS)",
+    titleKu: "دەستەواژە سەرەکییەکان لە یەکەم چاوپێکەوتندا",
+    titleEn: "Meeting someone for the first time",
     words: [
       {
-        en: "Please",
-        pron: "پڵیز",
-        ku: "تکایە",
-        icon: "✨",
-        contextKu: "کلیلی زێڕین بۆ هەموو داواکارییەک",
-      },
-      {
-        en: "Thank you",
-        pron: "ثانک یو",
-        ku: "سوپاس",
-        icon: "🙏",
-        contextKu: "بۆ کاتی وەرگرتنی هاوکاری یان شتومەک",
-      },
-      {
-        en: "You're welcome",
-        pron: "یۆر وێڵکەم",
-        ku: "شایەنی نییە / سەرچاو",
+        en: "Nice to meet you",
+        pron: "نایس تو میت یو",
+        ku: "خۆشحاڵم بە ناسینت",
         icon: "🤝",
-        contextKu: "وەڵامی دروست و ڕێزدار بۆ سوپاس",
+        note: "لە یەکەم بینینی کەسێکی نوێ",
       },
       {
-        en: "Excuse me",
-        pron: "ئێکسکیوز می",
-        ku: "ببورە / لێم ببورە",
-        icon: "🙋‍♂️",
-        contextKu: "بۆ سەرنجڕاکێشان یان داوای لێبوردن",
+        en: "Nice to meet you too",
+        pron: "نایس تو میت یو توو",
+        ku: "منیش خۆشحاڵم بە ناسینت",
+        icon: "✨",
+        note: "وەڵامدانەوەی خۆشحاڵی ناسین",
+      },
+      {
+        en: "Welcome",
+        pron: "وێڵکەم",
+        ku: "بەخێربێیت",
+        icon: "🚪",
+        note: "پێشوازیکردن لە میوان",
       },
     ],
   },
 
-  // 4. Cultural / Pedagogical Golden Rule Card
-  {
-    type: "tip_card",
-    badge: "تێبینی زێڕینی کولتووری (CULTURE & POLITENESS TIP)",
-    titleKu: "یاسای زێڕین: لە ئینگلیزیدا چۆن داواکاری ڕێزدار دەکرێت؟",
-    titleEn: "Why you should never say just 'I want' to a waiter or host",
-    ruleEn: "Always use 'Can I have...' or add 'Please'",
-    rulePron: "کەن ئای هاڤ ... / پڵیز",
-    ruleKu: "هەمیشە دەستەواژەی «دەتوانم ...م دەستکەوێت» یان «تکایە» بەکاربهێنە",
-    tipExplanationKu:
-      "لە کولتووری ئینگلیزیدا، وتنی ڕاستەوخۆی «I want...» (ئەوەم دەوێت) بە تەنیا لە ڕێستۆرانت یان میوانداریدا، لەوانەیە کەمێک توند یان ناڕێز دەربکەوێت. هەمیشە داواکارییەکەت نەرم بکەرەوە بە وتنی «Can I have... please?» یان بە کورتی ناوی شتەکە + «please».",
-    contrastPairs: [
-      {
-        badEn: "Give me tea! / I want tea!",
-        badKu: "توند و ناڕێز (فەرمانپێکردن)",
-        goodEn: "Can I have tea, please?",
-        goodKu: "بەڕێز و تەواو سروشتی (دەتوانم چایەکم دەستکەوێت، تکایە؟)",
-      },
-      {
-        badEn: "Water!",
-        badKu: "وشک و کتوپڕ",
-        goodEn: "Water, please.",
-        goodKu: "شیرین و پوخت (ئاو، تکایە)",
-      },
-    ],
-  },
-
-  // 5. Ear Training / Listen & Pick
-  {
-    type: "listen_pick",
-    badge: "ڕاهێنانی گوێگرتن (LISTENING CHALLENGE)",
-    titleKu: "گوێ لە دەنگەکە بگرە و دەستنیشانی بکە چ خواردنەوەیەک داوا کرا:",
-    titleEn: "Listen carefully to the audio and select what was ordered:",
-    audioTarget: "Coffee, please.",
-    promptHintKu: "کلیک لە دوگمەی دەنگ بکە بۆ گوێگرتن",
-    options: [
-      {
-        textEn: "Coffee, please.",
-        pronKu: "کۆفی، پڵیز",
-        meaningKu: "قاوە، تکایە (داواکراوەکە)",
-        correct: true,
-      },
-      {
-        textEn: "Water, please.",
-        pronKu: "واتەر، پڵیز",
-        meaningKu: "ئاو، تکایە",
-        correct: false,
-      },
-      {
-        textEn: "Milk, please.",
-        pronKu: "میڵک، پڵیز",
-        meaningKu: "شیر، تکایە",
-        correct: false,
-      },
-    ],
-    explanationKu: "لە دەنگەکەدا بە ڕوونی وترا «Coffee, please» واتە «قاوە، تکایە».",
-  },
-
-  // 6. Quick Polite Order Quiz
-  {
-    type: "quiz_choice",
-    badge: "داواکاری خێرا (QUICK POLITE ORDER)",
-    titleKu: "لە کافێیەکت، چۆن بە شێوازێکی کورت و بەڕێزانە داوای «چای» دەکەیت؟",
-    titleEn: "How to make a polite, concise order for tea?",
-    audioWord: "Tea, please.",
-    options: [
-      {
-        textEn: "Tea, please.",
-        pronKu: "تی، پڵیز",
-        meaningKu: "چای، تکایە (وەڵامی کورت، دروست و بەڕێز)",
-        correct: true,
-      },
-      {
-        textEn: "Give me tea now!",
-        pronKu: "گیڤ می تی ناو",
-        meaningKu: "ئێستا چایم پێبدە! (توند و نادروست)",
-        correct: false,
-      },
-      {
-        textEn: "Hello teacher.",
-        pronKu: "های تیچر",
-        meaningKu: "سڵاو مامۆستا (پەیوەندی بە داواکردنەوە نییە)",
-        correct: false,
-      },
-    ],
-    explanationKu: "یاسای داواکاری خێرا لە زمانی ئینگلیزیدا بریتییە لە: ناوی خواردنەوەکە + Please.",
-  },
-
-  // 7. Echo Mic Speaking Studio 1
-  {
-    type: "mic_speak",
-    badge: "ڕاهێنانی دەنگی (SPEAKING STUDIO)",
-    titleKu: "بە دەنگ لە مایکەکە بڵێ: Water, please.",
-    titleEn: "Speak clearly into your microphone:",
-    targetWord: "Water, please.",
-    pronKu: "واتەر، پڵیز.",
-    meaningKu: "ئاو، تکایە.",
-    ruleNoteKu: "بێژەکردنی خێرا: واتەر پڵیز (یاخود بە ئەمریکی: واڕەر پڵیز)",
-    explanationKu: "ئافەرم! دەستەواژەی «Water, please» بە تەواوی و بە ڕوونی بێژەکرا.",
-  },
-
-  // 8. Analytic Breakdown: Can I have...?
-  {
-    type: "analytic_breakdown",
-    badge: "شیکردنەوەی داواکاری فەرمی (CAN I HAVE...?)",
-    titleKu: "چۆنیەتی پێکهێنانی داواکاری فەرمی و دەوڵەمەند لە چێشتخانە و هۆتێل",
-    titleEn: "Modular sentence breakdown for 'Can I have... please?'",
-    subtitleKu: "کلیک لە هەر بەشێک بکە بۆ تێگەیشتن لە پێکهاتەی ڕستەکە:",
-    rows: [
-      {
-        en: "Can I have",
-        pron: "کەن ئای هاڤ",
-        ku: "دەتوانم ...م دەستکەوێت؟ / دەکرێت هەبێت؟",
-      },
-      {
-        en: "water",
-        pron: "واتەر",
-        ku: "ئاو",
-      },
-      {
-        en: "please?",
-        pron: "پڵیز؟",
-        ku: "تکایە؟ (وشەی کلیل بۆ ڕێز)",
-      },
-      {
-        en: "Can I have water, please?",
-        pron: "کەن ئای هاڤ واتەر، پڵیز؟",
-        ku: "دەتوانم ئاوم دەستکەوێت، تکایە؟",
-        isFullPhrase: true,
-      },
-      {
-        en: "Can I have coffee, please?",
-        pron: "کەن ئای هاڤ کۆفی، پڵیز؟",
-        ku: "دەتوانم قاوەیەکم دەستکەوێت، تکایە؟",
-        isFullPhrase: true,
-      },
-    ],
-  },
-
-  // 9. Spot the Mistake / Select Most Polite
-  {
-    type: "quiz_choice",
-    badge: "دەستنیشانکردنی ڕستەی دروست (GRAMMAR & ETIQUETTE)",
-    titleKu: "کام لەم ٣ ڕستەیە ڕێزدارترین و دروستترین داواکارییە لە ڕێستۆرانت؟",
-    titleEn: "Which of the following is the most natural and polite request?",
-    audioWord: "Can I have coffee, please?",
-    options: [
-      {
-        textEn: "Can I have coffee, please?",
-        pronKu: "کەن ئای هاڤ کۆفی، پڵیز؟",
-        meaningKu: "دەتوانم قاوەیەکم دەستکەوێت، تکایە؟ (ڕێزدارترین و دروست)",
-        correct: true,
-      },
-      {
-        textEn: "I coffee want.",
-        pronKu: "ئای کۆفی وۆنت",
-        meaningKu: "ڕیزبەندی هەڵە و سەقەت",
-        correct: false,
-      },
-      {
-        textEn: "Bring me that car.",
-        pronKu: "برینگ می ذات کار",
-        meaningKu: "ئەو ئۆتۆمبێلە بۆ من بێنە",
-        correct: false,
-      },
-    ],
-    explanationKu: "ڕستەی «Can I have coffee, please?» شێوازی فەرمی و زێڕینە لە هەموو کافێ و چێشتخانەیەکدا.",
-  },
-
-  // 10. Handing Over: Here you are
-  {
-    type: "quiz_choice",
-    badge: "فەرمووکردن و سوپاس (HERE YOU ARE)",
-    titleKu: "کاتێک گارسۆن شتەکەت پێدەدات و دەڵێت «Here you are» (فەرموو)، چی دەڵێیتەوە؟",
-    titleEn: "When the server hands you the item saying 'Here you are', how do you respond?",
-    audioWord: "Here you are.",
-    options: [
-      {
-        textEn: "Thank you!",
-        pronKu: "ثانک یو!",
-        meaningKu: "سوپاس! (وەڵامی ستاندارد و خێرا)",
-        correct: true,
-      },
-      {
-        textEn: "I hate this food.",
-        pronKu: "ئای هەیت ذس فوود",
-        meaningKu: "ڕقم لەم خواردنەیە (ناڕێز)",
-        correct: false,
-      },
-      {
-        textEn: "Excuse me.",
-        pronKu: "ئێکسکیوز می",
-        meaningKu: "ببورە (بۆ کاتی ترە)",
-        correct: false,
-      },
-    ],
-    explanationKu: "کاتێک پێت دەڵێن «Here you are» (فەرموو)، ڕاستەوخۆ دەڵێیت «Thank you!» (سوپاس!).",
-  },
-
-  // 11. Politeness Response: You're welcome
+  // 4. Agreement / Ping-Pong Trigger: Nice to meet you
   {
     type: "agreement_trigger",
-    badge: "وەڵامدانەوەی سوپاس (YOU'RE WELCOME)",
-    titleKu: "وەڵامی سروشتی بەڕێزانە کاتێک کەسێک پێت دەڵێت «Thank you»:",
-    titleEn: "Natural polite response to 'Thank you':",
-    promptEn: "Thank you!",
-    promptPronKu: "ثانک یو!",
-    promptMeaningKu: "سوپاس!",
-    replyEn: "You're welcome.",
-    replyPronKu: "یۆر وێڵکەم.",
-    replyMeaningKu: "شایەنی نییە / سەرچاو.",
+    badge: "وەڵامدانەوەی ناسین (INTRODUCTION REPLY)",
+    titleKu: "کەسێک بە دەستوشێنەوە پێت دەڵێت «Nice to meet you!»، تۆ چۆن بە ڕێزەوە وەڵام دەدەیتەوە؟",
+    titleEn: "Responding to 'Nice to meet you':",
+    promptPhrase: "Nice to meet you!",
+    promptPron: "نایس تو میت یو!",
+    promptKu: "خۆشحاڵم بە ناسینت!",
+    replyPhrase: "Nice to meet you too.",
+    replyPron: "نایس تو میت یو توو.",
+    replyKu: "منیش بە هەمان شێوە خۆشحاڵم بە ناسینت.",
     options: [
       {
-        textEn: "You're welcome.",
-        pronKu: "یۆر وێڵکەم",
-        meaningKu: "شایەنی نییە / سەرچاو (وەڵامی دروست)",
+        text: "Nice to meet you too.",
+        sub: "نایس تو میت یو توو — منیش خۆشحاڵم بە ناسینت",
         correct: true,
       },
       {
-        textEn: "I like bread.",
-        pronKu: "ئای ڵایک برێد",
-        meaningKu: "حەزم لە نانە",
+        text: "Good night.",
+        sub: "گود نایت — شەو باش",
         correct: false,
       },
       {
-        textEn: "That flower.",
-        pronKu: "ذات فڵاور",
-        meaningKu: "ئەو گوڵە",
+        text: "I don't like coffee.",
+        sub: "حەزم لە قاوە نییە",
         correct: false,
       },
     ],
-    explanationKu: "«You're welcome» دەستەواژەی فەرمی و باوە بۆ وەڵامی «Thank you» واتە «شایەنی نییە / سەرچاو».",
+    explanation: "زیادکردنی «too» لە کۆتایی ڕستەکە مانای «منیش بە هەمان شێوە» دەبەخشێت.",
   },
 
-  // 12. Status Bank: Want vs Don't want
+  // 5. Echo Mic Challenge 1: Nice to meet you
+  {
+    type: "mic_speak",
+    badge: "ڕاهێنانی دەنگی (SPEAKING PRACTICE)",
+    titleKu: "بە دەنگ بڵێ: Nice to meet you.",
+    titleEn: "Speak out loud into the microphone:",
+    targetWord: "Nice to meet you.",
+    pronKu: "نایس تو میت یو.",
+    meaningKu: "خۆشحاڵم بە ناسینت.",
+    ruleNote: "دەستەواژەی ناسین: نایس تو میت یو",
+    explanation: "ئافەرم! دەستەواژەی «Nice to meet you» زۆر ڕوون و پاراو بێژەکرا.",
+  },
+
+  // 6. Casual Check-ins Bank (How's it going / What's up)
   {
     type: "status_bank",
-    badge: "دەربڕینی ویستن و نەویستن (WANT vs DON'T WANT)",
-    titleKu: "دەربڕینی ئەوەی چیت دەوێت یان ناوت بە ئینگلیزی",
-    titleEn: "Sentence pattern: Expressing what you want or don't want",
-    subtitleKu: "گوێ لە هەر دەستەواژەیەک بگرە بە خێرایی جیاواز:",
-    framePrefix: "I ",
+    badge: "سڵاوی هاوڕێیانە و نافەرمی (CASUAL GREETINGS)",
+    titleKu: "سڵاوکردن و هەواڵپرسینی هاوڕێیانە لە زمانی ڕۆژانەدا",
+    titleEn: "Everyday casual greetings and check-ins:",
+    framePrefix: "Greeting: ",
     frameSuffix: " ...",
     items: [
       {
-        enWord: "want water",
-        fullSentenceEn: "I want water",
-        pron: "وۆنت واتەر",
-        meaning: "ئاوم دەوێت",
-        noteKu: "I want water — ئاوم دەوێت",
+        word: "How's it going?",
+        pron: "هاوز ئت گۆوینگ؟",
+        meaning: "دۆخ چۆن دەڕوات؟",
+        note: "زۆر باوە لە نێوان هاوڕێیاندا",
       },
       {
-        enWord: "want bread",
-        fullSentenceEn: "I want bread",
-        pron: "وۆنت برێد",
-        meaning: "نانم دەوێت",
-        noteKu: "I want bread — نانم دەوێت",
+        word: "What's up?",
+        pron: "وەتس ئەپ؟",
+        meaning: "چ باسی؟ چ هەواڵ؟",
+        note: "سڵاوی زۆر نافەرمی و خێرا",
       },
       {
-        enWord: "don't want coffee",
-        fullSentenceEn: "I don't want coffee",
-        pron: "دۆنت وۆنت کۆفی",
-        meaning: "قاوەم ناوێت",
-        noteKu: "I don't want coffee — قاوەم ناوێت",
+        word: "Not bad",
+        pron: "نۆت باد",
+        meaning: "خراپ نییە / باشە",
+        note: "وەڵامێکی باو بۆ How's it going",
       },
       {
-        enWord: "don't want tea",
-        fullSentenceEn: "I don't want tea",
-        pron: "دۆنت وۆنت تی",
-        meaning: "چایم ناوێت",
-        noteKu: "I don't want tea — چایم ناوێت",
+        word: "Nothing much",
+        pron: "نەسنگ مەچ",
+        meaning: "هەواڵێکی وا نییە",
+        note: "وەڵامی ستاندارد بۆ What's up",
       },
     ],
   },
 
-  // 13. Cafe Barista Chat Simulation
+  // 7. Interactive Chat Dialogue with Squirrel
   {
     type: "chat_dialogue",
-    badge: "دیالۆگی چێشتخانە و کافێ (CAFE DIALOGUE)",
-    titleKu: "گارسۆنەکە لە کافێ لێت دەپرسێت: Hello! What can I get for you?",
-    titleEn: "Choose the most polite and natural response at the cafe:",
-    speakerNameKu: "سمۆرەی گارسۆن (Smorik)",
-    speakerRoleEn: "Cafe Barista",
-    incomingMessageEn: "Hello! What can I get for you?",
-    incomingPronKu: "هێڵۆو! وەت کەن ئای گێت فۆر یو؟",
-    incomingMeaningKu: "سڵاو! چیت بۆ ئامادە بکەم / چیت دەوێت؟",
+    badge: "دیالۆگی چات (CHAT SIMULATION)",
+    titleKu: "سمۆریک بە هاوڕێیانە لێت دەپرسێت: What's up? (چ باسی؟)، باشترین وەڵام هەڵبژێرە:",
+    titleEn: "Choose the natural response to 'What's up?':",
+    incomingSender: "Smorik (سمۆریک)",
+    incomingMessage: "Hey! What's up?",
+    incomingPron: "هێی! وەتس ئەپ؟",
     options: [
       {
-        textEn: "Can I have tea, please?",
-        pronKu: "کەن ئای هاڤ تی، پڵیز؟",
-        meaningKu: "دەتوانم چایەکم هەبێت، تکایە؟ (داواکاری نموونەیی)",
+        text: "Nothing much, what about you?",
+        sub: "نەسنگ مەچ، وەرەباوتیو؟ (هەواڵێکی وا نییە، ئەی خۆت؟)",
         correct: true,
       },
       {
-        textEn: "I don't know who you are.",
-        pronKu: "ئای دۆنت نۆو هوو یو ئار",
-        meaningKu: "نازانم تۆ کێیت",
+        text: "Good night teacher.",
+        sub: "شەو باش مامۆستا",
         correct: false,
       },
       {
-        textEn: "This is a big house.",
-        pronKu: "ذس ئیز ئە بیگ هاوس",
-        meaningKu: "ئەمە ماڵێکی گەورەیە",
+        text: "This is that car.",
+        sub: "ئەمە ئەو ئۆتۆمبێلەیە",
         correct: false,
       },
     ],
-    explanationKu: "لە کاتی وەڵامدانەوەی گارسۆن، جوانترین و ڕێزدارترین شێواز: «Can I have tea, please?».",
+    explanation: "وەڵامی سروشتی بۆ «What's up?» بریتییە لە «Nothing much» (هەواڵێکی وا نییە).",
   },
 
-  // 14. Offering & Responding: Yes please vs No thank you
+  // 8. Farewells Word Anchors
+  {
+    type: "word_anchors",
+    badge: "ماڵئاوایی و لێکجیابوونەوە (FAREWELLS)",
+    titleKu: "دەستەواژەکانی ماڵئاوایی لە زمانی ئینگلیزیدا",
+    titleEn: "Saying goodbye and wishing well in English",
+    words: [
+      {
+        en: "Goodbye",
+        pron: "گودبای",
+        ku: "خوا حافیز / بەخێر بچیت",
+        icon: "👋",
+        note: "ماڵئاوایی فەرمی و گشتی",
+      },
+      {
+        en: "See you later",
+        pron: "سی یو لەیتەر",
+        ku: "دواتر دەتبینمەوە",
+        icon: "⏰",
+        note: "کاتی بەجێهێشتنی کاتی",
+      },
+      {
+        en: "See you tomorrow",
+        pron: "سی یو تومۆرۆو",
+        ku: "سبەی دەتبینمەوە",
+        icon: "📅",
+        note: "بۆ ڕۆژی دواتر",
+      },
+      {
+        en: "Take care",
+        pron: "تەیک کێر",
+        ku: "ئاگاداری خۆت بە",
+        icon: "💙",
+        note: "هیوای سەلامەتی بۆ کەسەکە",
+      },
+    ],
+  },
+
+  // 9. Wishing well: Have a nice day
   {
     type: "quiz_choice",
-    badge: "پێشنیار و وەڵامدانەوە (OFFERING & RESPONDING)",
-    titleKu: "کەسێک لێت دەپرسێت: «Do you want coffee?» (قاوەت دەوێت؟)، چۆن بە ڕێزەوە دەڵێیت بەڵێ؟",
-    titleEn: "How to politely accept an offer in social situations:",
-    audioWord: "Do you want coffee?",
+    badge: "هیوای ڕۆژێکی خۆش (HAVE A NICE DAY)",
+    titleKu: "لە کاتی جێهێشتنی دوکان یان ماڵئاوایی لە هاوڕێکەت، چۆن هیوای ڕۆژێکی خۆشی بۆ دەخوازیت؟",
+    titleEn: "How do you wish someone a pleasant day?",
+    audioWord: "Have a nice day!",
     options: [
       {
-        textEn: "Yes, please.",
-        pronKu: "یەس، پڵیز",
-        meaningKu: "بەڵێ، تکایە (قبوڵکردنی بەڕێزانە)",
+        text: "Have a nice day!",
+        sub: "هاڤ ئە نایس دەی! — ڕۆژێکی خۆشت هەبێت! (هیوای دڵسۆزانە)",
         correct: true,
       },
       {
-        textEn: "No, thank you.",
-        pronKu: "نۆو، ثانک یو",
-        meaningKu: "نەخێر، سوپاس (ڕەتکردنەوەی بەڕێزانە)",
+        text: "I hate this house.",
+        sub: "ڕقم لەم ماڵەیە",
         correct: false,
       },
       {
-        textEn: "Me too.",
-        pronKu: "می توو",
-        meaningKu: "منیش بە هەمان شێوە",
+        text: "How are you?",
+        sub: "چۆنیت؟",
         correct: false,
       },
     ],
-    explanationKu: "بۆ قبوڵکردنی بەڕێزانە دەڵێین «Yes, please»؛ ئەگەر پێویستیشمان نەبێت بە ڕێزەوە دەڵێین «No, thank you».",
+    explanation: "«Have a nice day!» باوترین دەستەواژەیە لە کاتی ماڵئاوایی بۆ بەخشینی وزەی ئەرێنی.",
   },
 
-  // 15. Tile Assembly Builder
+  // 10. Tile Assembly: See you tomorrow
   {
     type: "tile_assembly",
-    badge: "ڕێکخستنی دەستەواژە (TILE BUILDER)",
-    titleKu: "ڕستەی داواکاری قاوە بەڕێزانە بە وشەکان دروست بکە:",
-    titleEn: "Assemble the tiles to say 'Can I have coffee please':",
-    subtitleKu: "دەتوانم قاوەیەکم دەستکەوێت، تکایە؟",
-    tiles: ["please", "Can", "have", "I", "coffee"],
-    correctOrder: ["Can", "I", "have", "coffee", "please"],
-    fullPronKu: "کەن ئای هاڤ کۆفی پڵیز",
-    fullMeaningKu: "دەتوانم قاوەیەکم دەستکەوێت، تکایە؟",
+    badge: "ڕێکخستنی دەستەواژە (TILE ASSEMBLY)",
+    titleKu: "دەستەواژەی «سبەی دەتبینمەوە» ڕێکبخە:",
+    titleEn: "Arrange the words to say 'See you tomorrow':",
+    tiles: ["tomorrow", "See", "you"],
+    correctOrder: ["See", "you", "tomorrow"],
+    fullPron: "سی یو تومۆرۆو",
+    fullMeaning: "سبەی دەتبینمەوە",
   },
 
-  // 16. Matching Pairs
+  // 11. Matching Pairs: Greetings & Farewells
   {
     type: "quiz_pairs",
-    badge: "جوتکردنی وشەکان (VOCABULARY MATCHING)",
-    titleKu: "وشە ئینگلیزییەکان لەگەڵ مانا کوردییەکەیان جوت بکە:",
-    titleEn: "Match each English word with its Kurdish meaning:",
-    subtitleKu: "کلیک لەسەر وشەی چەپ بکە پاشان مانا کوردییەکەی لە لای ڕاست بدۆزەرەوە:",
+    badge: "جوتکردنی دەستەواژەکان (MATCHING PAIRS)",
+    titleKu: "دەستەواژە ئینگلیزییەکان لەگەڵ مانا کوردییەکەیان جوت بکە:",
+    titleEn: "Match each greeting or farewell with its Kurdish meaning:",
     pairs: [
-      { id: 1, en: "Water", pron: "واتەر", ku: "ئاو" },
-      { id: 2, en: "Tea", pron: "تی", ku: "چای" },
-      { id: 3, en: "Coffee", pron: "کۆفی", ku: "قاوە" },
-      { id: 4, en: "Bread", pron: "برێد", ku: "نان" },
-      { id: 5, en: "Please", pron: "پڵیز", ku: "تکایە" },
+      { id: 1, en: "Good morning", ku: "بەیانی باش" },
+      { id: 2, en: "Good evening", ku: "ئێوارە باش" },
+      { id: 3, en: "Goodbye", ku: "خوا حافیز" },
+      { id: 4, en: "See you later", ku: "دواتر دەتبینمەوە" },
+      { id: 5, en: "Take care", ku: "ئاگاداری خۆت بە" },
     ],
   },
 
-  // 17. Echo Mic Speaking Studio 2
+  // 12. Slot Filler: Good morning
+  {
+    type: "quiz_slot",
+    badge: "پڕکردنەوەی بۆشایی (SLOT FILLER)",
+    titleKu: "بۆشاییەکە پڕبکەرەوە بۆ سڵاوکردنی بەیانیان (🌅):",
+    titleEn: "Complete the morning greeting:",
+    framePre: "Good ",
+    framePost: "! (🌅 بەیانی باش — گود ...!)",
+    meaningKu: "بەیانی باش!",
+    audioWord: "Good morning",
+    options: [
+      { text: "morning (مۆرنینگ — بەیانی)", sub: "Morning", correct: true },
+      { text: "night (نایت — شەو)", sub: "Night", correct: false },
+      { text: "car (کار — ئۆتۆمبێل)", sub: "Car", correct: false },
+      { text: "tea (تی — چای)", sub: "Tea", correct: false },
+    ],
+    explanation: "«Good morning» واتا بەیانی باش.",
+  },
+
+  // 13. Echo Mic Challenge 2: Have a nice day
   {
     type: "mic_speak",
-    badge: "ڕاهێنانی دەنگی کۆتایی (SPEAKING MASTERY)",
-    titleKu: "بە دەنگ لە مایکەکە بڵێ: Can I have water please?",
-    titleEn: "Speak the full polite request out loud into the microphone:",
-    targetWord: "Can I have water please?",
-    pronKu: "کەن ئای هاڤ واتەر پڵیز؟",
-    meaningKu: "دەتوانم کەمێک ئاوم دەستکەوێت، تکایە؟",
-    ruleNoteKu: "ڕستەی فەرمی داواکاری: کەن ئای هاڤ واتەر پڵیز",
-    explanationKu: "سەرکەوتوو بوویت! داواکارییەکی فەرمی تەواو و پاراوت بە ئینگلیزی بێژەکرد.",
+    badge: "ڕاهێنانی دەنگی (SPEAKING PRACTICE)",
+    titleKu: "بە دەنگ بڵێ: Have a nice day!",
+    titleEn: "Speak out loud into the microphone:",
+    targetWord: "Have a nice day!",
+    pronKu: "هاڤ ئە نایس دەی!",
+    meaningKu: "ڕۆژێکی خۆشت هەبێت!",
+    ruleNote: "دەستەواژەی ماڵئاوایی: هاڤ ئە نایس دەی",
+    explanation: "نایابە! دەستەواژەی «Have a nice day» بە تەواوی ڕوون و جوان وترا.",
+  },
+
+  // 14. Classroom Dialogue (Good morning teacher)
+  {
+    type: "analytic_breakdown",
+    badge: "دیالۆگی پۆل و مامۆستا (CLASSROOM GREETINGS)",
+    titleKu: "شیکردنەوەی سڵاوی فەرمی لە پۆل و شوێنی کار",
+    titleEn: "Classroom greeting structure:",
+    rows: [
+      {
+        en: "Good morning, teacher!",
+        pron: "گود مۆرنینگ، تیچر!",
+        ku: "بەیانیت باش مامۆستا!",
+        isFullPhrase: true,
+      },
+      {
+        en: "Good morning, students!",
+        pron: "گود مۆرنینگ، ستوودێنتس!",
+        ku: "بەیانیتان باش قوتابیان!",
+        isFullPhrase: true,
+      },
+      {
+        en: "Welcome back!",
+        pron: "وێڵکەم باک!",
+        ku: "بەخێربێنەوە!",
+        isFullPhrase: true,
+      },
+    ],
+  },
+
+  // 15. Evening vs Night Distinction Check
+  {
+    type: "quiz_choice",
+    badge: "جیاوازی Good evening و Good night (CRITICAL DIFFERENCE)",
+    titleKu: "کاتژمێر ٧ی ئێوارە میوانێکت دێتە ماڵەوە، کامەیان دەڵێیت بۆ پێشوازیکردن؟",
+    titleEn: "Which greeting welcomes an evening guest?",
+    audioWord: "Good evening!",
+    options: [
+      {
+        text: "Good evening!",
+        sub: "گود ئیڤنینگ! — ئێوارە باش! (بۆ سڵاوکردن و پێشوازی)",
+        correct: true,
+      },
+      {
+        text: "Good night!",
+        sub: "گود نایت! — شەو باش! (تەنها بۆ ماڵئاوایی یان خەوتن بەکاردێت)",
+        correct: false,
+      },
+      {
+        text: "Goodbye!",
+        sub: "خوا حافیز",
+        correct: false,
+      },
+    ],
+    explanation: "خاڵی گرنگ: «Good evening» سڵاوی پێشوازییە لە ئێواراندا؛ «Good night» بە هیچ شێوەیەک سڵاو نییە، بەڵکو تەنها ماڵئاوایی پێش خەوتنە!",
   },
 ];
 
 export default function Lesson2Page() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [hearts, setHearts] = useState(5);
+  const [hearts] = useState(5);
   const [listenedWords, setListenedWords] = useState<Set<string>>(new Set());
   const [playingWord, setPlayingWord] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -739,22 +585,24 @@ export default function Lesson2Page() {
   const progress = (currentStep / LESSON_SLIDES.length) * 100;
   const isComplete = currentStep >= LESSON_SLIDES.length;
 
-  // Sound playback (with speed rate support)
-  const playAudio = (phrase: string, rate: number = 0.88) => {
+  // Sound playback
+  const playAudio = (phrase: string) => {
     setPlayingWord(phrase);
-    playAmericanSpeech(phrase, rate);
-    const timeoutDuration = rate < 0.8 ? 1600 : 1200;
-    setTimeout(() => setPlayingWord(null), timeoutDuration);
+    playAmericanSpeech(phrase, 0.85);
+    setTimeout(() => setPlayingWord(null), 1200);
   };
 
-  // Play fanfare when reaching completion screen
+  // Auto-play model audio on entering mic_speak
   useEffect(() => {
-    if (isComplete) {
-      playLessonCompleteSound();
+    if (slide?.type === "mic_speak") {
+      const timer = setTimeout(() => {
+        playAudio(slide.targetWord);
+      }, 400);
+      return () => clearTimeout(timer);
     }
-  }, [isComplete]);
+  }, [currentStep, slide]);
 
-  // Clean up speech recognition on unmount
+  // Clean up recognition on unmount
   useEffect(() => {
     return () => {
       if (recognitionRef.current) {
@@ -924,9 +772,6 @@ export default function Lesson2Page() {
     switch (slide.type) {
       case "word_anchors":
         return listenedWords.size >= Math.min(2, slide.words.length);
-      case "tip_card":
-        return true;
-      case "listen_pick":
       case "quiz_choice":
       case "chat_dialogue":
       case "agreement_trigger":
@@ -950,44 +795,28 @@ export default function Lesson2Page() {
   const handleCheck = () => {
     if (!slide) return;
 
-    if (slide.type === "tip_card") {
-      playCorrectSound();
-      setIsLastCorrect(true);
-      setFeedbackMessage("یاساکەت بە سەرکەوتوویی خوێندەوە!");
-      setShowFeedback(true);
-      return;
-    }
-
     if (
       slide.type === "word_anchors" ||
       slide.type === "analytic_breakdown" ||
       slide.type === "status_bank"
     ) {
-      playCorrectSound();
       setIsLastCorrect(true);
-      setFeedbackMessage("نایابە! گوێت لە دەنگەکان گرت و فێربوویت.");
+      setFeedbackMessage("نایابە! گوێت لە دەنگەکان گرت.");
       setShowFeedback(true);
       return;
     }
 
     if (slide.type === "mic_speak") {
       const isPassed = evalResult?.isMatch ?? true;
-      if (isPassed) {
-        playCorrectSound();
-      } else {
-        playIncorrectSound();
-        setHearts((h) => Math.max(1, h - 1));
-      }
       setIsLastCorrect(isPassed);
-      setFeedbackMessage(slide.explanationKu);
+      setFeedbackMessage(slide.explanation);
       setShowFeedback(true);
       return;
     }
 
     if (slide.type === "quiz_pairs") {
-      playCorrectSound();
       setIsLastCorrect(true);
-      setFeedbackMessage("هەموو وشەکان بە تەواوی و دروستی جووت کران!");
+      setFeedbackMessage("هەموو وشەکان بە تەواوی جووت کران!");
       setShowFeedback(true);
       return;
     }
@@ -995,38 +824,25 @@ export default function Lesson2Page() {
     if (slide.type === "tile_assembly") {
       const isCorrect =
         assembledTiles.join(" ") === slide.correctOrder.join(" ");
-      if (isCorrect) {
-        playCorrectSound();
-      } else {
-        playIncorrectSound();
-        setHearts((h) => Math.max(1, h - 1));
-      }
       setIsLastCorrect(isCorrect);
       setFeedbackMessage(
         isCorrect
-          ? `نایابە! «${slide.correctOrder.join(" ")}» (${slide.fullMeaningKu})`
+          ? `نایابە! «${slide.correctOrder.join(" ")}» (${slide.fullMeaning})`
           : `ڕیزبەندی دروست: ${slide.correctOrder.join(" ")}`
       );
       setShowFeedback(true);
       return;
     }
 
-    // Option-based types (quiz_choice, listen_pick, chat_dialogue, agreement_trigger, quiz_slot)
+    // Option-based types
     if (selectedOption !== null && "options" in slide) {
       const opt = slide.options[selectedOption];
       const isCorrect = opt?.correct ?? false;
-      if (isCorrect) {
-        playCorrectSound();
-      } else {
-        playIncorrectSound();
-        setHearts((h) => Math.max(1, h - 1));
-      }
       setIsLastCorrect(isCorrect);
-      const correctOpt = slide.options.find((o) => o.correct);
       setFeedbackMessage(
         isCorrect
           ? "ئافەرم! وەڵامەکەت تەواو و دروستە."
-          : `وەڵامی دروست: ${correctOpt?.textEn ?? ""} — ${slide.explanationKu}`
+          : `وەڵامی دروست: ${slide.options.find((o) => o.correct)?.text} — ${slide.explanation}`
       );
       setShowFeedback(true);
     }
@@ -1047,16 +863,13 @@ export default function Lesson2Page() {
   };
 
   const handleSkip = () => {
-    playOptionSelectSound();
     setIsLastCorrect(true);
     setFeedbackMessage("پەڕینەوە بۆ بەشی داهاتوو.");
     setShowFeedback(true);
   };
 
   const handleRestart = () => {
-    playOptionSelectSound();
     setCurrentStep(0);
-    setHearts(5);
     setSelectedOption(null);
     setListenedWords(new Set());
     setSelectedPairEn(null);
@@ -1068,7 +881,7 @@ export default function Lesson2Page() {
     setShowFeedback(false);
   };
 
-  // Completion screen (Strictly isolated, never links to other lessons)
+  // Completion screen
   if (isComplete) {
     return (
       <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-white dark:bg-[#131F24]">
@@ -1078,37 +891,41 @@ export default function Lesson2Page() {
           </div>
 
           <h1 className="font-kurdish text-3xl sm:text-4xl font-black text-[#4B4B4B] dark:text-white">
-            پیرۆزە! وانەی دووەمت بە سەرکەوتوویی تەواو کرد
+            پیرۆزە! فێربوونی سڵاوکردنت تەواو کرد
           </h1>
-          <p className="mt-3 text-sm sm:text-base font-bold text-[#777777] dark:text-[#8495A0] max-w-md font-kurdish" dir="rtl">
-            تۆ فێربوویت چۆن داوای خواردن و خواردنەوە بکەیت بە شێوازێکی تەواو بەڕێزانە (Can I have... please?) و بە ڕێزەوە وەڵامی فەرمووکردن و پێشکەشکردن بدەیتەوە.
+          <p className="mt-2 text-sm sm:text-base font-bold text-[#777777] dark:text-[#8495A0] max-w-md">
+            تۆ بە سەرکەوتوویی تەواوی سڵاوەکان بەپێی کاتەکانی ڕۆژ (Good morning / evening)، خۆناساندن (Nice to meet you)، سڵاوی هاوڕێیانە (What&apos;s up)، و ماڵئاواییت (See you tomorrow / Take care) فێربوویت.
           </p>
 
           <div className="mt-8 grid w-full max-w-md grid-cols-3 gap-3">
-            <div className="flex flex-col items-center rounded-2xl border-2 border-b-4 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#1A262C] p-3 shadow-xs">
+            <div className="flex flex-col items-center rounded-2xl border-2 border-b-4 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#1A262C] p-3">
               <span className="text-xl font-black text-[#58CC02]">100%</span>
-              <span className="text-xs font-bold text-[#777777] dark:text-[#8495A0] font-kurdish">وردبینی</span>
+              <span className="text-xs font-bold text-[#777777] dark:text-[#8495A0]">وردبینی</span>
             </div>
-            <div className="flex flex-col items-center rounded-2xl border-2 border-b-4 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#1A262C] p-3 shadow-xs">
-              <span className="text-xl font-black text-[#1CB0F6]">+85</span>
-              <span className="text-xs font-bold text-[#777777] dark:text-[#8495A0] font-kurdish">خاڵی XP</span>
+            <div className="flex flex-col items-center rounded-2xl border-2 border-b-4 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#1A262C] p-3">
+              <span className="text-xl font-black text-[#1CB0F6]">+90</span>
+              <span className="text-xs font-bold text-[#777777] dark:text-[#8495A0]">خاڵی XP</span>
             </div>
-            <div className="flex flex-col items-center rounded-2xl border-2 border-b-4 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#1A262C] p-3 shadow-xs">
+            <div className="flex flex-col items-center rounded-2xl border-2 border-b-4 border-[#E5E5E5] dark:border-[#37464F] bg-white dark:bg-[#1A262C] p-3">
               <span className="text-xl font-black text-[#FF9600]">🔥 ٣</span>
-              <span className="text-xs font-bold text-[#777777] dark:text-[#8495A0] font-kurdish">ڕۆژی بەردەوام</span>
+              <span className="text-xs font-bold text-[#777777] dark:text-[#8495A0]">ڕۆژی کارا</span>
             </div>
           </div>
 
-          {/* Buttons: Strictly self-contained, no external links to other lessons */}
           <div className="mt-10 flex w-full max-w-md flex-col gap-3">
             <PushButton
               variant="green"
               onClick={handleRestart}
-              className="w-full py-4 text-sm font-extrabold"
+              className="w-full py-3.5 text-sm"
             >
               <RotateCcw className="h-4 w-4 mr-2 inline" />
               دووبارەکردنەوەی ئەم وانەیە (Review Lesson)
             </PushButton>
+            <Link href="/gh-demo" className="w-full">
+              <PushButton variant="blue" className="w-full py-3.5 text-sm">
+                گەڕانەوە بۆ پەڕەی پێشانگا (Return to Demo)
+              </PushButton>
+            </Link>
           </div>
         </main>
       </div>
@@ -1141,31 +958,25 @@ export default function Lesson2Page() {
 
       {/* Main Exercise View Container */}
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-44 pt-2">
-        {/* 1. Word Anchors View (Drinks / Food / Magic Words) */}
+        {/* 1. Word Anchors View */}
         {slide.type === "word_anchors" && (
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-1.5 text-center">
-              <span className="inline-flex items-center gap-1.5 rounded-xl bg-[#E8FAD4] dark:bg-[#1E3B20] px-3.5 py-1 text-xs font-black uppercase tracking-wider text-[#58CC02]">
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-[#E8FAD4] dark:bg-[#1E3B20] px-3 py-1 text-xs font-black uppercase tracking-wider text-[#58CC02]">
                 <Sparkles className="h-3.5 w-3.5" />
                 {slide.badge}
               </span>
               <h2
                 dir="rtl"
-                className="font-kurdish text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white mt-1"
+                className="font-kurdish text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white"
               >
                 {slide.titleKu}
               </h2>
               <p
-                dir="ltr"
-                className="font-sans text-xs sm:text-sm font-bold text-[#777777] dark:text-[#8495A0]"
-              >
-                {slide.titleEn}
-              </p>
-              <p
                 dir="rtl"
-                className="font-kurdish text-xs font-bold text-[#1CB0F6] dark:text-[#3BC0F8] mt-0.5"
+                className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]"
               >
-                {slide.subtitleKu}
+                گوێ لە هەموو دەنگەکان بگرە بۆ بەردەوامبوون ({listenedWords.size} لە {slide.words.length})
               </p>
             </div>
 
@@ -1177,272 +988,57 @@ export default function Lesson2Page() {
                 return (
                   <div
                     key={w.en}
+                    onClick={() => {
+                      playAudio(w.en);
+                      setListenedWords((prev) => new Set(prev).add(w.en));
+                    }}
                     className={cn(
-                      "group relative flex flex-col rounded-2xl border-2 border-b-4 p-4 transition-all select-none shadow-xs",
+                      "group relative flex items-center justify-between gap-3 rounded-2xl border-2 border-b-4 p-4 transition-all cursor-pointer select-none",
                       isHeard
                         ? "border-[#58CC02] bg-[#F7FCF0] dark:border-[#58CC02] dark:bg-[#132817]"
                         : "border-[#E5E5E5] bg-white hover:border-[#1CB0F6] hover:bg-[#F4FBFF] dark:border-[#37464F] dark:bg-[#131F24]"
                     )}
+                    style={{ direction: "ltr" }}
                   >
-                    {/* Top Row: Word & Dual Audio Controls (Normal + Slow Turtle) */}
-                    <div className="flex items-center justify-between gap-3" style={{ direction: "ltr" }}>
-                      <div className="flex items-center gap-3">
-                        {/* Normal Audio Button (1.0x) */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            playAudio(w.en, 0.88);
-                            setListenedWords((prev) => new Set(prev).add(w.en));
-                          }}
-                          aria-label={`Play normal speed ${w.en}`}
-                          className={cn(
-                            "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-b-2 text-white transition-all shadow-xs text-xl cursor-pointer active:translate-y-[2px]",
-                            isPlaying
-                              ? "bg-[#1899D6] animate-pulse"
-                              : isHeard
-                                ? "bg-[#58CC02]"
-                                : "bg-[#1CB0F6]"
-                          )}
-                          title="Normal Speed (1.0x)"
-                        >
-                          {w.icon ? <span>{w.icon}</span> : <Volume2 className="h-6 w-6" />}
-                        </button>
-
-                        {/* Slow Turtle Audio Button (0.65x) */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            playAudio(w.en, 0.65);
-                            setListenedWords((prev) => new Set(prev).add(w.en));
-                          }}
-                          aria-label={`Play slow speed ${w.en}`}
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 border-b-3 border-[#E5E5E5] bg-white hover:border-[#1CB0F6] hover:bg-[#F4FBFF] dark:border-[#37464F] dark:bg-[#1A262C] text-[#777777] dark:text-[#8495A0] transition-all shadow-xs cursor-pointer active:translate-y-[2px]"
-                          title="Slow Speed (0.65x) / گوێگرتنی لەسەرخۆ"
-                        >
-                          <Turtle className="h-5 w-5 text-[#FF9600]" />
-                        </button>
-
-                        {/* Strict English Line */}
-                        <div className="flex flex-col text-left">
-                          <span className="text-2xl font-black text-[#4B4B4B] dark:text-white">
-                            {w.en}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Kurdish Badges: Strict Kurdish RTL */}
-                      <KurdishGlossBadges pronunciation={w.pron} meaning={w.ku} />
-                    </div>
-
-                    {/* Dedicated Context Note Line */}
-                    <div className="mt-2.5 pt-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between" dir="rtl">
-                      <span className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]">
-                        {w.contextKu}
-                      </span>
-                      <span className="font-kurdish text-[11px] text-[#AFAFAF] dark:text-[#8495A0]">
-                        {isHeard ? "✓ بیستراوە" : "کلیک لە دەنگ بکە"}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* 2. Professional Cultural Tip Card */}
-        {slide.type === "tip_card" && (
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-col items-center gap-1.5 text-center">
-              <span className="inline-flex items-center gap-1.5 rounded-xl bg-[#FFF4E5] dark:bg-[#342416] px-3.5 py-1 text-xs font-black uppercase tracking-wider text-[#FF9600]">
-                <Lightbulb className="h-4 w-4 text-[#FF9600]" />
-                {slide.badge}
-              </span>
-              <h2
-                dir="rtl"
-                className="font-kurdish text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white mt-1"
-              >
-                {slide.titleKu}
-              </h2>
-              <p
-                dir="ltr"
-                className="font-sans text-xs sm:text-sm font-bold text-[#777777] dark:text-[#8495A0]"
-              >
-                {slide.titleEn}
-              </p>
-            </div>
-
-            {/* Core Rule Card */}
-            <div className="rounded-3xl border-2 border-b-4 border-[#FF9600] bg-[#FFFBF5] dark:bg-[#251F19] p-6 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#FF9600] text-white shadow-xs">
-                  <Sparkles className="h-6 w-6" />
-                </div>
-                <div className="flex flex-col text-left" style={{ direction: "ltr" }}>
-                  <span className="text-xl font-black text-[#4B4B4B] dark:text-white">
-                    {slide.ruleEn}
-                  </span>
-                  <span className="font-kurdish text-xs font-bold text-[#FF9600]">
-                    وتنی: {slide.rulePron}
-                  </span>
-                </div>
-              </div>
-
-              <p
-                dir="rtl"
-                className="mt-4 font-kurdish text-sm leading-relaxed text-[#4B4B4B] dark:text-[#D5D5D5] bg-white dark:bg-[#1A262C] p-4 rounded-2xl border border-black/5 dark:border-white/5"
-              >
-                {slide.tipExplanationKu}
-              </p>
-            </div>
-
-            {/* Contrast Table (Bad vs Good) */}
-            <div className="flex flex-col gap-3">
-              <span dir="rtl" className="font-kurdish text-xs font-extrabold text-[#777777] dark:text-[#8495A0] px-1">
-                نموونەی بەراورد لە پەیوەندی ڕۆژانەدا:
-              </span>
-              {slide.contrastPairs.map((cp, idx) => (
-                <div
-                  key={idx}
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-                >
-                  {/* Bad / Rude approach */}
-                  <div className="rounded-2xl border-2 border-b-4 border-[#FFDFE0] bg-[#FFF5F5] dark:border-[#421A1D] dark:bg-[#261517] p-3.5 flex flex-col justify-between">
-                    <div className="flex items-center gap-2" style={{ direction: "ltr" }}>
-                      <span className="text-xs font-black text-[#EA2B2B] bg-white dark:bg-[#131F24] px-2 py-0.5 rounded-md border border-[#EA2B2B]/20">
-                        ✕ ناڕێز
-                      </span>
-                      <span className="text-sm font-black text-[#EA2B2B]">
-                        {cp.badEn}
-                      </span>
-                    </div>
-                    <span dir="rtl" className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0] mt-2">
-                      {cp.badKu}
-                    </span>
-                  </div>
-
-                  {/* Good / Polite approach */}
-                  <div className="rounded-2xl border-2 border-b-4 border-[#58CC02] bg-[#F7FCF0] dark:border-[#2D451C] dark:bg-[#152817] p-3.5 flex flex-col justify-between">
-                    <div className="flex items-center gap-2" style={{ direction: "ltr" }}>
-                      <span className="text-xs font-black text-[#58CC02] bg-white dark:bg-[#131F24] px-2 py-0.5 rounded-md border border-[#58CC02]/20">
-                        ✓ بەڕێز
-                      </span>
-                      <span className="text-sm font-black text-[#4B4B4B] dark:text-white">
-                        {cp.goodEn}
-                      </span>
-                    </div>
-                    <span dir="rtl" className="font-kurdish text-xs font-bold text-[#58CC02] mt-2">
-                      {cp.goodKu}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 3. Ear Training / Listen & Pick View */}
-        {slide.type === "listen_pick" && (
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-col items-center gap-1.5 text-center">
-              <span className="inline-flex items-center gap-1.5 rounded-xl bg-[#FFF4E5] dark:bg-[#342416] px-3.5 py-1 text-xs font-black uppercase tracking-wider text-[#FF9600]">
-                {slide.badge}
-              </span>
-              <h2
-                dir="rtl"
-                className="font-kurdish text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white mt-1"
-              >
-                {slide.titleKu}
-              </h2>
-              <p
-                dir="ltr"
-                className="font-sans text-xs sm:text-sm font-bold text-[#777777] dark:text-[#8495A0]"
-              >
-                {slide.titleEn}
-              </p>
-            </div>
-
-            {/* Listening Station */}
-            <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-b-4 border-[#1CB0F6] bg-[#F4FBFF] dark:bg-[#1C3342] p-8 text-center shadow-sm">
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => playAudio(slide.audioTarget, 0.88)}
-                  aria-label="Listen normal speed"
-                  className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-b-4 border-[#1899D6] bg-[#1CB0F6] text-white hover:bg-[#4FC3F9] active:translate-y-[2px] transition-all shadow-md cursor-pointer"
-                  title="Normal Speed (1.0x)"
-                >
-                  <Volume2 className="h-8 w-8" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => playAudio(slide.audioTarget, 0.65)}
-                  aria-label="Listen slow speed"
-                  className="flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-b-4 border-[#E5E5E5] bg-white hover:border-[#1CB0F6] dark:border-[#37464F] dark:bg-[#1A262C] text-[#FF9600] active:translate-y-[2px] transition-all shadow-xs cursor-pointer"
-                  title="Slow Speed (0.65x)"
-                >
-                  <Turtle className="h-6 w-6" />
-                </button>
-              </div>
-              <span dir="rtl" className="font-kurdish text-xs font-bold text-[#1899D6] dark:text-[#3BC0F8] mt-3">
-                {slide.promptHintKu}
-              </span>
-            </div>
-
-            {/* Option Cards */}
-            <div className="flex flex-col gap-3">
-              {slide.options.map((opt, idx) => {
-                const isSelected = selectedOption === idx;
-                return (
-                  <button
-                    key={opt.textEn}
-                    type="button"
-                    onClick={() => {
-                      playOptionSelectSound();
-                      setSelectedOption(idx);
-                      playAudio(opt.textEn, 0.88);
-                    }}
-                    className={cn(
-                      "flex flex-col rounded-2xl border-2 border-b-4 p-4 text-left transition-all cursor-pointer active:translate-y-[2px]",
-                      isSelected
-                        ? "border-[#1899D6] bg-[#DDF4FF] dark:border-[#3BC0F8] dark:bg-[#1C3342]"
-                        : "border-[#E5E5E5] bg-white hover:border-[#1CB0F6] dark:border-[#37464F] dark:bg-[#1A262C]"
-                    )}
-                  >
-                    {/* Dedicated English Line */}
-                    <div className="flex items-center justify-between" style={{ direction: "ltr" }}>
-                      <span className="text-xl font-black text-[#4B4B4B] dark:text-white">
-                        {opt.textEn}
-                      </span>
-                      <span
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        aria-label={`Play ${w.en}`}
                         className={cn(
-                          "flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-black",
-                          isSelected
-                            ? "border-[#1899D6] bg-[#1CB0F6] text-white"
-                            : "border-[#E5E5E5] text-[#AFAFAF] dark:border-[#37464F]"
+                          "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-b-2 text-white transition-all shadow-xs text-xl",
+                          isPlaying
+                            ? "bg-[#1899D6] animate-pulse"
+                            : isHeard
+                              ? "bg-[#58CC02]"
+                              : "bg-[#1CB0F6]"
                         )}
                       >
-                        {idx + 1}
-                      </span>
+                        {w.icon ? <span>{w.icon}</span> : <Volume2 className="h-6 w-6" />}
+                      </button>
+                      <div className="flex flex-col text-left">
+                        <span className="text-2xl font-black text-[#4B4B4B] dark:text-white">
+                          {w.en}
+                        </span>
+                        {w.note && (
+                          <span
+                            dir="rtl"
+                            className="font-kurdish text-xs font-bold text-[#AFAFAF] dark:text-[#8495A0]"
+                          >
+                            ({w.note})
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Dedicated Kurdish Line with Gloss Badges */}
-                    <div className="mt-2 pt-1.5 border-t border-black/5 dark:border-white/5 flex items-center justify-between" dir="rtl">
-                      <span className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]">
-                        {opt.meaningKu}
-                      </span>
-                      <span className="font-kurdish text-xs font-bold text-[#1899D6] dark:text-[#3BC0F8]">
-                        وتنی: {opt.pronKu}
-                      </span>
-                    </div>
-                  </button>
+                    <KurdishGlossBadges pronunciation={w.pron} meaning={w.ku} />
+                  </div>
                 );
               })}
             </div>
           </div>
         )}
 
-        {/* 4. Multiple Choice View */}
+        {/* 2. Multiple Choice View */}
         {slide.type === "quiz_choice" && (
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-1.5 text-center">
@@ -1464,22 +1060,14 @@ export default function Lesson2Page() {
             </div>
 
             {slide.audioWord && (
-              <div className="flex justify-center gap-2">
+              <div className="flex justify-center">
                 <button
                   type="button"
-                  onClick={() => playAudio(slide.audioWord!, 0.88)}
+                  onClick={() => playAudio(slide.audioWord!)}
                   className="inline-flex items-center gap-2 rounded-2xl border-2 border-b-4 border-[#1899D6] bg-[#1CB0F6] px-6 py-3 text-sm font-black text-white hover:bg-[#4FC3F9] active:translate-y-[2px] transition-all shadow-md cursor-pointer"
                 >
                   <Volume2 className="h-5 w-5" />
-                  <span>Listen (1.0x) / گوێبگرە</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => playAudio(slide.audioWord!, 0.65)}
-                  className="inline-flex items-center gap-2 rounded-2xl border-2 border-b-4 border-[#E5E5E5] bg-white px-4 py-3 text-sm font-black text-[#FF9600] hover:border-[#1CB0F6] active:translate-y-[2px] transition-all shadow-xs cursor-pointer dark:border-[#37464F] dark:bg-[#1A262C]"
-                  title="Slow Speed (0.65x)"
-                >
-                  <Turtle className="h-5 w-5" />
+                  <span>Listen / گوێبگرە</span>
                 </button>
               </div>
             )}
@@ -1489,46 +1077,44 @@ export default function Lesson2Page() {
                 const isSelected = selectedOption === idx;
                 return (
                   <button
-                    key={opt.textEn}
+                    key={opt.text}
                     type="button"
                     onClick={() => {
                       playOptionSelectSound();
                       setSelectedOption(idx);
-                      playAudio(opt.textEn, 0.88);
+                      playAudio(opt.text);
                     }}
                     className={cn(
-                      "flex flex-col rounded-2xl border-2 border-b-4 p-4 text-left transition-all cursor-pointer active:translate-y-[2px]",
+                      "flex items-center justify-between rounded-2xl border-2 border-b-4 p-4 text-left transition-all cursor-pointer active:translate-y-[2px]",
                       isSelected
                         ? "border-[#1899D6] bg-[#DDF4FF] dark:border-[#3BC0F8] dark:bg-[#1C3342]"
                         : "border-[#E5E5E5] bg-white hover:border-[#1CB0F6] dark:border-[#37464F] dark:bg-[#1A262C]"
                     )}
+                    style={{ direction: "ltr" }}
                   >
-                    {/* Dedicated English Line */}
-                    <div className="flex items-center justify-between" style={{ direction: "ltr" }}>
+                    <div className="flex flex-col">
                       <span className="text-xl font-black text-[#4B4B4B] dark:text-white">
-                        {opt.textEn}
+                        {opt.text}
                       </span>
-                      <span
-                        className={cn(
-                          "flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-black",
-                          isSelected
-                            ? "border-[#1899D6] bg-[#1CB0F6] text-white"
-                            : "border-[#E5E5E5] text-[#AFAFAF] dark:border-[#37464F]"
-                        )}
-                      >
-                        {idx + 1}
-                      </span>
+                      {opt.sub && (
+                        <span
+                          dir="rtl"
+                          className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0] mt-0.5"
+                        >
+                          {opt.sub}
+                        </span>
+                      )}
                     </div>
-
-                    {/* Dedicated Kurdish Line with Gloss Badges */}
-                    <div className="mt-2 pt-1.5 border-t border-black/5 dark:border-white/5 flex items-center justify-between" dir="rtl">
-                      <span className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]">
-                        {opt.meaningKu}
-                      </span>
-                      <span className="font-kurdish text-xs font-bold text-[#1899D6] dark:text-[#3BC0F8]">
-                        وتنی: {opt.pronKu}
-                      </span>
-                    </div>
+                    <span
+                      className={cn(
+                        "flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-black",
+                        isSelected
+                          ? "border-[#1899D6] bg-[#1CB0F6] text-white"
+                          : "border-[#E5E5E5] text-[#AFAFAF] dark:border-[#37464F]"
+                      )}
+                    >
+                      {idx + 1}
+                    </span>
                   </button>
                 );
               })}
@@ -1536,7 +1122,7 @@ export default function Lesson2Page() {
           </div>
         )}
 
-        {/* 5. Analytic Breakdown View */}
+        {/* 3. Analytic Breakdown View */}
         {slide.type === "analytic_breakdown" && (
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-1.5 text-center">
@@ -1554,7 +1140,7 @@ export default function Lesson2Page() {
                 dir="rtl"
                 className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]"
               >
-                {slide.subtitleKu} ({listenedWords.size} لە {slide.rows.length})
+                گوێ لە هەموو بەشەکان بگرە ({listenedWords.size} لە {slide.rows.length})
               </p>
             </div>
 
@@ -1567,7 +1153,7 @@ export default function Lesson2Page() {
                   <div
                     key={row.en}
                     onClick={() => {
-                      playAudio(row.en, 0.88);
+                      playAudio(row.en);
                       setListenedWords((prev) => new Set(prev).add(row.en));
                     }}
                     className={cn(
@@ -1618,7 +1204,7 @@ export default function Lesson2Page() {
           </div>
         )}
 
-        {/* 6. Status Bank: Want vs Don't Want */}
+        {/* 4. Status Bank View */}
         {slide.type === "status_bank" && (
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-1.5 text-center">
@@ -1635,44 +1221,41 @@ export default function Lesson2Page() {
                 dir="rtl"
                 className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]"
               >
-                {slide.subtitleKu} ({listenedWords.size} لە {slide.items.length})
+                گوێ لە هەموو دەستەواژەکان بگرە ({listenedWords.size} لە {slide.items.length})
               </p>
             </div>
 
             {/* Sentence Preview Frame */}
             <div className="rounded-3xl border-2 border-b-4 border-[#1CB0F6] bg-[#F4FBFF] dark:bg-[#1C3342] p-5 text-center shadow-xs">
-              <span className="text-xs font-extrabold text-[#1899D6] dark:text-[#3BC0F8] uppercase tracking-wider">
-                Sentence Pattern
+              <span className="text-sm font-extrabold text-[#1899D6] dark:text-[#3BC0F8] uppercase tracking-wider">
+                Casual Expression
               </span>
               <div
                 dir="ltr"
                 className="mt-2 text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white"
               >
-                I{" "}
-                <span className="rounded-xl border-2 border-dashed border-[#1899D6] bg-white dark:bg-[#131F24] px-3 py-0.5 text-[#1899D6] dark:text-[#3BC0F8]">
-                  {playingWord ? playingWord.replace(/^I\s+/, "") : "..."}
+                <span className="rounded-xl border-2 border-dashed border-[#1899D6] bg-white dark:bg-[#131F24] px-4 py-1 text-[#1899D6] dark:text-[#3BC0F8]">
+                  {playingWord ? playingWord : "..."}
                 </span>
-                {slide.frameSuffix}
               </div>
             </div>
 
             {/* Status Items Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {slide.items.map((item) => {
-                const fullPhrase = item.fullSentenceEn;
-                const isHeard = listenedWords.has(item.enWord);
-                const isPlaying = playingWord === fullPhrase;
+                const isHeard = listenedWords.has(item.word);
+                const isPlaying = playingWord === item.word;
 
                 return (
                   <button
-                    key={item.enWord}
+                    key={item.word}
                     type="button"
                     onClick={() => {
-                      playAudio(fullPhrase, 0.88);
-                      setListenedWords((prev) => new Set(prev).add(item.enWord));
+                      playAudio(item.word);
+                      setListenedWords((prev) => new Set(prev).add(item.word));
                     }}
                     className={cn(
-                      "flex flex-col rounded-2xl border-2 border-b-4 p-4 text-left transition-all cursor-pointer active:translate-y-[2px]",
+                      "flex flex-col items-center justify-center rounded-2xl border-2 border-b-4 p-4 text-center transition-all cursor-pointer active:translate-y-[2px]",
                       isPlaying
                         ? "border-[#1899D6] bg-[#DDF4FF] dark:border-[#3BC0F8] dark:bg-[#1C3342] scale-102"
                         : isHeard
@@ -1680,20 +1263,21 @@ export default function Lesson2Page() {
                           : "border-[#E5E5E5] bg-white hover:border-[#1CB0F6] dark:border-[#37464F] dark:bg-[#1A262C]"
                     )}
                   >
-                    <div className="flex items-center justify-between" style={{ direction: "ltr" }}>
-                      <span className="text-xl font-black text-[#4B4B4B] dark:text-white">
-                        {item.enWord}
-                      </span>
-                      <Volume2 className="h-5 w-5 text-[#1CB0F6]" />
-                    </div>
-                    <div className="mt-2 pt-1 border-t border-black/5 dark:border-white/5 flex flex-col" dir="rtl">
-                      <span className="font-kurdish text-sm font-bold text-[#1899D6] dark:text-[#3BC0F8]">
-                        وتنی: {item.pron}
-                      </span>
-                      <span className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]">
-                        {item.meaning}
-                      </span>
-                    </div>
+                    <span className="text-xl font-black text-[#4B4B4B] dark:text-white">
+                      {item.word}
+                    </span>
+                    <span
+                      dir="rtl"
+                      className="font-kurdish text-sm font-bold text-[#1899D6] dark:text-[#3BC0F8] mt-1"
+                    >
+                      {item.pron} ({item.meaning})
+                    </span>
+                    <span
+                      dir="ltr"
+                      className="font-sans text-xs text-[#AFAFAF] dark:text-[#8495A0] mt-1"
+                    >
+                      {item.note}
+                    </span>
                   </button>
                 );
               })}
@@ -1701,7 +1285,7 @@ export default function Lesson2Page() {
           </div>
         )}
 
-        {/* 7. Interactive Microphone View */}
+        {/* 5. Interactive Microphone View */}
         {slide.type === "mic_speak" && (
           <div className="flex flex-col items-center gap-6 text-center">
             <div className="flex flex-col items-center gap-1.5 text-center">
@@ -1724,31 +1308,20 @@ export default function Lesson2Page() {
             </div>
 
             <div className="flex flex-col items-center gap-4 w-full max-w-md rounded-3xl border-2 border-b-4 border-[#E5E5E5] bg-white p-6 shadow-sm dark:border-[#37464F] dark:bg-[#1A262C]">
-              {/* Target phrase & dual audio */}
               <div className="flex items-center justify-center gap-3">
                 <span
                   dir="ltr"
-                  className="text-2xl sm:text-3xl font-black tracking-wide text-[#4B4B4B] dark:text-white select-none"
+                  className="text-3xl sm:text-4xl font-black tracking-wide text-[#4B4B4B] dark:text-white select-none"
                 >
                   {slide.targetWord}
                 </span>
                 <button
                   type="button"
-                  onClick={() => playAudio(slide.targetWord, 0.88)}
+                  onClick={() => playAudio(slide.targetWord)}
                   aria-label={`Listen to ${slide.targetWord}`}
                   className="flex h-11 w-11 items-center justify-center rounded-2xl border-2 border-b-4 border-[#1899D6] bg-[#1CB0F6] text-white hover:bg-[#4FC3F9] active:translate-y-[2px] transition-all shadow-xs cursor-pointer"
-                  title="Normal Speed"
                 >
                   <Volume2 className="h-5 w-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => playAudio(slide.targetWord, 0.65)}
-                  aria-label={`Listen slow to ${slide.targetWord}`}
-                  className="flex h-11 w-11 items-center justify-center rounded-2xl border-2 border-b-4 border-[#E5E5E5] bg-white hover:border-[#1CB0F6] text-[#FF9600] active:translate-y-[2px] transition-all shadow-xs cursor-pointer dark:border-[#37464F] dark:bg-[#131F24]"
-                  title="Slow Speed (0.65x)"
-                >
-                  <Turtle className="h-5 w-5" />
                 </button>
               </div>
 
@@ -1761,7 +1334,7 @@ export default function Lesson2Page() {
                 dir="rtl"
                 className="rounded-xl bg-[#F7F7F7] dark:bg-[#202F36] px-3.5 py-1.5 font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0] border border-black/5 dark:border-white/5"
               >
-                {slide.ruleNoteKu}
+                {slide.ruleNote}
               </span>
             </div>
 
@@ -1824,7 +1397,7 @@ export default function Lesson2Page() {
           </div>
         )}
 
-        {/* 8. Response Pairing View */}
+        {/* 6. Response Pairing View */}
         {slide.type === "quiz_pairs" && (
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-1.5 text-center">
@@ -1843,12 +1416,6 @@ export default function Lesson2Page() {
               >
                 {slide.titleEn}
               </p>
-              <p
-                dir="rtl"
-                className="font-kurdish text-xs font-bold text-[#1CB0F6] dark:text-[#3BC0F8]"
-              >
-                {slide.subtitleKu}
-              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -1864,7 +1431,7 @@ export default function Lesson2Page() {
                       disabled={isMatched}
                       onClick={() => handlePairClickEn(p.id, p.en)}
                       className={cn(
-                        "flex flex-col min-h-[76px] items-center justify-center rounded-2xl border-2 border-b-4 p-3 text-center transition-all cursor-pointer",
+                        "flex min-h-[72px] items-center justify-center rounded-2xl border-2 border-b-4 p-3 text-center transition-all cursor-pointer font-bold text-sm",
                         isMatched
                           ? "border-[#58CC02] bg-[#E8FAD4] text-[#46A302] opacity-60 cursor-default"
                           : isSelected
@@ -1872,8 +1439,7 @@ export default function Lesson2Page() {
                             : "border-[#E5E5E5] bg-white text-[#4B4B4B] hover:border-[#1CB0F6] dark:border-[#37464F] dark:bg-[#1A262C] dark:text-white"
                       )}
                     >
-                      <span className="font-sans font-black text-base">{p.en}</span>
-                      <span className="font-kurdish text-[11px] text-[#AFAFAF] mt-0.5">({p.pron})</span>
+                      {p.en}
                     </button>
                   );
                 })}
@@ -1894,7 +1460,7 @@ export default function Lesson2Page() {
                         disabled={isMatched}
                         onClick={() => handlePairClickKu(p.id)}
                         className={cn(
-                          "flex min-h-[76px] items-center justify-center rounded-2xl border-2 border-b-4 p-3 text-center font-kurdish transition-all cursor-pointer font-black text-base",
+                          "flex min-h-[72px] items-center justify-center rounded-2xl border-2 border-b-4 p-3 text-center font-kurdish transition-all cursor-pointer font-black text-sm",
                           isMatched
                             ? "border-[#58CC02] bg-[#E8FAD4] text-[#46A302] opacity-60 cursor-default"
                             : isSelected
@@ -1912,7 +1478,7 @@ export default function Lesson2Page() {
           </div>
         )}
 
-        {/* 9. Chat Dialogue View */}
+        {/* 7. Chat Dialogue View */}
         {slide.type === "chat_dialogue" && (
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-1.5 text-center">
@@ -1934,49 +1500,42 @@ export default function Lesson2Page() {
               </p>
             </div>
 
-            {/* Simulated Chat Bubble */}
+            {/* Chat Bubble Simulation */}
             <div className="flex items-start gap-3 rounded-3xl border-2 border-b-4 border-[#E5E5E5] bg-white p-5 dark:border-[#37464F] dark:bg-[#1A262C] shadow-sm">
               <div className="shrink-0 flex items-center">
                 <SquirrelMascot
                   mood="happy"
-                  size={50}
-                  title={slide.speakerNameKu}
+                  size={48}
+                  title="Smorik"
                 />
               </div>
 
-              <div className="flex flex-col items-start gap-1 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-kurdish text-xs font-black text-[#4B4B4B] dark:text-white">
-                    {slide.speakerNameKu}
-                  </span>
-                  <span className="text-[11px] font-bold text-[#AFAFAF]">
-                    ({slide.speakerRoleEn})
-                  </span>
-                </div>
+              <div className="flex flex-col items-start gap-1">
+                <span className="text-xs font-extrabold text-[#777777] dark:text-[#8495A0]">
+                  {slide.incomingSender}
+                </span>
                 <div className="flex items-center gap-2 rounded-2xl rounded-tl-none bg-[#F4FBFF] dark:bg-[#1C3342] border border-[#1CB0F6]/30 px-4 py-2.5">
                   <span
                     dir="ltr"
                     className="text-lg font-black text-[#4B4B4B] dark:text-white"
                   >
-                    {slide.incomingMessageEn}
+                    {slide.incomingMessage}
                   </span>
                   <button
                     type="button"
-                    onClick={() => playAudio(slide.incomingMessageEn, 0.88)}
+                    onClick={() => playAudio(slide.incomingMessage)}
                     aria-label="Listen to message"
                     className="text-[#1899D6] hover:text-[#1CB0F6]"
                   >
                     <Volume2 className="h-4 w-4" />
                   </button>
                 </div>
-                <div className="flex items-center gap-2 mt-0.5" dir="rtl">
-                  <span className="font-kurdish text-xs font-bold text-[#1899D6] dark:text-[#3BC0F8]">
-                    وتنی: {slide.incomingPronKu}
-                  </span>
-                  <span className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]">
-                    ({slide.incomingMeaningKu})
-                  </span>
-                </div>
+                <span
+                  dir="rtl"
+                  className="font-kurdish text-xs font-bold text-[#1899D6] dark:text-[#3BC0F8] pl-1"
+                >
+                  {slide.incomingPron}
+                </span>
               </div>
             </div>
 
@@ -1986,43 +1545,44 @@ export default function Lesson2Page() {
                 const isSelected = selectedOption === idx;
                 return (
                   <button
-                    key={opt.textEn}
+                    key={opt.text}
                     type="button"
                     onClick={() => {
                       playOptionSelectSound();
                       setSelectedOption(idx);
-                      playAudio(opt.textEn, 0.88);
+                      playAudio(opt.text);
                     }}
                     className={cn(
-                      "flex flex-col rounded-2xl border-2 border-b-4 p-4 text-left transition-all cursor-pointer active:translate-y-[2px]",
+                      "flex items-center justify-between rounded-2xl border-2 border-b-4 p-4 text-left transition-all cursor-pointer active:translate-y-[2px]",
                       isSelected
                         ? "border-[#1899D6] bg-[#DDF4FF] dark:border-[#3BC0F8] dark:bg-[#1C3342]"
                         : "border-[#E5E5E5] bg-white hover:border-[#1CB0F6] dark:border-[#37464F] dark:bg-[#1A262C]"
                     )}
+                    style={{ direction: "ltr" }}
                   >
-                    <div className="flex items-center justify-between" style={{ direction: "ltr" }}>
+                    <div className="flex flex-col">
                       <span className="text-xl font-black text-[#4B4B4B] dark:text-white">
-                        {opt.textEn}
+                        {opt.text}
                       </span>
-                      <span
-                        className={cn(
-                          "flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-black",
-                          isSelected
-                            ? "border-[#1899D6] bg-[#1CB0F6] text-white"
-                            : "border-[#E5E5E5] text-[#AFAFAF] dark:border-[#37464F]"
-                        )}
-                      >
-                        {idx + 1}
-                      </span>
+                      {opt.sub && (
+                        <span
+                          dir="rtl"
+                          className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]"
+                        >
+                          {opt.sub}
+                        </span>
+                      )}
                     </div>
-                    <div className="mt-2 pt-1.5 border-t border-black/5 dark:border-white/5 flex items-center justify-between" dir="rtl">
-                      <span className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]">
-                        {opt.meaningKu}
-                      </span>
-                      <span className="font-kurdish text-xs font-bold text-[#1899D6] dark:text-[#3BC0F8]">
-                        وتنی: {opt.pronKu}
-                      </span>
-                    </div>
+                    <span
+                      className={cn(
+                        "flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-black",
+                        isSelected
+                          ? "border-[#1899D6] bg-[#1CB0F6] text-white"
+                          : "border-[#E5E5E5] text-[#AFAFAF] dark:border-[#37464F]"
+                      )}
+                    >
+                      {idx + 1}
+                    </span>
                   </button>
                 );
               })}
@@ -2030,7 +1590,7 @@ export default function Lesson2Page() {
           </div>
         )}
 
-        {/* 10. Agreement Trigger View */}
+        {/* 8. Agreement / Trigger View */}
         {slide.type === "agreement_trigger" && (
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-1.5 text-center">
@@ -2058,11 +1618,11 @@ export default function Lesson2Page() {
                   dir="ltr"
                   className="text-2xl sm:text-3xl font-black text-[#4B4B4B] dark:text-white"
                 >
-                  {slide.promptEn}
+                  {slide.promptPhrase}
                 </span>
                 <button
                   type="button"
-                  onClick={() => playAudio(slide.promptEn, 0.88)}
+                  onClick={() => playAudio(slide.promptPhrase)}
                   className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1CB0F6] text-white shadow-xs"
                 >
                   <Volume2 className="h-4 w-4" />
@@ -2072,7 +1632,7 @@ export default function Lesson2Page() {
                 dir="rtl"
                 className="mt-2 font-kurdish text-sm font-bold text-[#1899D6] dark:text-[#3BC0F8]"
               >
-                وتنی: {slide.promptPronKu} ({slide.promptMeaningKu})
+                {slide.promptPron} ({slide.promptKu})
               </p>
             </div>
 
@@ -2082,43 +1642,44 @@ export default function Lesson2Page() {
                 const isSelected = selectedOption === idx;
                 return (
                   <button
-                    key={opt.textEn}
+                    key={opt.text}
                     type="button"
                     onClick={() => {
                       playOptionSelectSound();
                       setSelectedOption(idx);
-                      playAudio(opt.textEn, 0.88);
+                      playAudio(opt.text);
                     }}
                     className={cn(
-                      "flex flex-col rounded-2xl border-2 border-b-4 p-4 text-left transition-all cursor-pointer active:translate-y-[2px]",
+                      "flex items-center justify-between rounded-2xl border-2 border-b-4 p-4 text-left transition-all cursor-pointer active:translate-y-[2px]",
                       isSelected
                         ? "border-[#1899D6] bg-[#DDF4FF] dark:border-[#3BC0F8] dark:bg-[#1C3342]"
                         : "border-[#E5E5E5] bg-white hover:border-[#1CB0F6] dark:border-[#37464F] dark:bg-[#1A262C]"
                     )}
+                    style={{ direction: "ltr" }}
                   >
-                    <div className="flex items-center justify-between" style={{ direction: "ltr" }}>
+                    <div className="flex flex-col">
                       <span className="text-xl font-black text-[#4B4B4B] dark:text-white">
-                        {opt.textEn}
+                        {opt.text}
                       </span>
-                      <span
-                        className={cn(
-                          "flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-black",
-                          isSelected
-                            ? "border-[#1899D6] bg-[#1CB0F6] text-white"
-                            : "border-[#E5E5E5] text-[#AFAFAF] dark:border-[#37464F]"
-                        )}
-                      >
-                        {idx + 1}
-                      </span>
+                      {opt.sub && (
+                        <span
+                          dir="rtl"
+                          className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]"
+                        >
+                          {opt.sub}
+                        </span>
+                      )}
                     </div>
-                    <div className="mt-2 pt-1.5 border-t border-black/5 dark:border-white/5 flex items-center justify-between" dir="rtl">
-                      <span className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]">
-                        {opt.meaningKu}
-                      </span>
-                      <span className="font-kurdish text-xs font-bold text-[#1899D6] dark:text-[#3BC0F8]">
-                        وتنی: {opt.pronKu}
-                      </span>
-                    </div>
+                    <span
+                      className={cn(
+                        "flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-black",
+                        isSelected
+                          ? "border-[#1899D6] bg-[#1CB0F6] text-white"
+                          : "border-[#E5E5E5] text-[#AFAFAF] dark:border-[#37464F]"
+                      )}
+                    >
+                      {idx + 1}
+                    </span>
                   </button>
                 );
               })}
@@ -2126,7 +1687,7 @@ export default function Lesson2Page() {
           </div>
         )}
 
-        {/* 11. Slot Filler View */}
+        {/* 9. Slot Filler View */}
         {slide.type === "quiz_slot" && (
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-1.5 text-center">
@@ -2150,7 +1711,7 @@ export default function Lesson2Page() {
                 <span>{slide.framePre}</span>
                 <span className="inline-flex min-w-[90px] items-center justify-center border-b-4 border-dashed border-[#1CB0F6] bg-[#DDF4FF] px-4 py-1 text-2xl text-[#1899D6] dark:bg-[#1C3342] dark:text-[#3BC0F8] rounded-xl">
                   {selectedOption !== null
-                    ? slide.options[selectedOption].textEn.split(" ")[0]
+                    ? slide.options[selectedOption].text.split(" ")[0]
                     : "___"}
                 </span>
                 <span>{slide.framePost}</span>
@@ -2169,12 +1730,12 @@ export default function Lesson2Page() {
                 const isSelected = selectedOption === idx;
                 return (
                   <button
-                    key={opt.textEn}
+                    key={opt.text}
                     type="button"
                     onClick={() => {
                       playOptionSelectSound();
                       setSelectedOption(idx);
-                      playAudio(opt.textEn.split(" ")[0], 0.88);
+                      playAudio(opt.text.split(" ")[0]);
                     }}
                     className={cn(
                       "flex items-center justify-between rounded-2xl border-2 border-b-4 p-4 text-left transition-all cursor-pointer active:translate-y-[2px]",
@@ -2185,14 +1746,16 @@ export default function Lesson2Page() {
                     style={{ direction: "ltr" }}
                   >
                     <span className="text-xl font-black text-[#4B4B4B] dark:text-white">
-                      {opt.textEn}
+                      {opt.text}
                     </span>
-                    <span
-                      dir="rtl"
-                      className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]"
-                    >
-                      {opt.meaningKu}
-                    </span>
+                    {opt.sub && (
+                      <span
+                        dir="rtl"
+                        className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]"
+                      >
+                        {opt.sub}
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -2200,7 +1763,7 @@ export default function Lesson2Page() {
           </div>
         )}
 
-        {/* 12. Tile Assembly View */}
+        {/* 10. Tile Assembly View */}
         {slide.type === "tile_assembly" && (
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-1.5 text-center">
@@ -2217,11 +1780,11 @@ export default function Lesson2Page() {
                 dir="rtl"
                 className="font-kurdish text-xs font-bold text-[#777777] dark:text-[#8495A0]"
               >
-                {slide.subtitleKu} ({slide.fullPronKu})
+                {slide.fullMeaning} ({slide.fullPron})
               </p>
             </div>
 
-            {/* Construction Drop Zone */}
+            {/* Construction Area */}
             <div className="flex min-h-[90px] flex-wrap items-center justify-center gap-2.5 rounded-3xl border-2 border-dashed border-[#1CB0F6] bg-[#F4FBFF] dark:bg-[#1C3342] p-4">
               {assembledTiles.length === 0 ? (
                 <span className="font-kurdish text-xs text-[#AFAFAF] italic">
@@ -2255,7 +1818,7 @@ export default function Lesson2Page() {
                     type="button"
                     onClick={() => {
                       playOptionSelectSound();
-                      playAudio(t, 0.88);
+                      playAudio(t);
                       setAssembledTiles((prev) => [...prev, t]);
                     }}
                     className="rounded-2xl border-2 border-b-4 border-[#E5E5E5] bg-white px-6 py-3 text-lg font-black text-[#4B4B4B] shadow-sm hover:border-[#1CB0F6] active:translate-y-[2px] dark:border-[#37464F] dark:bg-[#1A262C] dark:text-white"
@@ -2286,7 +1849,6 @@ export default function Lesson2Page() {
               className="shrink-0 px-10 py-3"
             >
               {slide.type === "word_anchors" ||
-              slide.type === "tip_card" ||
               slide.type === "analytic_breakdown" ||
               slide.type === "status_bank"
                 ? "Continue"
